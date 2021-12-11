@@ -1,8 +1,8 @@
 <?php 
     if(isset($_POST['ipPB']) && isset($_POST['upPB']) && isset($_POST['gesloPB'])){
-        $ipfilter = filter_input(INPUT_POST, $ipPB, FILTER_SANITIZE_STRING);
-        $upfilter = filter_input(INPUT_POST, $upPB, FILTER_SANITIZE_STRING);
-        $geslofilter = filter_input(INPUT_POST, $gesloPB, FILTER_SANITIZE_STRING);
+        $ipfilter = filter_input(INPUT_POST, 'ipPB', FILTER_SANITIZE_STRING);
+        $upfilter = filter_input(INPUT_POST, 'upPB', FILTER_SANITIZE_STRING);
+        $geslofilter = filter_input(INPUT_POST, 'gesloPB', FILTER_SANITIZE_STRING);
 
         if(empty($ipfilter)){
             RedirectZNapako(1);
@@ -16,6 +16,26 @@
             RedirectZNapako(3);
         }
 
+        $datoteka = fopen("PovezavaZBazo.php", "w") or die("Nemorem odpreti datoteke!");
+
+        $vpisvdatoteko = "<?php 
+            \$uporabniskoime = \"$upfilter\";
+            \$serverip = \"$ipfilter\";
+            \$geslo = \"$geslofilter\";
+            /*\$podatkovnabaza = \"Kmetijski_Izdelki\";*/
+        
+            \$povezava = mysqli_connect(\$serverip, \$uporabniskoime, \$geslo/*, \$podatkovnabaza*/);
+            
+            if(!\$povezava){
+                die(\"Povezava ni uspela: \" . mysqli_connect_error());
+            }
+        
+            mysqli_set_charset(\$povezava, 'utf8');
+        
+            ?>";
+        
+        fwrite($datoteka, $vpisvdatoteko);
+        fclose($datoteka);
     }
 
     function RedirectZNapako($napaka){
@@ -49,7 +69,7 @@
             <div class="vsebina">
                 <div class="VzpostavljanjePBNaslov">Vzpostavljanje povezave s podatkovno bazo</div>
                 <div class="formdiv">
-                    <form method="post" action="">
+                    <form method="post" action="install.php">
                         <div class="formvnosi">
                             <div class="formvnosItem">
                                 <div class="vnosNaslov">IP Naslov:</div>
