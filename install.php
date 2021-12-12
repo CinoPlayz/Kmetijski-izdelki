@@ -16,6 +16,10 @@
             RedirectZNapako(3);
         }
 
+        if($geslofilter == "empty"){
+            $geslofilter = "";
+        }
+
         $datoteka = fopen("PovezavaZBazo.php", "w") or die("Nemorem odpreti datoteke!");
 
         $vpisvdatoteko = "<?php 
@@ -27,7 +31,7 @@
             \$povezava = mysqli_connect(\$serverip, \$uporabniskoime, \$geslo/*, \$podatkovnabaza*/);
             
             if(!\$povezava){
-                die(\"Povezava ni uspela: \" . mysqli_connect_error());
+                /*die(\"Povezava ni uspela: \" . mysqli_connect_error());*/
             }
         
             mysqli_set_charset(\$povezava, 'utf8');
@@ -36,11 +40,31 @@
         
         fwrite($datoteka, $vpisvdatoteko);
         fclose($datoteka);
+
+        require("PovezavaZBazo.php");
+
+        if(!$povezava){
+            RedirectZNapako("PovError");
+        }
+        else{
+            RedirectZUspehom("UspesnaPov");
+        }
     }
 
     function RedirectZNapako($napaka){
         header("location: install.php?napaka=$napaka");
         exit;
+    }
+
+    function RedirectZUspehom($napaka){
+        header("location: install.php?uspeh=$napaka");
+        exit;
+    }
+
+    if(isset($_POST['inicealizacija'])){
+        if($_POST['inicealizacija'] == "DA"){
+            
+        }
     }
 ?>
 <html>
@@ -67,25 +91,31 @@
             </div>
 
             <div class="vsebina">
-                <div class="VzpostavljanjePBNaslov">Vzpostavljanje povezave s podatkovno bazo</div>
-                <div class="formdiv">
-                    <form method="post" action="install.php">
-                        <div class="formvnosi">
-                            <div class="formvnosItem">
-                                <div class="vnosNaslov">IP Naslov:</div>
-                                <input type="text" name="ipPB" class="ipPB">
+                <?php 
+                    if(!$_GET || isset($_GET['napaka'])){
+
+                echo" 
+                <div class='VzpostavljanjePBNaslov'>Vzpostavljanje povezave s podatkovno bazo</div>
+                <div class='formdiv'>
+                    <form method='post' action='install.php'>
+                        <div class='formvnosi'>
+                            <div class='formvnosItem'>
+                                <div class='vnosNaslov'>IP Naslov:</div>
+                                <input type='text' name='ipPB' class='ipPB'>
                             </div>
 
-                            <div class="formvnosItem">
-                                <div class="vnosNaslov">Uporabniško ime:</div>
-                                <input type="text" name="upPB" class="ipPB">
+                            <div class='formvnosItem'>
+                                <div class='vnosNaslov'>Uporabniško ime:</div>
+                                <input type='text' name='upPB' class='ipPB'>
                             </div>
 
-                            <div class="formvnosItem">
-                                <div class="vnosNaslov">Geslo:</div>
-                                <input type="text" name="gesloPB" class="ipPB">
+                            <div class='formvnosItem'>
+                                <div class='vnosNaslov'>Geslo:</div>
+                                <input type='text' name='gesloPB' class='ipPB'>
                             </div>  
-                        </div>                      
+                        </div>    "; 
+                    }
+                    ?>                 
                         <?php 
                             if(isset($_GET['napaka'])){
                                 switch($_GET['napaka']){
@@ -95,17 +125,37 @@
                                         break;
                                     case 3 : echo("<div class='napaka'>Vpišite veljaveno Geslo</div>");
                                         break;
+                                    case "PovError": echo("<div class='napaka'>Povezava ni uspela(poglejte, da so podatki pravilni)</div>");
+                                        break;
                                 }
 
                                 
                             }
                         
                         ?>
-                        <div style="text-align: center;">
-                            <input type="submit">
+                      <?php  
+                      if(!$_GET || isset($_GET['napaka'])){
+                        echo
+                      
+                                "<div style='text-align: center;'>
+                            <input type='submit'>
                         </div>
                     </form>
+                </div>"; }?>
+
+                <?php 
+                 if(isset($_GET['uspeh']) && $_GET['uspeh'] == "UspesnaPov"){
+                    echo"
+                 
+                <div class='VzpostavljanjePBNaslov'>Uspešna povezava</div>
+                <div class='formdiv'>
+                    <form method='post' action='install.php'>
+                        <input type='hidden' name='inicealizacija' value='DA'>
+                        <input type='submit' value='inicializiraj'>
+                    </form>
                 </div>
+                <div class='napaka'>(To izbriše podatkovno bazo, če ste jo imeli ter jo ponovno naredi!!!!!)</div>
+                ";}?>
             </div>
 
             <div class="noga">
