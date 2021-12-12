@@ -5,7 +5,7 @@ CREATE DATABASE Kmetijski_Izdelki;
 USE Kmetijski_Izdelki;
 
 CREATE TABLE Uporabnik(
-	Poljubno_ime VARCHAR(50) PRIMARY KEY,
+	Uporabnisko_ime VARCHAR(50) PRIMARY KEY,
 	Ime VARCHAR(50) NOT NULL,
 	Priimek VARCHAR(50) NOT NULL,
 	Geslo VARCHAR(512) NOT NULL,
@@ -29,10 +29,10 @@ CREATE TABLE Prodaja(
 	Datum_Vpisa DATETIME NOT NULL,
 	Koliko INT NOT NULL,
 	id_stranke INT NOT NULL,
-	Poljubno_ime VARCHAR(50) NOT NULL,
+	Uporabnisko_ime VARCHAR(50) NOT NULL,
 	Izdelek VARCHAR(50) NOT NULL,
 	FOREIGN KEY (id_stranke) REFERENCES Stranka(id_stranke), 
-	FOREIGN KEY (Poljubno_ime) REFERENCES Uporabnik(Poljubno_ime), 
+	FOREIGN KEY (Uporabnisko_ime) REFERENCES Uporabnik(Uporabnisko_ime), 
 	FOREIGN KEY (Izdelek) REFERENCES Izdelek(Izdelek)
 );
 

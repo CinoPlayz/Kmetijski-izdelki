@@ -141,3 +141,12 @@ input[type=submit]:hover {
     justify-content: center;
     align-items: center;
 }
+
+.uspesno{
+    color: green; 
+    font-size: 18px; 
+    font-weight: 700;
+    padding-bottom: 15px; 
+    padding-top: 7px;
+    text-align:center;
+}

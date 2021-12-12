@@ -56,8 +56,8 @@
         exit;
     }
 
-    function RedirectZUspehom($napaka){
-        header("location: install.php?uspeh=$napaka");
+    function RedirectZUspehom($uspeh){
+        header("location: install.php?uspeh=$uspeh");
         exit;
     }
 
@@ -71,7 +71,7 @@
             USE Kmetijski_Izdelki;
             
             CREATE TABLE Uporabnik(
-                Poljubno_ime VARCHAR(50) PRIMARY KEY,
+                Uporabnisko_ime VARCHAR(50) PRIMARY KEY,
                 Ime VARCHAR(50) NOT NULL,
                 Priimek VARCHAR(50) NOT NULL,
                 Geslo VARCHAR(512) NOT NULL,
@@ -95,10 +95,10 @@
                 Datum_Vpisa DATETIME NOT NULL,
                 Koliko INT NOT NULL,
                 id_stranke INT NOT NULL,
-                Poljubno_ime VARCHAR(50) NOT NULL,
+                Uporabnisko_ime VARCHAR(50) NOT NULL,
                 Izdelek VARCHAR(50) NOT NULL,
                 FOREIGN KEY (id_stranke) REFERENCES Stranka(id_stranke), 
-                FOREIGN KEY (Poljubno_ime) REFERENCES Uporabnik(Poljubno_ime), 
+                FOREIGN KEY (Uporabnisko_ime) REFERENCES Uporabnik(Uporabnisko_ime), 
                 FOREIGN KEY (Izdelek) REFERENCES Izdelek(Izdelek)
             );
             
@@ -140,6 +140,72 @@
             
 
         }
+    }
+
+    if(isset($_POST['upAdmin']) && isset($_POST['gesloAdmin']) && isset($_POST['gesloPoAdmin'])){
+        require("PovezavaZBazo.php");
+
+        $upfilter = filter_input(INPUT_POST, 'upAdmin', FILTER_SANITIZE_STRING);
+        $geslofilter = filter_input(INPUT_POST, 'gesloAdmin', FILTER_SANITIZE_STRING);
+        $gesloponovnofilter = filter_input(INPUT_POST, 'gesloPoAdmin', FILTER_SANITIZE_STRING);
+
+        if(empty($upfilter)){
+            RedirectZNapakoAdmin(1, $povezava);
+        }
+
+        if(empty($geslofilter)){
+            RedirectZNapakoAdmin(2, $povezava);
+        }
+
+        if(empty($gesloponovnofilter)){
+            RedirectZNapakoAdmin(3, $povezava);
+        }
+        
+        $up = mysqli_real_escape_string($povezava, $upfilter);
+        $geslo = mysqli_real_escape_string($povezava, $geslofilter);
+        $gesloponovno = mysqli_real_escape_string($povezava, $gesloponovnofilter);
+
+        if(empty($up)){
+            RedirectZNapakoAdmin(1, $povezava);
+        }
+
+        if(empty($geslo)){
+            RedirectZNapakoAdmin(2, $povezava);
+        }
+
+        if(empty($gesloponovno)){
+            RedirectZNapakoAdmin(3, $povezava);
+        }
+
+        if($geslo != $gesloponovno){
+            RedirectZNapakoAdmin(4, $povezava);
+        }
+
+
+
+
+        if(defined('PASSWORD_ARGON2ID')) {
+            $geslohash = password_hash($geslo, PASSWORD_ARGON2ID, ['memory_cost' => 2048, 'time_cost' => 12, 'threads' => 2]);
+        }
+        else{
+            $geslohash = password_hash($geslo, PASSWORD_DEFAULT, ['memory_cost' => 2048, 'time_cost' => 12, 'threads' => 2]);
+        }
+
+        $sql = "INSERT INTO Uporabnik (Uporabnisko_ime, Ime, Priimek, Geslo, Token, Pravila) VALUES ('$up', 'Admin', 'Admin', '$geslohash', NULL, 'Admin');";
+
+        if(mysqli_query($povezava, $sql)){
+            mysqli_close($povezava);
+            RedirectZUspehom("UspesnoDod");
+        }
+        else{
+            RedirectZNapakoAdmin("PovError", $povezava);
+        }
+    }
+
+    function RedirectZNapakoAdmin($napaka, $povezava){    
+        mysqli_close($povezava);    
+        header("location: install.php?napakaAd=$napaka&uspeh=UspešnoUst");
+        exit;
     }
 ?>
 <html>
@@ -221,16 +287,80 @@
                 <?php 
                  if(isset($_GET['uspeh']) && $_GET['uspeh'] == "UspesnaPov"){
                     echo"
-                 
-                <div class='VzpostavljanjePBNaslov'>Uspešna povezava</div>
+
+                <div class='uspesno'><img src='Slike/tick-green.svg' width='17px' height='17px' style='padding-right: 4px;'>Uspešna povezava</div>
+                <div class='VzpostavljanjePBNaslov'>Inicializiraj podatkovno bazo</div>
                 <div class='formdiv'>
                     <form method='post' action='install.php'>
                         <input type='hidden' name='inicealizacija' value='DA'>
-                        <input type='submit' value='inicializiraj'>
+                        <input type='submit' value='Inicializiraj'>
                     </form>
                 </div>
                 <div class='napaka'>(To izbriše podatkovno bazo, če ste jo imeli ter jo ponovno naredi!!!!!)</div>
                 ";}?>
+
+                <?php if(isset($_GET['uspeh']) && $_GET['uspeh'] == "UspešnoUst"){
+                echo"<div class='uspesno' style='padding-bottom: 1px;'><img src='Slike/tick-green.svg' width='17px' height='17px' style='padding-right: 4px;'>Uspešna povezava</div>
+                <div class='uspesno'><img src='Slike/tick-green.svg' width='17px' height='17px' style='padding-right: 4px;'>Uspešno inicializirana podatkovna baza</div>
+                <div class='VzpostavljanjePBNaslov'>Dodaj Administratorja</div>
+                <div class='formdiv'>
+                    <form method='post' action='install.php'>
+                        <div class='formvnosi'>
+                            <div class='formvnosItem'>
+                                <div class='vnosNaslov'>Uporabniško ime:</div>
+                                <input type='text' name='upAdmin' class='ipPB'>
+                            </div>
+
+                            <div class='formvnosItem'>
+                                <div class='vnosNaslov'>Geslo:</div>
+                                <input type='password' name='gesloAdmin' class='ipPB'>
+                            </div>
+
+                            <div class='formvnosItem'>
+                                <div class='vnosNaslov'>Geslo ponovno:</div>
+                                <input type='password' name='gesloPoAdmin' class='ipPB'>
+                            </div>"; }?>
+                        
+                        <?php 
+                            if(isset($_GET['napakaAd']) && $_GET['uspeh'] == "UspešnoUst"){
+                                switch($_GET['napakaAd']){
+                                    case 1 : echo("<div class='napaka'>Vpišite veljaveno Uporabniško ime</div>");
+                                        break;
+                                    case 2 : echo("<div class='napaka'>Vpišite veljaveno Geslo</div>");
+                                        break;
+                                    case 3 : echo("<div class='napaka'>Vpišite veljaveno Ponovno geslo</div>");
+                                        break;
+                                    case 4 : echo("<div class='napaka'>Vpišite isti gesli</div>");
+                                        break;
+                                    case "PovError": echo("<div class='napaka'>Povezava ni uspela</div>");
+                                        break;
+                                }
+
+                                
+                            }
+                        
+                        ?>
+
+                        <?php
+                        if(isset($_GET['uspeh']) && $_GET['uspeh'] == "UspešnoUst"){
+                        echo"<div style='text-align: center;'>
+                                <input type='submit'>
+                            </div> 
+                        </div>
+                    </form>
+                </div>";}
+                ?>
+
+                <?php
+                if(isset($_GET['uspeh']) && $_GET['uspeh'] == "UspesnoDod"){
+                echo"<div class='uspesno' style='padding-bottom: 1px;'><img src='Slike/tick-green.svg' width='17px' height='17px' style='padding-right: 4px;'>Uspešna povezava</div>
+                <div class='uspesno' style='padding-bottom: 1px;'><img src='Slike/tick-green.svg' width='17px' height='17px' style='padding-right: 4px;'>Uspešno inicializirana podatkovna baza</div>
+                <div class='uspesno'><img src='Slike/tick-green.svg' width='17px' height='17px' style='padding-right: 4px;'>Uspešno dodan Administrator</div>
+
+                <div class='uspesno' style='font-size: 20px; padding-bottom: 1px;'>Vse vredu</div>
+                <div class='uspesno' style='color:red'>(Izbrišite datoteko install.php, za večjo varnost)</div>
+                <div class='VzpostavljanjePBNaslov'>Zdaj se lahko <a href='Prijava.php' style='color:F68D2F'>prijavite</a></div>"; }
+                ?>
             </div>
 
             <div class="noga">
