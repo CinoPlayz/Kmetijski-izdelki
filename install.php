@@ -63,7 +63,82 @@
 
     if(isset($_POST['inicealizacija'])){
         if($_POST['inicealizacija'] == "DA"){
+            require("PovezavaZBazo.php");
+            $sqlustvarjanje = "DROP DATABASE IF EXISTS Kmetijski_Izdelki;
+
+            CREATE DATABASE Kmetijski_Izdelki;
             
+            USE Kmetijski_Izdelki;
+            
+            CREATE TABLE Uporabnik(
+                Poljubno_ime VARCHAR(50) PRIMARY KEY,
+                Ime VARCHAR(50) NOT NULL,
+                Priimek VARCHAR(50) NOT NULL,
+                Geslo VARCHAR(512) NOT NULL,
+                Token VARCHAR(64),
+                Pravila VARCHAR(9) DEFAULT 'Uporabnik' CHECK(Pravila IN('Admin', 'Uporabnik'))
+                );
+            
+            CREATE TABLE Stranka(
+                id_stranke INT PRIMARY KEY AUTO_INCREMENT,
+                Ime VARCHAR(50) NOT NULL,
+                Priimek VARCHAR(50) NOT NULL
+            );
+            
+            CREATE TABLE Izdelek(
+                Izdelek VARCHAR(50) PRIMARY KEY	
+            );
+            
+            CREATE TABLE Prodaja(
+                id_prodaje INT PRIMARY KEY AUTO_INCREMENT,
+                Datum_Prodaje DATETIME NOT NULL,
+                Datum_Vpisa DATETIME NOT NULL,
+                Koliko INT NOT NULL,
+                id_stranke INT NOT NULL,
+                Poljubno_ime VARCHAR(50) NOT NULL,
+                Izdelek VARCHAR(50) NOT NULL,
+                FOREIGN KEY (id_stranke) REFERENCES Stranka(id_stranke), 
+                FOREIGN KEY (Poljubno_ime) REFERENCES Uporabnik(Poljubno_ime), 
+                FOREIGN KEY (Izdelek) REFERENCES Izdelek(Izdelek)
+            );
+            
+            CREATE TABLE Nacrtovani_Prevzemi(
+                id_nacrtovani_prevzem INT PRIMARY KEY AUTO_INCREMENT,
+                Kolicina INT NOT NULL,
+                Dan VARCHAR(40) NOT NULL CHECK(Dan IN('Ponedeljek', 'Torek', 'Sreda', 'Četrtek', 'Petek', 'Sobota', 'Nedelja')),
+                Cas VARCHAR(40) DEFAULT 'Cel' CHECK(Cas IN('Zjutraj', 'Zvečer', 'Sredi', 'Cel')),
+                Izdelek VARCHAR(50) NOT NULL,
+                id_stranke INT NOT NULL,
+                FOREIGN KEY (id_stranke) REFERENCES Stranka(id_stranke), 
+                FOREIGN KEY (Izdelek) REFERENCES Izdelek(Izdelek)
+            );";
+
+            if(mysqli_multi_query($povezava, $sqlustvarjanje)){
+                mysqli_close($povezava);
+
+                $vrstice = file("PovezavaZBazo.php");
+
+                $rezultat = "";
+                foreach($vrstice as $vrstica){
+                    if(strpos($vrstica, "/*") !== false && strpos($vrstica, "*/") !== false){
+                        $rezultat .= str_replace(["/*", "*/"], "", $vrstica);
+                    }
+                    else{
+                        $rezultat .= $vrstica;
+                    }
+                }
+
+                file_put_contents('PovezavaZBazo.php', $rezultat);
+                RedirectZUspehom("UspešnoUst");
+            }
+            else{                
+                echo "Neka napaka: " . mysqli_error($povezava);
+                exit;
+            }
+
+
+            
+
         }
     }
 ?>

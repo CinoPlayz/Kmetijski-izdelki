@@ -9,7 +9,8 @@ CREATE TABLE Uporabnik(
 	Ime VARCHAR(50) NOT NULL,
 	Priimek VARCHAR(50) NOT NULL,
 	Geslo VARCHAR(512) NOT NULL,
-	Token VARCHAR(64)
+	Token VARCHAR(64),
+	Pravila VARCHAR(9) DEFAULT 'Uporabnik' CHECK(Pravila IN('Admin', 'Uporabnik'))
 	);
 
 CREATE TABLE Stranka(
