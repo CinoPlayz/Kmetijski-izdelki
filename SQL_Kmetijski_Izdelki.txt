@@ -2,6 +2,9 @@ DROP DATABASE IF EXISTS Kmetijski_Izdelki;
 
 CREATE DATABASE Kmetijski_Izdelki;
 
+ALTER DATABASE Kmetijski_Izdelki CHARACTER 
+SET utf8mb4 COLLATE utf8mb4_general_ci;
+
 USE Kmetijski_Izdelki;
 
 CREATE TABLE Uporabnik(

@@ -70,6 +70,9 @@
 
             CREATE DATABASE Kmetijski_Izdelki;
             
+            ALTER DATABASE Kmetijski_Izdelki CHARACTER 
+            SET utf8mb4 COLLATE utf8mb4_general_ci;
+            
             USE Kmetijski_Izdelki;
             
             CREATE TABLE Uporabnik(
@@ -148,8 +151,8 @@
     }
 
     /*Inicializacija z imenom*/
-    if(isset($_POST['inicealizacija']) && isset($_POST['imepb'])){
-        if($_POST['inicealizacija'] == "DA"){
+    if(isset($_POST['inicealizacijaNov']) && isset($_POST['imepb'])){
+        if($_POST['inicealizacijaNov'] == "DA"){
             require("PovezavaZBazo.php");
 
             $imefilter = filter_input(INPUT_POST, 'imepb', FILTER_SANITIZE_STRING);
@@ -164,6 +167,10 @@
                 RedirectZNapakoIncializacijaNap("imepb", $povezava, 1 );
             }
 
+            $sql = "USE $ime;";
+
+            $rez = mysqli_query($povezava, $sql);
+
             $sql = "SELECT concat('ALTER TABLE ', TABLE_NAME, ' DROP FOREIGN KEY ', CONSTRAINT_NAME, ';') 
             FROM information_schema.key_column_usage 
             WHERE CONSTRAINT_SCHEMA = '$ime' 
@@ -176,7 +183,9 @@
                 $sqlalter .= $row[0];
             }
 
-            if(mysqli_multi_query($povezava, $sqlalter)){
+            if(mysqli_num_rows($rez) == 0 || mysqli_multi_query($povezava, $sqlalter)){
+                while(mysqli_next_result($povezava)){;}
+
                 $sql = "SHOW TABLE STATUS FROM $ime";
 
                 $rez = mysqli_query($povezava, $sql);
@@ -186,80 +195,102 @@
                     $sqltabele .= "DROP TABLE IF EXISTS " . $row[0] . ";";
                 }
 
-                if(mysqli_multi_query($povezava, $sqltabele)){
+                if(mysqli_num_rows($rez) == 0 || mysqli_multi_query($povezava, $sqltabele)){
+                    while(mysqli_next_result($povezava)){;}
 
-                    $sqlustvarjanje = "                    
-                    USE $ime;
-                    
-                    CREATE TABLE Uporabnik(
-                        Uporabnisko_ime VARCHAR(50) PRIMARY KEY,
-                        Ime VARCHAR(50) NOT NULL,
-                        Priimek VARCHAR(50) NOT NULL,
-                        Geslo VARCHAR(512) NOT NULL,
-                        Token VARCHAR(64),
-                        Pravila VARCHAR(9) DEFAULT 'Uporabnik' CHECK(Pravila IN('Admin', 'Uporabnik'))
+                    $sqlchar = "ALTER DATABASE $ime CHARACTER 
+                    SET utf8mb4 COLLATE utf8mb4_general_ci;";
+
+                    if(mysqli_query($povezava, $sqlchar)){
+
+                        $sqlustvarjanje = "                    
+                        USE $ime;
+                        
+                        CREATE TABLE Uporabnik(
+                            Uporabnisko_ime VARCHAR(50) PRIMARY KEY,
+                            Ime VARCHAR(50) NOT NULL,
+                            Priimek VARCHAR(50) NOT NULL,
+                            Geslo VARCHAR(512) NOT NULL,
+                            Token VARCHAR(64),
+                            Pravila VARCHAR(9) DEFAULT 'Uporabnik' CHECK(Pravila IN('Admin', 'Uporabnik'))
+                            );
+                        
+                        CREATE TABLE Stranka(
+                            id_stranke INT PRIMARY KEY AUTO_INCREMENT,
+                            Ime VARCHAR(50) NOT NULL,
+                            Priimek VARCHAR(50) NOT NULL
                         );
-                    
-                    CREATE TABLE Stranka(
-                        id_stranke INT PRIMARY KEY AUTO_INCREMENT,
-                        Ime VARCHAR(50) NOT NULL,
-                        Priimek VARCHAR(50) NOT NULL
-                    );
-                    
-                    CREATE TABLE Izdelek(
-                        Izdelek VARCHAR(50) PRIMARY KEY	
-                    );
-                    
-                    CREATE TABLE Prodaja(
-                        id_prodaje INT PRIMARY KEY AUTO_INCREMENT,
-                        Datum_Prodaje DATETIME NOT NULL,
-                        Datum_Vpisa DATETIME NOT NULL,
-                        Koliko INT NOT NULL,
-                        id_stranke INT NOT NULL,
-                        Uporabnisko_ime VARCHAR(50) NOT NULL,
-                        Izdelek VARCHAR(50) NOT NULL,
-                        FOREIGN KEY (id_stranke) REFERENCES Stranka(id_stranke), 
-                        FOREIGN KEY (Uporabnisko_ime) REFERENCES Uporabnik(Uporabnisko_ime), 
-                        FOREIGN KEY (Izdelek) REFERENCES Izdelek(Izdelek)
-                    );
-                    
-                    CREATE TABLE Nacrtovani_Prevzemi(
-                        id_nacrtovani_prevzem INT PRIMARY KEY AUTO_INCREMENT,
-                        Kolicina INT NOT NULL,
-                        Dan VARCHAR(40) NOT NULL CHECK(Dan IN('Ponedeljek', 'Torek', 'Sreda', 'Četrtek', 'Petek', 'Sobota', 'Nedelja')),
-                        Cas VARCHAR(40) DEFAULT 'Cel' CHECK(Cas IN('Zjutraj', 'Zvečer', 'Sredi', 'Cel')),
-                        Izdelek VARCHAR(50) NOT NULL,
-                        id_stranke INT NOT NULL,
-                        FOREIGN KEY (id_stranke) REFERENCES Stranka(id_stranke), 
-                        FOREIGN KEY (Izdelek) REFERENCES Izdelek(Izdelek)
-                    );";
+                        
+                        CREATE TABLE Izdelek(
+                            Izdelek VARCHAR(50) PRIMARY KEY	
+                        );
+                        
+                        CREATE TABLE Prodaja(
+                            id_prodaje INT PRIMARY KEY AUTO_INCREMENT,
+                            Datum_Prodaje DATETIME NOT NULL,
+                            Datum_Vpisa DATETIME NOT NULL,
+                            Koliko INT NOT NULL,
+                            id_stranke INT NOT NULL,
+                            Uporabnisko_ime VARCHAR(50) NOT NULL,
+                            Izdelek VARCHAR(50) NOT NULL,
+                            FOREIGN KEY (id_stranke) REFERENCES Stranka(id_stranke), 
+                            FOREIGN KEY (Uporabnisko_ime) REFERENCES Uporabnik(Uporabnisko_ime), 
+                            FOREIGN KEY (Izdelek) REFERENCES Izdelek(Izdelek)
+                        );
+                        
+                        CREATE TABLE Nacrtovani_Prevzemi(
+                            id_nacrtovani_prevzem INT PRIMARY KEY AUTO_INCREMENT,
+                            Kolicina INT NOT NULL,
+                            Dan VARCHAR(40) NOT NULL CHECK(Dan IN('Ponedeljek', 'Torek', 'Sreda', 'Četrtek', 'Petek', 'Sobota', 'Nedelja')),
+                            Cas VARCHAR(40) DEFAULT 'Cel' CHECK(Cas IN('Zjutraj', 'Zvečer', 'Sredi', 'Cel')),
+                            Izdelek VARCHAR(50) NOT NULL,
+                            id_stranke INT NOT NULL,
+                            FOREIGN KEY (id_stranke) REFERENCES Stranka(id_stranke), 
+                            FOREIGN KEY (Izdelek) REFERENCES Izdelek(Izdelek)
+                        );";
 
-                    if(mysqli_multi_query($povezava, $sqlustvarjanje)){
-                        mysqli_close($povezava);
+                        if(mysqli_multi_query($povezava, $sqlustvarjanje)){
+                            mysqli_close($povezava);
 
-                        $vrstice = file("PovezavaZBazo.php");
+                            $vrstice = file("PovezavaZBazo.php");
 
-                        $rezultat = "";
-                        foreach($vrstice as $vrstica){
-                            if(strpos($vrstica, "/*") !== false && strpos($vrstica, "*/") !== false){
-                                $rezultat .= str_replace(["/*", "*/"], "", $vrstica);
+                            $rezultat = "";
+                            foreach($vrstice as $vrstica){
+                                if(strpos($vrstica, "/*") !== false && strpos($vrstica, "*/") !== false){
+                                    $temprezultat .= str_replace(["/*", "*/"], "", $vrstica);
+
+                                    if(strpos($temprezultat, "Kmetijski_Izdelki") !== false && strpos($temprezultat, "podatkovnabaza = ") !== false){
+                                        $rezultat .= str_replace("Kmetijski_Izdelki", "$ime", $temprezultat);
+                                    }
+                                    else{
+                                        $rezultat .= $temprezultat;
+                                    }
+                                }                                
+                                else{
+                                    $rezultat .= $vrstica;
+                                }
                             }
-                            else{
-                                $rezultat .= $vrstica;
-                            }
+                                                       
+
+                            file_put_contents('PovezavaZBazo.php', $rezultat);
+                            RedirectZUspehom("UspešnoUst");
                         }
-
-                        file_put_contents('PovezavaZBazo.php', $rezultat);
-                        RedirectZUspehom("UspešnoUst");
+                        else{                
+                            echo "Neka napaka: " . mysqli_error($povezava);
+                            echo "Napaka4";
+                            exit;
+                        }
                     }
-                    else{                
+                    else{
                         echo "Neka napaka: " . mysqli_error($povezava);
+                        echo "Napaka3";
                         exit;
                     }
                     
                 }
                 else{                
                     echo "Neka napaka: " . mysqli_error($povezava);
+                    echo "Napaka2";
                     exit;
                 }
 
@@ -267,9 +298,10 @@
             }
             else{                
                 echo "Neka napaka: " . mysqli_error($povezava);
+                echo "Napaka1";
                 exit;
             }
-
+            
         }
     }
 
@@ -281,7 +313,7 @@
 
     function RedirectZNapakoIncializacijaNap($napaka, $povezava, $napaka1){    
         mysqli_close($povezava);    
-        header("location: install.php?napakaIn=$napaka&uspeh=UspesnaPovIn&napaka=$napaka1");
+        header("location: install.php?napakaIn=$napaka&uspeh=UspesnaPovIn&napakaIm=$napaka1");
         exit;
     }
 
@@ -396,7 +428,7 @@
 
                             <div class='formvnosItem'>
                                 <div class='vnosNaslov'>Geslo:</div>
-                                <input type='text' name='gesloPB' class='ipPB'>
+                                <input type='password' name='gesloPB' class='ipPB'>
                             </div>  
                         </div>    "; 
                     }
@@ -455,14 +487,16 @@
                     <div class='VzpostavljanjePBNaslov'>Inicializiraj podatkovno bazo</div>
                 
                     <form method='post' action='install.php' class='form'>
-                        <div class='vnosNaslov'>Ime podatkovne baze:</div>
-                        <div style='padding-bottom: 20px;'><input type='text' name='imepb'></div>
-                        <input type='hidden' name='inicealizacija' value='DA'>";
+                        <div class='formvnosItem'>
+                            <div class='vnosNaslov'>Ime podatkovne baze:</div>
+                            <input type='text' name='imepb' class='ipPB'>
+                        </div>                       
+                        <input type='hidden' name='inicealizacijaNov' value='DA'>";
                          ?>
 
                     <?php 
-                            if(isset($_GET['napaka']) && $_GET['uspeh'] == "UspesnaPovIn" && $_GET['napakaIn'] == "imepb"){
-                                switch($_GET['napaka']){
+                            if(isset($_GET['napakaIm']) && $_GET['uspeh'] == "UspesnaPovIn" && $_GET['napakaIn'] == "imepb"){
+                                switch($_GET['napakaIm']){
                                     case 1 : echo("<div class='napaka'>Vpišite veljavno ime podatkovne baze</div>");
                                         break;                                    
                                 }
