@@ -38,6 +38,9 @@ body, html {
 .vsebina{
     grid-area: vsebina;
     background-color: white;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
 }
 
 .noga{
@@ -49,7 +52,7 @@ body, html {
 }
 
 /*Glava*/
-.prijava{
+.odjava{
     height: fit-content;
     padding: 2px;
     font-size: 20px;
@@ -57,12 +60,12 @@ body, html {
     padding-top: 4px;
 }
 
-.prijavaA{
+.odjavaA{
     color: white;
     text-decoration: none;
 }
 
-.prijavaA:hover{
+.odjavaA:hover{
     padding: 1px;
     border-radius: 4px;
     background-color: #787c87;
@@ -93,6 +96,28 @@ body, html {
 }
 
 /*Vsebina*/
+.bazaA{
+    background-color: #F98012;
+    color: white;
+    text-decoration: none;
+    font-size: 20px;   
+    border-radius: 10px; 
+    padding-left: 4px;
+    padding-right: 4px;
+    padding-top: 1px;
+    padding-bottom: 1px;
+}
+
+.bazaA:hover {
+    background-color: #f0ccaa;
+    color: #F98012;
+    border-radius: 10px;    
+
+}
+
+.bazadiv{
+    padding-top: 12px;
+}
 
 /*Noga*/
 .nogaMenu{
@@ -118,3 +143,4 @@ body, html {
     background-color: #787c87;
     align-items: center;
 }
+

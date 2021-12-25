@@ -31,7 +31,7 @@ if(isset($_POST['upime']) && isset($_POST['geslo'])){
 
     unset($_SESSION['temp']);
 
-    $sql = "SELECT Geslo FROM Uporabnik WHERE Uporabnisko_ime='$up'";
+    $sql = "SELECT Geslo, Pravila FROM Uporabnik WHERE Uporabnisko_ime='$up'";
 
     $rezultat = mysqli_query($povezava, $sql);
     if(mysqli_num_rows($rezultat) > 0){
@@ -40,6 +40,7 @@ if(isset($_POST['upime']) && isset($_POST['geslo'])){
 
         if(password_verify($geslo, $vrstica['Geslo'])){
             $_SESSION['UprIme'] = $up;
+            $_SESSION['Pravila'] = $vrstica['Pravila'];
             mysqli_close($povezava);
             header("location: Domov.php");
             exit;
