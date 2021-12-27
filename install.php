@@ -80,7 +80,8 @@
                 Ime VARCHAR(50) NOT NULL,
                 Priimek VARCHAR(50) NOT NULL,
                 Geslo VARCHAR(512) NOT NULL,
-                Token VARCHAR(64),
+                TokenWeb VARCHAR(64),
+	            TokenAndroid VARCHAR(64),
                 Pravila VARCHAR(9) DEFAULT 'Uporabnik' CHECK(Pravila IN('Admin', 'Uporabnik'))
                 );
             
@@ -211,7 +212,8 @@
                             Ime VARCHAR(50) NOT NULL,
                             Priimek VARCHAR(50) NOT NULL,
                             Geslo VARCHAR(512) NOT NULL,
-                            Token VARCHAR(64),
+                            TokenWeb VARCHAR(64),
+	                        TokenAndroid VARCHAR(64),
                             Pravila VARCHAR(9) DEFAULT 'Uporabnik' CHECK(Pravila IN('Admin', 'Uporabnik'))
                             );
                         
@@ -367,7 +369,7 @@
             $geslohash = password_hash($geslo, PASSWORD_DEFAULT, ['memory_cost' => 2048, 'time_cost' => 12, 'threads' => 2]);
         }
 
-        $sql = "INSERT INTO Uporabnik (Uporabnisko_ime, Ime, Priimek, Geslo, Token, Pravila) VALUES ('$up', 'Admin', 'Admin', '$geslohash', NULL, 'Admin');";
+        $sql = "INSERT INTO Uporabnik (Uporabnisko_ime, Ime, Priimek, Geslo, Pravila) VALUES ('$up', 'Admin', 'Admin', '$geslohash', 'Admin');";
 
         if(mysqli_query($povezava, $sql)){
             mysqli_close($povezava);

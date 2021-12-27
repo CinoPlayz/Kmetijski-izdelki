@@ -1,5 +1,11 @@
 <?php 
 session_start();
+
+if(isset($_SESSION['UprIme']) || isset($_SESSION['Pravila'])){
+    header("location: Domov.php");
+    exit;
+}
+
 if(isset($_POST['upime']) && isset($_POST['geslo'])){
     $upfilter = filter_input(INPUT_POST, 'upime', FILTER_SANITIZE_STRING);
     $geslofilter = filter_input(INPUT_POST, 'geslo', FILTER_SANITIZE_STRING);
@@ -41,6 +47,13 @@ if(isset($_POST['upime']) && isset($_POST['geslo'])){
         if(password_verify($geslo, $vrstica['Geslo'])){
             $_SESSION['UprIme'] = $up;
             $_SESSION['Pravila'] = $vrstica['Pravila'];
+
+            $token = newToken(80);
+            $_SESSION['Token'] = $token;
+
+            $sql = "UPDATE Uporabnik SET TokenWeb = '" . hash("sha256", $token) . "' WHERE Uporabnisko_ime='$up'";
+            mysqli_query($povezava, $sql);
+
             mysqli_close($povezava);
             header("location: Domov.php");
             exit;
@@ -64,6 +77,21 @@ if(isset($_POST['upime']) && isset($_POST['geslo'])){
 function RedirectZNapako($napaka){
     header("location: Prijava.php?napaka=$napaka");
     exit;
+}
+
+function newToken($velikost) {
+    $vsecrke = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+
+    $token = '';
+
+    for($i = 0; $i < $velikost; $i++){
+        $indeks = random_int(1, strlen($vsecrke) - 1);
+
+        $token .= $vsecrke[$indeks];
+    }
+
+    return $token;
+
 }
 
 ?>

@@ -1,49 +1,51 @@
 <?php 
 session_start();
 if(!isset($_SESSION['UprIme']) && !isset($_SESSION['Pravila'])){
-    header("location: Prijava.php");
+    header("location: ../Prijava.php");
     exit;
 }
 
-if($_SESSION['Pravila'] == "Admin"){
-    header("location: Admin/DomovAdmin.php");    
+if($_SESSION['Pravila'] != "Admin"){
+    header("location: ../Domov.php");
     exit;
 }
 
-echo $_SESSION['Token'];
+
 ?>
-
 <html>
     <head>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <title>Domov</title>
+        <title>Osnove Admin</title>
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="stylesheet" href="Domov.css">
+        <link rel="stylesheet" href="OsnoveAdmin.css">
+        <link rel="stylesheet" type="text/css" href="../DataTables/datatables.min.css"/>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+        <script type="text/javascript" src="../DataTables/datatables.min.js"></script>
     </head>
     <body>
         <div class="vse">
             <div class="glava">
                 <div>
-                    <a href="Domov.php"><img src="Slike/nutrition.svg" width="40px" height="40px"></a>
+                    <a href="Domov.php"><img src="../Slike/nutrition.svg" width="40px" height="40px"></a>
                 </div>
 
                 <div class="flexfill"></div>
 
                 <div class="odjava">
-                    <span class="odjava"><a href="Odjava.php" class="odjavaA">Odjava</a></span>
+                    <span class="odjava"><a href="../Odjava.php" class="odjavaA">Odjava</a></span>
                 </div>
             </div>
             
             <div class="menu">
-                <div class="menuItem"><a class="menuItemA" href="Domov.php">Domov</a></div>
+                <div class="menuItem"><a class="menuItemA" href="../Domov.php">Domov</a></div>
             </div>
 
             <div class="vsebina"></div>
 
             <div class="noga">
                 <div>
-                    <img src="Slike/nutrition.svg" width="80px" height="80px">
+                    <img src="../Slike/nutrition.svg" width="80px" height="80px">
                 </div>
 
                 <div class="nogaMenu">

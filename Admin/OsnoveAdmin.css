@@ -48,6 +48,7 @@ body, html {
     padding: 8px;
 }
 
+/*Glava*/
 .odjava{
     height: fit-content;
     padding: 2px;
@@ -66,12 +67,14 @@ body, html {
     border-radius: 4px;
     background-color: #787c87;
     align-items: center;
+
 }
 
 .flexfill{
     flex-grow: 1;
 }
 
+/*Menu*/
 .menuItem{
     color: white;
     font-size: 20px;
@@ -89,6 +92,9 @@ body, html {
     align-items: center;
 }
 
+/*Vsebina*/
+
+/*Noga*/
 .nogaMenu{
     display: flex;
     flex-direction: column;

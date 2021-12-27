@@ -10,6 +10,7 @@ if($_SESSION['Pravila'] != "Admin"){
     exit;
 }
 
+echo $_SESSION['Token'];
 ?>
 
 <html>
@@ -39,11 +40,11 @@ if($_SESSION['Pravila'] != "Admin"){
             </div>
 
             <div class="vsebina">
-                <div class="bazadiv" style="padding-top: 20px;"><a class="bazaA" href="Izdelki.php">Izdeleki</a></div>
-                <div class="bazadiv"><a class="bazaA" href="Uporabniki.php">Uporabniki</a></div>
-                <div class="bazadiv"><a class="bazaA" href="Prodaje.php">Prodaje</a></div>
-                <div class="bazadiv"><a class="bazaA" href="Stranke.php">Stranke</a></div>
-                <div class="bazadiv"><a class="bazaA" href="Nacrtovani_Prevzem.php">Načrtovani prevzemi</a></div>
+                <div class="bazadiv" style="padding-top: 20px;"><a class="bazaA" href="BranjeAdmin.php?tabela=Izdelek">Izdeleki</a></div>
+                <div class="bazadiv"><a class="bazaA" href="BranjeAdmin.php?tabela=Uporabnik">Uporabniki</a></div>
+                <div class="bazadiv"><a class="bazaA" href="BranjeAdmin.php?tabela=Prodaja">Prodaje</a></div>
+                <div class="bazadiv"><a class="bazaA" href="BranjeAdmin.php?tabela=Stranka">Stranke</a></div>
+                <div class="bazadiv"><a class="bazaA" href="BranjeAdmin.php?tabela=Nacrtovani_prevzemi">Načrtovani prevzemi</a></div>
             </div>
 
             <div class="noga">
