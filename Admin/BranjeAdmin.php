@@ -65,6 +65,7 @@ if($_SESSION['Pravila'] != "Admin"){
                                 }                                
 
                                 ?>
+                                <th></th>
                             </tr>
                         </thead>
                     </table>
@@ -93,7 +94,12 @@ if($_SESSION['Pravila'] != "Admin"){
                             }    
                             
                         ?>
-                        
+                        {"data": "<?php echo $tabele[0]?>",
+                        "orderable": false,
+                        "render": function(data, type, row){
+                             return '<span style="display:flex; justify-content: right;"><a href="" style="padding-right:10px;"><img src="../Slike/pencil.svg" width="20px" height="20px"></a> <a href=""><img src="../Slike/trash-can.svg" width="20px" height="20px"></a></span>'
+                            }
+                        }
                     ],
 
                     "columnDefs": [{
