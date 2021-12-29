@@ -82,7 +82,7 @@
                 Geslo VARCHAR(512) NOT NULL,
                 TokenWeb VARCHAR(64),
 	            TokenAndroid VARCHAR(64),
-                Pravila VARCHAR(9) DEFAULT 'Uporabnik' CHECK(Pravila IN('Admin', 'Uporabnik'))
+                Pravila VARCHAR(9) NOT NULL DEFAULT 'Uporabnik' CHECK(Pravila IN('Admin', 'Uporabnik'))
                 );
             
             CREATE TABLE Stranka(
@@ -214,7 +214,7 @@
                             Geslo VARCHAR(512) NOT NULL,
                             TokenWeb VARCHAR(64),
 	                        TokenAndroid VARCHAR(64),
-                            Pravila VARCHAR(9) DEFAULT 'Uporabnik' CHECK(Pravila IN('Admin', 'Uporabnik'))
+                            Pravila VARCHAR(9) NOT NULL DEFAULT 'Uporabnik' CHECK(Pravila IN('Admin', 'Uporabnik'))
                             );
                         
                         CREATE TABLE Stranka(

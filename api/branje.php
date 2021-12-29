@@ -24,8 +24,10 @@ if(empty($headers)){
 
 require("../PovezavaZBazo.php");
 
+$headersfilterSQL = mysqli_real_escape_string($povezava, $headers);
+$headersfilter = htmlspecialchars($headersfilterSQL, ENT_QUOTES);
 
-$token = str_replace("Bearer ", "", $headers);
+$token = str_replace("Bearer ", "", $headersfilter);
 
 
 $sql = "SELECT * FROM Uporabnik WHERE TokenWeb='". hash("sha256", $token) . "'";
