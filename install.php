@@ -97,8 +97,8 @@
             
             CREATE TABLE Prodaja(
                 id_prodaje INT PRIMARY KEY AUTO_INCREMENT,
-                Datum_Prodaje DATETIME NOT NULL,
-                Datum_Vpisa DATETIME NOT NULL,
+                Datum_Prodaje DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                Datum_Vpisa DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
                 Koliko INT NOT NULL,
                 id_stranke INT NOT NULL,
                 Uporabnisko_ime VARCHAR(50) NOT NULL,
@@ -229,8 +229,8 @@
                         
                         CREATE TABLE Prodaja(
                             id_prodaje INT PRIMARY KEY AUTO_INCREMENT,
-                            Datum_Prodaje DATETIME NOT NULL,
-                            Datum_Vpisa DATETIME NOT NULL,
+                            Datum_Prodaje DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                            Datum_Vpisa DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
                             Koliko INT NOT NULL,
                             id_stranke INT NOT NULL,
                             Uporabnisko_ime VARCHAR(50) NOT NULL,

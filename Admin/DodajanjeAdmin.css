@@ -138,6 +138,10 @@ input[type=submit]:hover {
     padding-bottom: 20px;
 }
 
+.select{
+    font-size: 16px;
+}
+
 /*Noga*/
 .nogaMenu{
     display: flex;
