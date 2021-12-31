@@ -60,7 +60,7 @@ if(mysqli_num_rows($rezultat) > 0){
     else{
         mysqli_close($povezava);
         http_response_code(400);
-        echo json_encode(array("sporocilo" => "Vse ni vključeno"));
+        echo json_encode(array("sporocilo" => "Vse ni vključeno"), JSON_UNESCAPED_UNICODE);
         exit;
     }
 }
@@ -86,7 +86,7 @@ function Branje($tabela, $povezava){
 
         $Vsipodatki = array_fill_keys($koncenarray, $podatki);
 
-        echo json_encode($Vsipodatki);
+        echo json_encode($Vsipodatki, JSON_UNESCAPED_UNICODE);
         
         mysqli_close($povezava);
         http_response_code(200);
@@ -95,7 +95,7 @@ function Branje($tabela, $povezava){
     else{
         mysqli_close($povezava);
         http_response_code(404);
-        echo json_encode(array("sporocilo" => "Ni najdena tabela oz. tabela je prazna"));
+        echo json_encode(array("sporocilo" => "Ni najdena tabela oz. tabela je prazna"), JSON_UNESCAPED_UNICODE);
         exit;
     } 
 }

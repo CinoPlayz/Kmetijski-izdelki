@@ -1,5 +1,5 @@
 body, html {
-    font-family: "Segoe UI Symbol", "Segoe UI", sans-serif;
+    font-family: "Segoe UI", sans-serif;;
     margin: 0;			
     padding: 0;			
 }
@@ -117,6 +117,12 @@ body, html {
 
 .bazadiv{
     padding-top: 12px;
+}
+
+.izbira{
+    padding-top: 10px;
+    font-size: 20px;
+    font-weight: 700;
 }
 
 /*Noga*/

@@ -17,7 +17,7 @@ echo $_SESSION['Token'];
     <head>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <title>Admin Domov</title>
+        <title>Admin Domov Branje</title>
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="stylesheet" href="DomovAdmin.css">
     </head>
@@ -40,7 +40,6 @@ echo $_SESSION['Token'];
             </div>
 
             <div class="vsebina">
-                <div class="izbira">Izberite kaj želite urejati/brati:</div>
                 <div class="bazadiv" style="padding-top: 20px;"><a class="bazaA" href="BranjeAdmin.php?tabela=Izdelek">Izdeleki</a></div>
                 <div class="bazadiv"><a class="bazaA" href="BranjeAdmin.php?tabela=Uporabnik">Uporabniki</a></div>
                 <div class="bazadiv"><a class="bazaA" href="BranjeAdmin.php?tabela=Prodaja">Prodaje</a></div>

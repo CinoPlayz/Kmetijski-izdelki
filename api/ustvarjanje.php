@@ -3,7 +3,7 @@ header("Content-Type: application/json; charset=UTF-8");
 header("Access-Control-Allow-Methods: POST");
 header("Access-Control-Max-Age: 3600");
 header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
-  
+
 //Dobi podatke o Authorization, ki so v headerju
 if (isset($_SERVER['Authorization'])) {
     $headers = trim($_SERVER["Authorization"]);
@@ -84,9 +84,10 @@ if(mysqli_num_rows($rezultat) > 0){
             if($Stolpci[$i][1] == "NO"){
                
                 if(empty($podatkifilter)){
+                    echo $podatkifilter . "<br>";
                     mysqli_close($povezava);
                     http_response_code(400);
-                    echo json_encode(array("sporocilo" => "Vse ni vključeno"));
+                    echo json_encode(array("sporocilo" => "Vse ni vključeno"), JSON_UNESCAPED_UNICODE);
                     exit;
                 }
                 else{
@@ -106,7 +107,7 @@ if(mysqli_num_rows($rezultat) > 0){
                     else if($stolpec == "Pravila"){
                         if($podatkifilter != "Admin" && $podatkifilter != "Uporabnik"){
                             http_response_code(400);
-                            echo json_encode(array("sporocilo" => "Pravilo ne obstaja"));
+                            echo json_encode(array("sporocilo" => "Pravilo ne obstaja"), JSON_UNESCAPED_UNICODE);
                             exit;
                         }
 
@@ -183,7 +184,8 @@ if(mysqli_num_rows($rezultat) > 0){
         
         $sql = $sqlPrviDel . $sqlDrugiDel;
 
-        if(mysqli_query($povezava, $sql)){            
+        if(mysqli_query($povezava, $sql)){  
+            mysqli_close($povezava);          
             http_response_code(200);
             exit;
         }
@@ -192,12 +194,12 @@ if(mysqli_num_rows($rezultat) > 0){
             if(mysqli_errno($povezava) == 1062){
                 mysqli_close($povezava);
                 http_response_code(400);
-                echo json_encode(array("sporocilo" => "Vnos že obstaja"));
+                echo json_encode(array("sporocilo" => "Vnos že obstaja"), JSON_UNESCAPED_UNICODE);
                 exit;
             }
 
             mysqli_close($povezava);
-            echo json_encode(array("sporocilo" => "Neka napaka se je zglodila pri izvajanju"));
+            echo json_encode(array("sporocilo" => "Neka napaka se je zglodila pri izvajanju"), JSON_UNESCAPED_UNICODE);
             http_response_code(500);
             exit; 
         }
@@ -208,7 +210,7 @@ if(mysqli_num_rows($rezultat) > 0){
         //Če ni vpisana tabela vrne to
         mysqli_close($povezava);
         http_response_code(400);
-        echo json_encode(array("sporocilo" => "Vse ni vključeno"));
+        echo json_encode(array("sporocilo" => "Vse ni vključeno"), JSON_UNESCAPED_UNICODE);
         exit;
     }
 }
@@ -239,7 +241,7 @@ function BranjeStolpcev($tabela, $povezava){
     else{
         mysqli_close($povezava);
         http_response_code(404);
-        echo json_encode(array("sporocilo" => "Ni najdena tabela oz. tabela je prazna"));
+        echo json_encode(array("sporocilo" => "Ni najdena tabela oz. tabela je prazna"), JSON_UNESCAPED_UNICODE);
         exit;
     } 
 }

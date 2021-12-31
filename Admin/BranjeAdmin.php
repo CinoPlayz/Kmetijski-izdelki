@@ -70,6 +70,8 @@ if($_SESSION['Pravila'] != "Admin"){
                         </thead>
                     </table>
                 </div>
+
+                <div class="dodajanjediv"><a href="DodajanjeAdmin.php?tabela=<?php echo $tabela;?>" class="dodajanje">+</a></div>
             </div>
 
             <script>
