@@ -181,6 +181,28 @@ if(isset($_POST['tabela'])){
                                     $tabele = array();
 
                                     if($rezultat == true && mysqli_num_rows($rezultat) > 0){
+                                        $sql = "SELECT * FROM information_schema.CHECK_CONSTRAINTS WHERE CONSTRAINT_SCHEMA = '$podatkovnabaza' AND TABLE_NAME = '$tabela'";
+
+                                        $rezultat2 = mysqli_query($povezava, $sql);
+
+                                        if($rezultat2 == true && mysqli_num_rows($rezultat2) > 0){
+                                            while($vrstica = mysqli_fetch_assoc($rezultat2)){
+
+                                                $stolpecPrvaPozicija = strpos($vrstica['CHECK_CLAUSE'], "`");
+                                                $stolpecPrvaPozicija++;
+                    
+                                                $stolpecDrugaPozicija = strpos($vrstica['CHECK_CLAUSE'], "`", $stolpecPrvaPozicija);
+                                                $stolpecDrugaPozicija--;
+
+                                                $stolpec = substr($vrstica['CHECK_CLAUSE'], $stolpecPrvaPozicija, $stolpecDrugaPozicija);
+
+                                                echo $stolpec;
+
+                                                print_r(MedDvemaStringa($vrstica['CHECK_CLAUSE'], "(", ")"));
+                                                
+                                            }
+                                        }
+
                                         while($vrstica = mysqli_fetch_assoc($rezultat)){
                                             
                                             if($vrstica['Field'] != "TokenWeb" && $vrstica['Field'] != "TokenAndroid"){
@@ -191,7 +213,7 @@ if(isset($_POST['tabela'])){
                                                     </div>";
                                                 }
                                                 else{
-
+                                                    
                                                     if(isset($_SESSION['temp'][$vrstica['Field']])){
                                                         echo "<div class='formvnosItem'>
                                                         <div class='vnosNaslov'>". str_replace("_", " ", $vrstica['Field']).":</div>
@@ -216,6 +238,15 @@ if(isset($_POST['tabela'])){
                                     } 
                                     
                                     mysqli_close($povezava);
+
+                                    function MedDvemaStringa($string, $zacetek, $konec){
+                                        foreach (explode($zacetek, $string) as $key => $value) {
+                                            if(strpos($value, $konec) !== FALSE){
+                                                 $rezultat[] = str_replace("'", "", substr($value, 0, strpos($value, $konec)));
+                                            }
+                                        }
+                                        return $rezultat;
+                                     }
                                 ?>                                
 
                                 <div class="formvnosItem">
