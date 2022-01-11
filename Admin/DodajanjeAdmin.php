@@ -159,7 +159,7 @@ if(isset($_POST['tabela'])){
     }
     else{
         unset($_SESSION['temp']);
-        header("location: BranjeAdmin.php?tabela=$tabela");
+        header("location: BranjeAdmin.php?tabela=$tabela&uspeh=dodano");
         exit;
     }
 
@@ -390,7 +390,7 @@ if(isset($_POST['tabela'])){
                                     function MedDvemaStringa($string, $zacetek, $konec){
                                         foreach (explode($zacetek, $string) as $key => $value) {
                                             if(strpos($value, $konec) !== FALSE){
-                                                 $rezultat[] = str_replace("'", "", substr($value, 0, strpos($value, $konec)));
+                                                $rezultat[] = str_replace("'", "", substr($value, 0, strpos($value, $konec)));
                                             }
                                         }
                                         return $rezultat;

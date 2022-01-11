@@ -136,6 +136,23 @@ body, html {
     justify-content: center;
 }
 
+.uspesno{
+    color: green; 
+    font-size: 18px; 
+    font-weight: 700;
+    background-color: #ccffcc; 
+    padding-top: 4px;
+    padding-bottom: 4px;    
+    border: 1px solid green;
+    border-radius: 10px;  
+}
+
+.uspesnododano{
+    padding-left: 5vw;
+    padding-right: 5vw;
+    padding-top: 1vh;
+}
+
 /*Noga*/
 .nogaMenu{
     display: flex;

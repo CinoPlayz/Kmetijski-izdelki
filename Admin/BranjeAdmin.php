@@ -41,6 +41,15 @@ if($_SESSION['Pravila'] != "Admin"){
             </div>
 
             <div class="vsebina">
+                <div class="uspesnododano">
+                    <?php 
+                        if(isset($_GET['uspeh']) && $_GET['uspeh'] == "dodano"){
+                            echo "<div class='uspesno'><img src='../Slike/tick-green.svg' width='17px' height='17px' style='padding-right: 4px; padding-left: 4px;'>Uspešno Dodano</div>";
+                        }
+                    
+                    ?>
+                    
+                </div>
                 <div class="tablediv">
                     <table id="tabela" class="tabela" style="width: 100%">
                         <thead>
