@@ -114,6 +114,10 @@ if(mysqli_num_rows($rezultat) > 0){
                         $podatkifilter = "";
 
                     }
+                    else if($stolpec == "Uporabnisko_ime" && $tabela = "Prodaja"){
+                        array_push($StolpciZPodatki, array($stolpec, $upr['Uporabnisko_ime'], "NO"));
+                        $podatkifilter = "";
+                    }
                     else{
                         array_push($StolpciZPodatki, array($stolpec, $podatkifilter, "NO"));
                         $podatkifilter = "";

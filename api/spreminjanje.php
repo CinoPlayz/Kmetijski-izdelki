@@ -135,6 +135,10 @@ if(mysqli_num_rows($rezultat) > 0){
                             $podatkifilter = "";
 
                         }
+                        else if($stolpec == "Uporabnisko_ime" && $tabela = "Prodaja"){
+                            array_push($StolpciZPodatki, array($stolpec, $upr['Uporabnisko_ime'], "NO"));
+                            $podatkifilter = "";
+                        }
                         else{
                             array_push($StolpciZPodatki, array($stolpec, $podatkifilter, "NO"));
                             $podatkifilter = "";
@@ -184,7 +188,7 @@ if(mysqli_num_rows($rezultat) > 0){
                     }
                 }
                 else{
-                    //Dodaja stavek skupaj, če je zadenj vnos se ne bo vpisala "," v stavek
+                    //Dodaja stavek skupaj, vspodaj doda stringu "ime stolpca = "
 
                     $sqlPrviDel .= $StolpciZPodatki[$i][0] . " = ";            
                     
@@ -200,7 +204,7 @@ if(mysqli_num_rows($rezultat) > 0){
                         $sqlPrviDel .= "'" . $StolpciZPodatki[$i][1] . "'";
                     }
 
-                    //Doda vejico, če ni zadenj vnos drugače samo zaključi stavek
+                    //Doda vejico, če ni zadenj vnos drugače samo naredi presledek
                     if($i == ($kolikoPodatkov-1)){
                         $sqlPrviDel .= " ";
                     }
@@ -214,7 +218,7 @@ if(mysqli_num_rows($rezultat) > 0){
                 
             }
             else if($StolpciZPodatki[$i][2] == "PRI"){
-
+                //doda k drugemu delu stringa WHERE ime stolpca = pa podatek
                 if(is_numeric($StolpciZPodatki[$i][1])){
                     $sqlDrugiDel .= $StolpciZPodatki[$i][0] . " = " . $StolpciZPodatki[$i][1] . ";";
                 }
@@ -227,7 +231,6 @@ if(mysqli_num_rows($rezultat) > 0){
         }
         
         $sql = $sqlPrviDel . $sqlDrugiDel;
-        echo $sql;
 
         if(mysqli_query($povezava, $sql)){  
             mysqli_close($povezava);          
@@ -235,11 +238,18 @@ if(mysqli_num_rows($rezultat) > 0){
             exit;
         }
         else{
-
+            
             if(mysqli_errno($povezava) == 1062){
                 mysqli_close($povezava);
                 http_response_code(400);
                 echo json_encode(array("sporocilo" => "Vnos že obstaja"), JSON_UNESCAPED_UNICODE);
+                exit;
+            }
+
+            if(mysqli_errno($povezava) == 1451){
+                mysqli_close($povezava);
+                http_response_code(400);
+                echo json_encode(array("sporocilo" => "Ne moremo spremeniti, zaradi foreign keya"), JSON_UNESCAPED_UNICODE);
                 exit;
             }
 
