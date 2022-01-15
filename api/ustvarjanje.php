@@ -84,7 +84,6 @@ if(mysqli_num_rows($rezultat) > 0){
             if($Stolpci[$i][1] == "NO"){
                
                 if(empty($podatkifilter)){
-                    echo $podatkifilter . "<br>";
                     mysqli_close($povezava);
                     http_response_code(400);
                     echo json_encode(array("sporocilo" => "Vse ni vključeno"), JSON_UNESCAPED_UNICODE);
