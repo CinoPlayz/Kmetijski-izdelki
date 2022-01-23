@@ -199,7 +199,6 @@ function BranjeStolpcev($tabela, $povezava){
         $podatki = array();
 
         while($vrstica = mysqli_fetch_assoc($rezultat)){
-            //Preveri, da nima atribut nastavljene možnosti za auto_increment
             if($vrstica['Key'] == "PRI"){
                 array_push($podatki, $vrstica['Field']);
             }

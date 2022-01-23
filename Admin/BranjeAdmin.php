@@ -118,7 +118,7 @@ if($_SESSION['Pravila'] != "Admin"){
                         {"data": "<?php echo $tabele[0][0]?>",
                         "orderable": false,
                         "render": function(data, type, row){
-                             return '<span style="display:flex; justify-content: right;"><a href="SpreminjanjeAdmin.php?tabela=<?php echo $tabela . "&"; echo $primaryatribut; ?>=' + row['<?php echo $primaryatribut; ?>'] + '" style="padding-right:10px;"><img src="../Slike/pencil.svg" width="20px" height="20px"></a> <a href=""><img src="../Slike/trash-can.svg" width="20px" height="20px"></a></span>'
+                             return '<span style="display:flex; justify-content: right;"><a href="SpreminjanjeAdmin.php?tabela=<?php echo $tabela . "&"; echo $primaryatribut; ?>=' + row['<?php echo $primaryatribut; ?>'] + '" style="padding-right:10px;"><img src="../Slike/pencil.svg" width="20px" height="20px"></a> <a href="IzbrisAdmin.php?tabela=<?php echo $tabela . "&"; echo $primaryatribut; ?>=' + row['<?php echo $primaryatribut; ?>'] + '"><img src="../Slike/trash-can.svg" width="20px" height="20px"></a></span>'
                             }
                         }
                     ],
