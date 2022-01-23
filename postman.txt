@@ -1,0 +1,7 @@
+"Datum_Prodaje" : "2021-02-20 15:40:53",       
+    "Datum_Vpisa" : "2022-06-20 15:40:53",   
+    "id_prodaje" : "1",
+    "id_stranke" : "2",
+    "Izdelek" : "Mleko",
+    "Koliko" : "70",    
+    "Uporabnisko_ime" : "fgjhgfh"

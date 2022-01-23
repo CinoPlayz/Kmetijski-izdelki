@@ -46,6 +46,10 @@ if($_SESSION['Pravila'] != "Admin"){
                         if(isset($_GET['uspeh']) && $_GET['uspeh'] == "dodano"){
                             echo "<div class='uspesno'><img src='../Slike/tick-green.svg' width='17px' height='17px' style='padding-right: 4px; padding-left: 4px;'>Uspešno Dodano</div>";
                         }
+
+                        if(isset($_GET['uspeh']) && $_GET['uspeh'] == "spremenjeno"){
+                            echo "<div class='uspesno'><img src='../Slike/tick-green.svg' width='17px' height='17px' style='padding-right: 4px; padding-left: 4px;'>Uspešno Spremenjeno</div>";
+                        }
                     
                     ?>
                     
@@ -69,9 +73,11 @@ if($_SESSION['Pravila'] != "Admin"){
                                 if($rezultat == true && mysqli_num_rows($rezultat) > 0){
                                     while($vrstica = mysqli_fetch_assoc($rezultat)){
                                         echo "<th>". str_replace("_", " ", $vrstica['Field'])."</th>";
-                                        array_push($tabele, $vrstica['Field']);
+                                        array_push($tabele, array($vrstica['Field'], $vrstica['Key']));
                                     }
-                                }                                
+                                }
+                                
+                                
 
                                 ?>
                                 <th></th>
@@ -101,14 +107,18 @@ if($_SESSION['Pravila'] != "Admin"){
                     "columns": [
                         <?php 
                             for($i = 0; $i < count($tabele); $i++){
-                                echo "{\"data\": \"". $tabele[$i] ."\"},\n";
+                                echo "{\"data\": \"". $tabele[$i][0] ."\"},\n";
+
+                                if($tabele[$i][1] == "PRI"){
+                                    $primaryatribut = $tabele[$i][0];
+                                }
                             }    
                             
                         ?>
-                        {"data": "<?php echo $tabele[0]?>",
+                        {"data": "<?php echo $tabele[0][0]?>",
                         "orderable": false,
                         "render": function(data, type, row){
-                             return '<span style="display:flex; justify-content: right;"><a href="" style="padding-right:10px;"><img src="../Slike/pencil.svg" width="20px" height="20px"></a> <a href=""><img src="../Slike/trash-can.svg" width="20px" height="20px"></a></span>'
+                             return '<span style="display:flex; justify-content: right;"><a href="SpreminjanjeAdmin.php?tabela=<?php echo $tabela . "&"; echo $primaryatribut; ?>=' + row['<?php echo $primaryatribut; ?>'] + '" style="padding-right:10px;"><img src="../Slike/pencil.svg" width="20px" height="20px"></a> <a href=""><img src="../Slike/trash-can.svg" width="20px" height="20px"></a></span>'
                             }
                         }
                     ],

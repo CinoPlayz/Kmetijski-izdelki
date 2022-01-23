@@ -85,8 +85,10 @@ if(mysqli_num_rows($rezultat) > 0){
                 if(empty($podatkifilter)){
                     mysqli_close($povezava);
                     http_response_code(400);
-                    echo json_encode(array("sporocilo" => "Vse ni vključeno"), JSON_UNESCAPED_UNICODE);
+                    echo json_encode(array("sporocilo" => "Vse ni vključeno345"), JSON_UNESCAPED_UNICODE);
                     exit;
+                    
+                    
                 }
                 else{
                     //Preveri, če je ta primarykey nov (kot da bo prmary key preimenovan v to)
@@ -105,10 +107,16 @@ if(mysqli_num_rows($rezultat) > 0){
                 if($Stolpci[$i][1] == "NO"){
                 
                     if(empty($podatkifilter)){
-                        mysqli_close($povezava);
-                        http_response_code(400);
-                        echo json_encode(array("sporocilo" => "Vse ni vključeno"), JSON_UNESCAPED_UNICODE);
-                        exit;
+                        if($stolpec == "Geslo"){
+                        
+                        }
+                        else{
+                            mysqli_close($povezava);
+                            http_response_code(400);
+                            echo json_encode(array("sporocilo" => "Vse ni vključeno657"), JSON_UNESCAPED_UNICODE);
+                            exit;
+                        }
+                        
                     }
                     else{
                         //Najprej preveri če je Geslo, ter to nato Hasha in shrani podatke, če niso prazni, ter spremeni $podatkifilter tako da je empty. Zadnji del isto za else
@@ -173,8 +181,9 @@ if(mysqli_num_rows($rezultat) > 0){
         //Gre čez vsak element v arrayu(V tem primeru je 2D)
         for($i = 0; $i < $kolikoPodatkov; $i++){
 
-            //Preveri, da ne po slučajno vpisal podatkov v spodnja dva stolpca
+            //Preveri, da ne po slučajno spremenil podatkov v spodnja dva stolpca
             if($StolpciZPodatki[$i][0] != "TokenWeb" && $StolpciZPodatki[$i][0] != "TokenAndroid" && $StolpciZPodatki[$i][2] != "PRI"){
+
 
                 if($StolpciZPodatki[$i][2] == "Nov"){
                     $sqlPrviDel .= str_replace("Nov", "", $StolpciZPodatki[$i][0]) . " = ";
@@ -265,7 +274,7 @@ if(mysqli_num_rows($rezultat) > 0){
         //Če ni vpisana tabela vrne to
         mysqli_close($povezava);
         http_response_code(400);
-        echo json_encode(array("sporocilo" => "Vse ni vključeno"), JSON_UNESCAPED_UNICODE);
+        echo json_encode(array("sporocilo" => "Vse ni vključeno688"), JSON_UNESCAPED_UNICODE);
         exit;
     }
 }
