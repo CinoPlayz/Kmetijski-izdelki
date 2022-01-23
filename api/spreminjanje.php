@@ -85,7 +85,7 @@ if(mysqli_num_rows($rezultat) > 0){
                 if(empty($podatkifilter)){
                     mysqli_close($povezava);
                     http_response_code(400);
-                    echo json_encode(array("sporocilo" => "Vse ni vključeno345"), JSON_UNESCAPED_UNICODE);
+                    echo json_encode(array("sporocilo" => "Vse ni vključeno"), JSON_UNESCAPED_UNICODE);
                     exit;
                     
                     
@@ -113,7 +113,7 @@ if(mysqli_num_rows($rezultat) > 0){
                         else{
                             mysqli_close($povezava);
                             http_response_code(400);
-                            echo json_encode(array("sporocilo" => "Vse ni vključeno657"), JSON_UNESCAPED_UNICODE);
+                            echo json_encode(array("sporocilo" => "Vse ni vključeno"), JSON_UNESCAPED_UNICODE);
                             exit;
                         }
                         
@@ -274,7 +274,7 @@ if(mysqli_num_rows($rezultat) > 0){
         //Če ni vpisana tabela vrne to
         mysqli_close($povezava);
         http_response_code(400);
-        echo json_encode(array("sporocilo" => "Vse ni vključeno688"), JSON_UNESCAPED_UNICODE);
+        echo json_encode(array("sporocilo" => "Vse ni vključeno"), JSON_UNESCAPED_UNICODE);
         exit;
     }
 }
