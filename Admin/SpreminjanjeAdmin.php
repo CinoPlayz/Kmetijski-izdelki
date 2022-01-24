@@ -84,10 +84,10 @@ if(isset($_POST['tabela'])){
 
                     if(isset($primaryPodatek)){
                         --$i;
-                        header("location: SpreminjanjeAdmin.php?tabela=$tabela&$primaryKey=$primaryPodatek&napaka=$i");
+                        header("location: SpreminjanjeAdmin.php?tabela=$tabela&$primaryKey=$primaryPodatek&napaka=$i");                        
                     }
                     else{
-                        header("location: SpreminjanjeAdmin.php?tabela=$tabela&$primaryKey=$primaryPodatek&napaka=$i");
+                        header("location: SpreminjanjeAdmin.php?tabela=$tabela&$primaryKey=$primaryPodatek&napaka=$i");                        
                     }
                     
                     exit;

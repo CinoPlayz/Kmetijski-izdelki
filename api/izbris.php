@@ -130,12 +130,16 @@ if(mysqli_num_rows($rezultat) > 0){
 
                 $rezultat = mysqli_multi_query($povezava, $sql);                
 
-                if($rezultat == false){
-                    mysqli_close($povezava);
-                    http_response_code(500);
-                    echo json_encode(array("sporocilo" => "Neka napaka se je zglodila pri izvajanju"), JSON_UNESCAPED_UNICODE);
-                    exit;
+                while(mysqli_next_result($povezava)){
+                    if($rezultat == false){
+                        mysqli_close($povezava);
+                        http_response_code(500);
+                        echo json_encode(array("sporocilo" => "Neka napaka se je zglodila pri izvajanju"), JSON_UNESCAPED_UNICODE);
+                        exit;
+                    } 
                 }
+
+                
 
             }
 
@@ -151,7 +155,9 @@ if(mysqli_num_rows($rezultat) > 0){
                 http_response_code(200); 
             }
             else{
+                mysqli_error($povezava);
                 mysqli_close($povezava);
+                
                 http_response_code(500);
                 echo json_encode(array("sporocilo" => "Neka napaka se je zglodila pri izvajanju"), JSON_UNESCAPED_UNICODE);
                 exit;  

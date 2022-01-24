@@ -50,6 +50,10 @@ if($_SESSION['Pravila'] != "Admin"){
                         if(isset($_GET['uspeh']) && $_GET['uspeh'] == "spremenjeno"){
                             echo "<div class='uspesno'><img src='../Slike/tick-green.svg' width='17px' height='17px' style='padding-right: 4px; padding-left: 4px;'>Uspešno Spremenjeno</div>";
                         }
+
+                        if(isset($_GET['uspeh']) && $_GET['uspeh'] == "izbrisano"){
+                            echo "<div class='uspesno'><img src='../Slike/tick-green.svg' width='17px' height='17px' style='padding-right: 4px; padding-left: 4px;'>Uspešno Izbrisano</div>";
+                        }
                     
                     ?>
                     
