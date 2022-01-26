@@ -39,7 +39,13 @@ echo $_SESSION['Token'];
                 <div class="menuItem"><a class="menuItemA" href="Domov.php">Domov</a></div>
             </div>
 
-            <div class="vsebina"></div>
+            <div class="vsebina">
+                <div class="izbira">Izberite kaj želite urejati/brati:</div>
+                <div class="bazadiv" style="padding-top: 20px;"><a class="bazaA" href="Branje.php?tabela=Izdelek">Izdeleki</a></div>
+                <div class="bazadiv"><a class="bazaA" href="Branje.php?tabela=Prodaja">Prodaje</a></div>
+                <div class="bazadiv"><a class="bazaA" href="Branje.php?tabela=Stranka">Stranke</a></div>
+                <div class="bazadiv"><a class="bazaA" href="Branje.php?tabela=Nacrtovani_prevzemi">Načrtovani prevzemi</a></div>
+            </div>
 
             <div class="noga">
                 <div>

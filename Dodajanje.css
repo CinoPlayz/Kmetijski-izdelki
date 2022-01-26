@@ -37,10 +37,7 @@ body, html {
 
 .vsebina{
     grid-area: vsebina;
-    background-color: white;    
-    display: flex;
-    align-items: center;
-    flex-direction: column;
+    background-color: white;
 }
 
 .noga{
@@ -70,6 +67,7 @@ body, html {
     border-radius: 4px;
     background-color: #787c87;
     align-items: center;
+
 }
 
 .flexfill{
@@ -95,33 +93,53 @@ body, html {
 }
 
 /*Vsebina*/
-.bazaA{
-    background-color: #F98012;
-    color: white;
-    text-decoration: none;
-    font-size: 20px;   
-    border-radius: 10px; 
-    padding-left: 4px;
-    padding-right: 4px;
-    padding-top: 1px;
-    padding-bottom: 1px;
-}
 
-.bazaA:hover {
-    background-color: #f0ccaa;
-    color: #F98012;
-    border-radius: 10px;    
-
-}
-
-.bazadiv{
-    padding-top: 12px;
-}
-
-.izbira{
+.formdiv{
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
     padding-top: 10px;
+}
+
+input[type=submit] {
+    border-radius: 5px;
+    border: none;
+    padding: 4px;
+    color: white;
+    background-color: #fa9638;
+    text-align: center;
+    font-size: 18px;
+}
+
+input[type=submit]:hover {
+    background-color: #F98012;
+}
+
+.vnosNaslov{
+    font-size: 18px;
+}
+
+.formvnosItem{
+    padding-bottom: 20px;
+}
+
+.formvnosi{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.napaka{
+    color:red;
     font-size: 20px;
-    font-weight: 700;
+    text-align: center;
+    padding-bottom: 20px;
+}
+
+.select{
+    font-size: 16px;
 }
 
 /*Noga*/
