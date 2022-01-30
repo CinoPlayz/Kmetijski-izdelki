@@ -30,7 +30,7 @@ $headersfilter = htmlspecialchars($headersfilterSQL, ENT_QUOTES);
 $token = str_replace("Bearer ", "", $headersfilter);
 
 
-$sql = "SELECT * FROM Uporabnik WHERE TokenWeb='". hash("sha256", $token) . "'";
+$sql = "SELECT * FROM Uporabnik WHERE TokenWeb='". hash("sha256", $token) . "' OR TokenAndroid='". hash("sha256", $token) . "'";
 
 $rezultat = mysqli_query($povezava, $sql);
 
@@ -72,7 +72,22 @@ else{
 
 
 function Branje($tabela, $povezava){
-    $sql = "SELECT * FROM $tabela";
+    if($tabela == "Nacrtovani_prevzemi"){
+        if(isset($_GET['dan'])){
+            $danfilter = filter_input(INPUT_GET, 'dan', FILTER_SANITIZE_STRING);
+    
+            $dan = mysqli_real_escape_string($povezava, $danfilter);
+
+            $sql = "SELECT * FROM $tabela WHERE Dan = '$dan'";
+        }
+        else{
+            $sql = "SELECT * FROM $tabela";
+        }
+    }
+    else{
+        $sql = "SELECT * FROM $tabela";
+    }
+    
             
     $rezultat = mysqli_query($povezava, $sql);
     if($rezultat == true && mysqli_num_rows($rezultat) > 0){
