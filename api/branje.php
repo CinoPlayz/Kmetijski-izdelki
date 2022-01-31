@@ -78,15 +78,20 @@ function Branje($tabela, $povezava){
     
             $dan = mysqli_real_escape_string($povezava, $danfilter);
 
-            $sql = "SELECT * FROM $tabela WHERE Dan = '$dan'";
+            $sql = "SELECT * FROM $tabela n INNER JOIN Stranka s ON n.id_stranke = s.id_stranke WHERE Dan = '$dan'";
         }
         else{
-            $sql = "SELECT * FROM $tabela";
+            $sql = "SELECT * FROM $tabela n INNER JOIN Stranka s ON n.id_stranke = s.id_stranke";
         }
+    }
+    else if($tabela == "Prodaja"){
+        $sql = "SELECT * FROM $tabela p INNER JOIN Stranka s ON p.id_stranke = s.id_stranke";
     }
     else{
         $sql = "SELECT * FROM $tabela";
     }
+
+
     
             
     $rezultat = mysqli_query($povezava, $sql);

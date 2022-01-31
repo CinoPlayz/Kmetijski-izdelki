@@ -79,6 +79,13 @@ if($_SESSION['Pravila'] != "Admin"){
                                         echo "<th>". str_replace("_", " ", $vrstica['Field'])."</th>";
                                         array_push($tabele, array($vrstica['Field'], $vrstica['Key']));
                                     }
+
+                                    if($tabela == "Nacrtovani_prevzemi" || $tabela == "Prodaja"){
+                                        echo "<th>Ime</th>";
+                                        array_push($tabele, array("Ime", "MOL"));
+                                        echo "<th>Priimek</th>";
+                                        array_push($tabele, array("Priimek", "MOL"));
+                                    }
                                 }
                                 
                                 
@@ -116,7 +123,8 @@ if($_SESSION['Pravila'] != "Admin"){
                                 if($tabele[$i][1] == "PRI"){
                                     $primaryatribut = $tabele[$i][0];
                                 }
-                            }    
+                            }                            
+                           
                             
                         ?>
                         {"data": "<?php echo $tabele[0][0]?>",

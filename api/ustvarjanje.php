@@ -35,7 +35,7 @@ $headersfilter = htmlspecialchars($headersfilterSQL, ENT_QUOTES);
 $token = str_replace("Bearer ", "", $headersfilter);
 
 //Preveri, če sploh obstaja ta token v bazi
-$sql = "SELECT * FROM Uporabnik WHERE TokenWeb='". hash("sha256", $token) . "'";
+$sql = "SELECT * FROM Uporabnik WHERE TokenWeb='". hash("sha256", $token) . "' OR TokenAndroid='". hash("sha256", $token) . "'";
 
 $rezultat = mysqli_query($povezava, $sql);
 
