@@ -85,7 +85,17 @@ function Branje($tabela, $povezava){
         }
     }
     else if($tabela == "Prodaja"){
-        $sql = "SELECT * FROM $tabela p INNER JOIN Stranka s ON p.id_stranke = s.id_stranke";
+        if(isset($_GET['omejitev'])){
+            $omejitevfilter = filter_input(INPUT_GET, 'omejitev', FILTER_SANITIZE_STRING);
+    
+            $omejitev = mysqli_real_escape_string($povezava, $omejitevfilter);
+
+            $sql = "SELECT * FROM $tabela p INNER JOIN Stranka s ON p.id_stranke = s.id_stranke ORDER BY p.Datum_Prodaje DESC LIMIT $omejitev ";
+        }
+        else{
+            $sql = "SELECT * FROM $tabela p INNER JOIN Stranka s ON p.id_stranke = s.id_stranke ORDER BY p.Datum_Prodaje DESC";
+        }
+        
     }
     else{
         $sql = "SELECT * FROM $tabela";
