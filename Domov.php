@@ -10,7 +10,6 @@ if($_SESSION['Pravila'] == "Admin"){
     exit;
 }
 
-echo $_SESSION['Token'];
 ?>
 
 <html>

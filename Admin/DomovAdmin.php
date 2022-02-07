@@ -9,8 +9,6 @@ if($_SESSION['Pravila'] != "Admin"){
     header("location: ../Domov.php");
     exit;
 }
-
-echo $_SESSION['Token'];
 ?>
 
 <html>
