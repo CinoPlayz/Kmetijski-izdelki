@@ -51,8 +51,16 @@ if(isset($_POST['izbris'])){
         $povnaslov =  $_SERVER['SERVER_NAME'] . $_SERVER['PHP_SELF'];
         $urldel = str_replace("Admin/IzbrisAdmin.php", "api/izbris.php", $povnaslov) . "?tabela=" . urlencode($tabela);;
 
-        //URL spremenimo tako da presledge zamenjamo z %20 (rabi bit encodan)
-        $url = str_replace ( ' ', '%20', $urldel);
+         //URL spremenimo tako da presledge zamenjamo z %20 (rabi bit encodan)
+        $urlneki = str_replace ( ' ', '%20', $urldel);
+
+        //Preveri če uporablja http oz. https
+        if( isset($_SERVER['HTTPS'] ) ) {
+            $url = "https://" . $urlneki;
+        }
+        else{
+            $url = "http://" . $urlneki;
+        }
         
         //Začne se curl
         $curl = curl_init();

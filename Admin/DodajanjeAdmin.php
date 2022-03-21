@@ -69,7 +69,7 @@ if(isset($_POST['tabela'])){
             }
             else{              
 
-                if($tabela == "Nacrtovani_prevzemi" && $tabele[$i] == "id_stranke"){
+                if($tabela == "Nacrtovani_Prevzemi" && $tabele[$i] == "id_stranke"){
                     $idNahaja = strpos($podatekpostSQL, " - ");
                     $id = substr($podatekpostSQL, ($idNahaja+3));
                     array_push($podatkiZaPoslat, array($tabele[$i] => $id));
@@ -107,15 +107,27 @@ if(isset($_POST['tabela'])){
     
     
     $jsonZaPoslat .= "}";
+
+    echo $jsonZaPoslat;
    
     mysqli_close($povezava);
 
     //Dobimo URL za curl
     $povnaslov =  $_SERVER['SERVER_NAME'] . $_SERVER['PHP_SELF'];
-    $urldel = str_replace("Admin/DodajanjeAdmin.php", "api/ustvarjanje.php", $povnaslov) . "?tabela=" . urlencode($tabela);;
+    $urldel = str_replace("Admin/DodajanjeAdmin.php", "api/ustvarjanje.php", $povnaslov) . "?tabela=" . urlencode($tabela);
 
     //URL spremenimo tako da presledge zamenjamo z %20 (rabi bit encodan)
-    $url = str_replace ( ' ', '%20', $urldel);
+    $urlneki = str_replace ( ' ', '%20', $urldel);
+
+    //Preveri če uporablja http oz. https
+    if( isset($_SERVER['HTTPS'] ) ) {
+        $url = "https://" . $urlneki;
+    }
+    else{
+        $url = "http://" . $urlneki;
+    }
+
+    
     
     //Začne se curl
     $curl = curl_init();
@@ -146,7 +158,6 @@ if(isset($_POST['tabela'])){
     $headers = substr($rezultat, 0, $header_size);
     $body = substr($rezultat, $header_size);
 
-
     curl_close($curl);
 
     if(isset($body) && !empty($body)){
@@ -154,7 +165,7 @@ if(isset($_POST['tabela'])){
         $vrnjeno = json_decode($body, true);
         $vrnjenosporocilo = $vrnjeno["sporocilo"];
 
-        header("location: DodajanjeAdmin.php?tabela=$tabela&napaka=$vrnjenosporocilo");
+        //header("location: DodajanjeAdmin.php?tabela=$tabela&napaka=$vrnjenosporocilo");
         exit;
     }
     else{
@@ -383,7 +394,7 @@ if(isset($_POST['tabela'])){
                                         }
 
                                         echo "<input type='hidden' name='tabela' value='$tabela'>";
-                                    } 
+                                    }
                                     
                                     mysqli_close($povezava);
 

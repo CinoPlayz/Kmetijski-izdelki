@@ -96,7 +96,7 @@ if(isset($_POST['tabela'])){
             }
             else{              
 
-                if($tabela == "Nacrtovani_prevzemi" && $tabele[$i] == "id_stranke"){
+                if($tabela == "Nacrtovani_Prevzemi" && $tabele[$i] == "id_stranke"){
                     $idNahaja = strpos($podatekpostSQL, " - ");
                     $id = substr($podatekpostSQL, ($idNahaja+3));
                     array_push($podatkiZaPoslat, array($tabele[$i] => $id));
@@ -143,7 +143,15 @@ if(isset($_POST['tabela'])){
     $urldel = str_replace("Admin/SpreminjanjeAdmin.php", "api/spreminjanje.php", $povnaslov) . "?tabela=" . urlencode($tabela);;
 
     //URL spremenimo tako da presledge zamenjamo z %20 (rabi bit encodan)
-    $url = str_replace ( ' ', '%20', $urldel);
+    $urlneki = str_replace ( ' ', '%20', $urldel);
+
+    //Preveri če uporablja http oz. https
+    if( isset($_SERVER['HTTPS'] ) ) {
+        $url = "https://" . $urlneki;
+    }
+    else{
+        $url = "http://" . $urlneki;
+    }
     
     //Začne se curl
     $curl = curl_init();
