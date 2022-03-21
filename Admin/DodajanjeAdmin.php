@@ -107,8 +107,6 @@ if(isset($_POST['tabela'])){
     
     
     $jsonZaPoslat .= "}";
-
-    echo $jsonZaPoslat;
    
     mysqli_close($povezava);
 
@@ -165,7 +163,7 @@ if(isset($_POST['tabela'])){
         $vrnjeno = json_decode($body, true);
         $vrnjenosporocilo = $vrnjeno["sporocilo"];
 
-        //header("location: DodajanjeAdmin.php?tabela=$tabela&napaka=$vrnjenosporocilo");
+        header("location: DodajanjeAdmin.php?tabela=$tabela&napaka=$vrnjenosporocilo");
         exit;
     }
     else{
