@@ -43,7 +43,7 @@ if($_SESSION['Pravila'] == "Admin"){
                 <div class="bazadiv" style="padding-top: 20px;"><a class="bazaA" href="Branje.php?tabela=Izdelek">Izdeleki</a></div>
                 <div class="bazadiv"><a class="bazaA" href="Branje.php?tabela=Prodaja">Prodaje</a></div>
                 <div class="bazadiv"><a class="bazaA" href="Branje.php?tabela=Stranka">Stranke</a></div>
-                <div class="bazadiv"><a class="bazaA" href="Branje.php?tabela=Nacrtovani_prevzemi">Načrtovani prevzemi</a></div>
+                <div class="bazadiv"><a class="bazaA" href="Branje.php?tabela=Nacrtovani_Prevzemi">Načrtovani prevzemi</a></div>
             </div>
 
             <div class="noga">

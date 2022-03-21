@@ -86,7 +86,7 @@ if($_SESSION['Pravila'] == "Admin"){
                                         array_push($tabele, array($vrstica['Field'], $vrstica['Key']));
                                     }
 
-                                    if($tabela == "Nacrtovani_prevzemi" || $tabela == "Prodaja"){
+                                    if($tabela == "Nacrtovani_Prevzemi" || $tabela == "Prodaja"){
                                         echo "<th>Ime</th>";
                                         array_push($tabele, array("Ime", "MOL"));
                                         echo "<th>Priimek</th>";

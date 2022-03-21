@@ -52,7 +52,15 @@ if(isset($_POST['izbris'])){
         $urldel = str_replace("Izbris.php", "api/izbris.php", $povnaslov) . "?tabela=" . urlencode($tabela);;
 
         //URL spremenimo tako da presledge zamenjamo z %20 (rabi bit encodan)
-        $url = str_replace ( ' ', '%20', $urldel);
+        $urlneki = str_replace ( ' ', '%20', $urldel);
+
+        //Preveri če uporablja http oz. https
+        if( isset($_SERVER['HTTPS'] ) ) {
+            $url = "https://" . $urlneki;
+        }
+        else{
+            $url = "http://" . $urlneki;
+        }
         
         //Začne se curl
         $curl = curl_init();
