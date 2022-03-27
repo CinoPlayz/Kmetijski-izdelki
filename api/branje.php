@@ -72,11 +72,13 @@ else{
 
 
 function Branje($tabela, $povezava){
-    if($tabela == "Nacrtovani_prevzemi"){
+    if($tabela == "Nacrtovani_Prevzemi"){
         if(isset($_GET['dan'])){
             $danfilter = filter_input(INPUT_GET, 'dan', FILTER_SANITIZE_STRING);
     
             $dan = mysqli_real_escape_string($povezava, $danfilter);
+
+            echo $dan;
 
             $sql = "SELECT * FROM $tabela n INNER JOIN Stranka s ON n.id_stranke = s.id_stranke WHERE Dan = '$dan'";
         }
