@@ -78,8 +78,6 @@ function Branje($tabela, $povezava){
     
             $dan = mysqli_real_escape_string($povezava, $danfilter);
 
-            echo $dan;
-
             $sql = "SELECT * FROM $tabela n INNER JOIN Stranka s ON n.id_stranke = s.id_stranke WHERE Dan = '$dan'";
         }
         else{
