@@ -115,6 +115,7 @@
                 Cas VARCHAR(40) DEFAULT 'Cel' CHECK(Cas IN('Zjutraj', 'Zvečer', 'Sredi', 'Cel')),
                 Izdelek VARCHAR(50) NOT NULL,
                 id_stranke INT NOT NULL,
+                Cas_Enkrat DATETIME,
                 FOREIGN KEY (id_stranke) REFERENCES Stranka(id_stranke), 
                 FOREIGN KEY (Izdelek) REFERENCES Izdelek(Izdelek)
             );";
@@ -247,6 +248,7 @@
                             Cas VARCHAR(40) DEFAULT 'Cel' CHECK(Cas IN('Zjutraj', 'Zvečer', 'Sredi', 'Cel')),
                             Izdelek VARCHAR(50) NOT NULL,
                             id_stranke INT NOT NULL,
+                            Cas_Enkrat DATETIME,
                             FOREIGN KEY (id_stranke) REFERENCES Stranka(id_stranke), 
                             FOREIGN KEY (Izdelek) REFERENCES Izdelek(Izdelek)
                         );";

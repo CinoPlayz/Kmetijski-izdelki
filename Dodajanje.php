@@ -62,7 +62,7 @@ if(isset($_POST['tabela'])){
         }
 
         if($preskoci === false){
-            if(empty($podatekpostSQL)){
+            if(empty($podatekpostSQL) && $tabela != "Nacrtovani_Prevzemi" && $tabele[$i] != "Cas_Enkrat"){
                 mysqli_close($povezava);
                 header("location: Dodajanje.php?tabela=$tabela&napaka=$i");
                 exit;
@@ -290,6 +290,21 @@ if(isset($_POST['tabela'])){
                                                 }
                                                 //Če je Datum_Vpisa za vnos prikaže vnos z izbero datuma
                                                 else if($vrstica['Field'] == "Datum_Vpisa" && $tabela = "Prodaja"){
+                                                    if(isset($_SESSION['temp'][$vrstica['Field']])){
+                                                        echo "<div class='formvnosItem' style='display:flex; flex-direction: column; align-items: center;'>
+                                                        <div class='vnosNaslov'>". str_replace("_", " ", $vrstica['Field']).":</div>
+                                                        <input type='date' name='". $vrstica['Field'] ."' class='ipPB' value='". $_SESSION['temp'][$vrstica['Field']] ."'>
+                                                        </div>";
+                                                    }
+                                                    else{
+                                                        echo "<div class='formvnosItem' style='display:flex; flex-direction: column; align-items: center;'>
+                                                        <div class='vnosNaslov'>". str_replace("_", " ", $vrstica['Field']).":</div>
+                                                        <input type='date' name='". $vrstica['Field'] ."' class='ipPB'>
+                                                        </div>";
+                                                    }
+                                                }
+                                                //Če je Cas_Enkrat za vnos prikaže vnos z izbero datuma
+                                                else if($vrstica['Field'] == "Cas_Enkrat" && $tabela = "Nacrtovani_Prevzemi"){
                                                     if(isset($_SESSION['temp'][$vrstica['Field']])){
                                                         echo "<div class='formvnosItem' style='display:flex; flex-direction: column; align-items: center;'>
                                                         <div class='vnosNaslov'>". str_replace("_", " ", $vrstica['Field']).":</div>
