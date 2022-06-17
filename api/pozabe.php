@@ -74,7 +74,7 @@ if(mysqli_num_rows($rezultat) > 0){
             WHEN 'Sobota' THEN '5'
             WHEN 'Nedelja' THEN '6'
             ELSE '1'
-            END AS Dan FROM nacrtovani_prevzemi  WHERE nacrtovani_prevzemi.id_stranke = p.id_stranke) AND p.Datum_Prodaje BETWEEN '$kolikonazajzacetek' AND '$kolikonazajkonec';";
+            END AS Dan FROM Nacrtovani_Prevzemi  WHERE Nacrtovani_Prevzemi.id_stranke = p.id_stranke) AND p.Datum_Prodaje BETWEEN '$kolikonazajzacetek' AND '$kolikonazajkonec';";
      
             $rezultatProdaja = mysqli_query($povezava, $sqlProdaja);
 
@@ -89,7 +89,7 @@ if(mysqli_num_rows($rezultat) > 0){
             //Načrtovani prevzemi glede na datum, ki je vpisan. Najprej ustvari temp podatkovne baze z datumi katere se nanašajo na slovenski napis ("Ponedeljek", "Torek"...)            
             $sqlNacrtovaniPrevzemi = "SET @datum = CONVERT('$kolikonazajzacetek', DATETIME);
 
-            CREATE TEMPORARY TABLE temp1 AS SELECT n.id_nacrtovani_prevzem, n.id_stranke, n.Kolicina, n.Izdelek, n.Dan, @datum AS 'Datum' FROM nacrtovani_prevzemi  n WHERE n.Dan = (SELECT CASE WEEKDAY(@datum) 
+            CREATE TEMPORARY TABLE temp1 AS SELECT n.id_nacrtovani_prevzem, n.id_stranke, n.Kolicina, n.Izdelek, n.Dan, @datum AS 'Datum' FROM Nacrtovani_Prevzemi  n WHERE n.Dan = (SELECT CASE WEEKDAY(@datum) 
                 WHEN '0' THEN 'Ponedeljek'
                 WHEN '1' THEN 'Torek'
                 WHEN '2' THEN 'Sreda'
@@ -98,11 +98,11 @@ if(mysqli_num_rows($rezultat) > 0){
                 WHEN '5' THEN 'Sobota'
                 WHEN '6' THEN 'Nedelja'
                 ELSE 'Ponedeljek'
-                END AS Dan FROM nacrtovani_prevzemi LIMIT 1);
+                END AS Dan FROM Nacrtovani_Prevzemi LIMIT 1);
             
                 SET @datum = DATE_ADD(@datum, INTERVAL 1 DAY);
                 
-                CREATE TEMPORARY TABLE temp2 AS SELECT n.id_nacrtovani_prevzem, n.id_stranke, n.Kolicina, n.Izdelek, n.Dan, @datum AS 'Datum' FROM nacrtovani_prevzemi  n WHERE n.Dan = (SELECT CASE WEEKDAY(@datum) 
+                CREATE TEMPORARY TABLE temp2 AS SELECT n.id_nacrtovani_prevzem, n.id_stranke, n.Kolicina, n.Izdelek, n.Dan, @datum AS 'Datum' FROM Nacrtovani_Prevzemi  n WHERE n.Dan = (SELECT CASE WEEKDAY(@datum) 
                 WHEN '0' THEN 'Ponedeljek'
                 WHEN '1' THEN 'Torek'
                 WHEN '2' THEN 'Sreda'
@@ -111,11 +111,11 @@ if(mysqli_num_rows($rezultat) > 0){
                 WHEN '5' THEN 'Sobota'
                 WHEN '6' THEN 'Nedelja'
                 ELSE 'Ponedeljek'
-                END AS Dan FROM nacrtovani_prevzemi  LIMIT 1);
+                END AS Dan FROM Nacrtovani_Prevzemi  LIMIT 1);
             
                 SET @datum = DATE_ADD(@datum, INTERVAL 1 DAY);
                 
-                CREATE TEMPORARY TABLE temp3 AS SELECT n.id_nacrtovani_prevzem, n.id_stranke, n.Kolicina, n.Izdelek, n.Dan, @datum AS 'Datum' FROM nacrtovani_prevzemi  n WHERE n.Dan = (SELECT CASE WEEKDAY(@datum) 
+                CREATE TEMPORARY TABLE temp3 AS SELECT n.id_nacrtovani_prevzem, n.id_stranke, n.Kolicina, n.Izdelek, n.Dan, @datum AS 'Datum' FROM Nacrtovani_Prevzemi  n WHERE n.Dan = (SELECT CASE WEEKDAY(@datum) 
                 WHEN '0' THEN 'Ponedeljek'
                 WHEN '1' THEN 'Torek'
                 WHEN '2' THEN 'Sreda'
@@ -124,11 +124,11 @@ if(mysqli_num_rows($rezultat) > 0){
                 WHEN '5' THEN 'Sobota'
                 WHEN '6' THEN 'Nedelja'
                 ELSE 'Ponedeljek'
-                END AS Dan FROM nacrtovani_prevzemi  LIMIT 1);
+                END AS Dan FROM Nacrtovani_Prevzemi  LIMIT 1);
             
                 SET @datum = DATE_ADD(@datum, INTERVAL 1 DAY);
                 
-                CREATE TEMPORARY TABLE temp4 AS SELECT n.id_nacrtovani_prevzem, n.id_stranke, n.Kolicina, n.Izdelek, n.Dan, @datum AS 'Datum' FROM nacrtovani_prevzemi  n WHERE n.Dan = (SELECT CASE WEEKDAY(@datum) 
+                CREATE TEMPORARY TABLE temp4 AS SELECT n.id_nacrtovani_prevzem, n.id_stranke, n.Kolicina, n.Izdelek, n.Dan, @datum AS 'Datum' FROM Nacrtovani_Prevzemi  n WHERE n.Dan = (SELECT CASE WEEKDAY(@datum) 
                 WHEN '0' THEN 'Ponedeljek'
                 WHEN '1' THEN 'Torek'
                 WHEN '2' THEN 'Sreda'
@@ -137,11 +137,11 @@ if(mysqli_num_rows($rezultat) > 0){
                 WHEN '5' THEN 'Sobota'
                 WHEN '6' THEN 'Nedelja'
                 ELSE 'Ponedeljek'
-                END AS Dan FROM nacrtovani_prevzemi  LIMIT 1);
+                END AS Dan FROM Nacrtovani_Prevzemi  LIMIT 1);
             
                 SET @datum = DATE_ADD(@datum, INTERVAL 1 DAY);
                 
-                CREATE TEMPORARY TABLE temp5 AS SELECT n.id_nacrtovani_prevzem, n.id_stranke, n.Kolicina, n.Izdelek, n.Dan, @datum AS 'Datum' FROM nacrtovani_prevzemi  n WHERE n.Dan = (SELECT CASE WEEKDAY(@datum) 
+                CREATE TEMPORARY TABLE temp5 AS SELECT n.id_nacrtovani_prevzem, n.id_stranke, n.Kolicina, n.Izdelek, n.Dan, @datum AS 'Datum' FROM Nacrtovani_Prevzemi  n WHERE n.Dan = (SELECT CASE WEEKDAY(@datum) 
                 WHEN '0' THEN 'Ponedeljek'
                 WHEN '1' THEN 'Torek'
                 WHEN '2' THEN 'Sreda'
@@ -150,11 +150,11 @@ if(mysqli_num_rows($rezultat) > 0){
                 WHEN '5' THEN 'Sobota'
                 WHEN '6' THEN 'Nedelja'
                 ELSE 'Ponedeljek'
-                END AS Dan FROM nacrtovani_prevzemi  LIMIT 1);
+                END AS Dan FROM Nacrtovani_Prevzemi  LIMIT 1);
             
                 SET @datum = DATE_ADD(@datum, INTERVAL 1 DAY);
                 
-                CREATE TEMPORARY TABLE temp6 AS SELECT n.id_nacrtovani_prevzem, n.id_stranke, n.Kolicina, n.Izdelek, n.Dan, @datum AS 'Datum' FROM nacrtovani_prevzemi  n WHERE n.Dan = (SELECT CASE WEEKDAY(@datum) 
+                CREATE TEMPORARY TABLE temp6 AS SELECT n.id_nacrtovani_prevzem, n.id_stranke, n.Kolicina, n.Izdelek, n.Dan, @datum AS 'Datum' FROM Nacrtovani_Prevzemi  n WHERE n.Dan = (SELECT CASE WEEKDAY(@datum) 
                 WHEN '0' THEN 'Ponedeljek'
                 WHEN '1' THEN 'Torek'
                 WHEN '2' THEN 'Sreda'
@@ -163,11 +163,11 @@ if(mysqli_num_rows($rezultat) > 0){
                 WHEN '5' THEN 'Sobota'
                 WHEN '6' THEN 'Nedelja'
                 ELSE 'Ponedeljek'
-                END AS Dan FROM nacrtovani_prevzemi  LIMIT 1);
+                END AS Dan FROM Nacrtovani_Prevzemi  LIMIT 1);
             
                 SET @datum = DATE_ADD(@datum, INTERVAL 1 DAY);
                 
-                CREATE TEMPORARY TABLE temp7 AS SELECT n.id_nacrtovani_prevzem, n.id_stranke, n.Kolicina, n.Izdelek, n.Dan, @datum AS 'Datum' FROM nacrtovani_prevzemi  n WHERE n.Dan = (SELECT CASE WEEKDAY(@datum) 
+                CREATE TEMPORARY TABLE temp7 AS SELECT n.id_nacrtovani_prevzem, n.id_stranke, n.Kolicina, n.Izdelek, n.Dan, @datum AS 'Datum' FROM Nacrtovani_Prevzemi  n WHERE n.Dan = (SELECT CASE WEEKDAY(@datum) 
                 WHEN '0' THEN 'Ponedeljek'
                 WHEN '1' THEN 'Torek'
                 WHEN '2' THEN 'Sreda'
@@ -176,7 +176,7 @@ if(mysqli_num_rows($rezultat) > 0){
                 WHEN '5' THEN 'Sobota'
                 WHEN '6' THEN 'Nedelja'
                 ELSE 'Ponedeljek'
-                END AS Dan FROM nacrtovani_prevzemi  LIMIT 1);               
+                END AS Dan FROM Nacrtovani_Prevzemi  LIMIT 1);               
                 ";
 
             $rezultatNacrtovaniPrevzemi = mysqli_multi_query($povezava, $sqlNacrtovaniPrevzemi);
