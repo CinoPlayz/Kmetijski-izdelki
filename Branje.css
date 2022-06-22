@@ -157,6 +157,10 @@ td{
     text-align: center;
 }
 
+.levo_table_border{
+    border-left: 1px solid black;
+}
+
 /*Noga*/
 .nogaMenu{
     display: flex;

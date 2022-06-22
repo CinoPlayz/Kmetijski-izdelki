@@ -93,7 +93,7 @@ function Branje($tabela, $povezava){
             $sql = "SELECT * FROM $tabela p INNER JOIN Stranka s ON p.id_stranke = s.id_stranke ORDER BY p.Datum_Prodaje DESC LIMIT $omejitev ";
         }
         else{
-            $sql = "SELECT * FROM $tabela p INNER JOIN Stranka s ON p.id_stranke = s.id_stranke ORDER BY p.Datum_Prodaje DESC";
+            $sql = "SELECT *  FROM $tabela p INNER JOIN Stranka s ON p.id_stranke = s.id_stranke ORDER BY p.Datum_Prodaje DESC";
         }
         
     }

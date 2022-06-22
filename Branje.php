@@ -21,6 +21,8 @@ if($_SESSION['Pravila'] == "Admin"){
         <link rel="stylesheet" type="text/css" href="DataTables/datatables.min.css"/>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
         <script type="text/javascript" src="DataTables/datatables.min.js"></script>
+        <script type="text/javascript" src="DataTables/datetime.js"></script>
+        <script type="text/javascript" src="DataTables/moment.js"></script>
     </head>
     <body>
         <div class="vse">
@@ -81,17 +83,83 @@ if($_SESSION['Pravila'] == "Admin"){
                                 $tabele = array();
 
                                 if($rezultat == true && mysqli_num_rows($rezultat) > 0){
-                                    while($vrstica = mysqli_fetch_assoc($rezultat)){
-                                        echo "<th>". str_replace("_", " ", $vrstica['Field'])."</th>";
-                                        array_push($tabele, array($vrstica['Field'], $vrstica['Key']));
-                                    }
 
-                                    if($tabela == "Nacrtovani_Prevzemi" || $tabela == "Prodaja"){
-                                        echo "<th>Ime</th>";
-                                        array_push($tabele, array("Ime", "MOL"));
+                                    //Preveri če je tabela Prodaja oz. Načrtovani_Prevzemi, če je zapiše drugačni zapored stolpcev
+                                    if($tabela == "Prodaja"){
+                                        echo "<th>ID Prodaje</th>";
+                                        array_push($tabele, array("id_prodaje", "PRI"));
+
+                                        echo "<th>Datum Prodaje</th>";
+                                        array_push($tabele, array("Datum_Prodaje", ""));
+
+                                        echo "<th>ID Stranke</th>";
+                                        array_push($tabele, array("id_stranke", "MOL"));
+
                                         echo "<th>Priimek</th>";
                                         array_push($tabele, array("Priimek", "MOL"));
+
+                                        echo "<th>Ime</th>";
+                                        array_push($tabele, array("Ime", "MOL"));     
+                                                                            
+                                        echo "<th>Izdelek</th>";
+                                        array_push($tabele, array("Izdelek", "MOL"));
+
+                                        echo "<th>Količina</th>";
+                                        array_push($tabele, array("Koliko", "")); 
+
+                                        echo "<th>Datum Vpisa</th>";
+                                        array_push($tabele, array("Datum_Vpisa", ""));                                        
+
+                                        echo "<th>Vpisal</th>";
+                                        array_push($tabele, array("Uporabnisko_ime", "MOL"));
                                     }
+                                    else if($tabela == "Nacrtovani_Prevzemi"){
+                                        echo "<th>ID Nacrtovanega Prevzema</th>";
+                                        array_push($tabele, array("id_nacrtovani_prevzem", "PRI"));
+
+                                        echo "<th>Izdelek</th>";
+                                        array_push($tabele, array("Izdelek", "MOL"));
+
+                                        echo "<th>Količina</th>";
+                                        array_push($tabele, array("Kolicina", ""));
+
+                                        echo "<th>Dan</th>";
+                                        array_push($tabele, array("Dan", ""));
+
+                                        echo "<th>Cas</th>";
+                                        array_push($tabele, array("Cas", ""));
+
+                                        echo "<th>ID Stranke</th>";
+                                        array_push($tabele, array("id_stranke", "MOL"));
+
+                                        echo "<th>Priimek</th>";
+                                        array_push($tabele, array("Priimek", "MOL"));
+
+                                        echo "<th>Ime</th>";
+                                        array_push($tabele, array("Ime", "MOL"));     
+
+                                        echo "<th>Datum Enkratnega prevzema</th>";
+                                        array_push($tabele, array("Cas_Enkrat", ""));      
+                                    }
+                                    else if($tabela == "Stranka"){
+                                        echo "<th>ID Stranke</th>";
+                                        array_push($tabele, array("id_stranke", "PRI"));
+
+                                        echo "<th>Priimek</th>";
+                                        array_push($tabele, array("Priimek", ""));
+
+                                        echo "<th>Ime</th>";
+                                        array_push($tabele, array("Ime", ""));
+
+                                    }                                    
+                                    else{
+                                        while($vrstica = mysqli_fetch_assoc($rezultat)){
+                                            echo "<th>". str_replace("_", " ", $vrstica['Field'])."</th>";
+                                            array_push($tabele, array($vrstica['Field'], $vrstica['Key']));
+                                                                                    
+                                        }
+                                    }
+                                    
                                 }
                                 
                                 
@@ -108,6 +176,8 @@ if($_SESSION['Pravila'] == "Admin"){
 
             <script>
                 $(document).ready(function() {
+
+                    
                 $('#tabela').DataTable( {
                     "ajax": {
                         "url": 'api/branje.php?tabela=<?php echo $tabela;?>',
@@ -129,7 +199,7 @@ if($_SESSION['Pravila'] == "Admin"){
                                 if($tabele[$i][1] == "PRI"){
                                     $primaryatribut = $tabele[$i][0];
                                 }
-                            }    
+                            } 
                             
                         ?>
                         {"data": "<?php echo $tabele[0][0]?>",
@@ -140,12 +210,118 @@ if($_SESSION['Pravila'] == "Admin"){
                         }
                     ],
 
-                    "columnDefs": [{
-                        "defaultContent": "NULL",
-                        "targets": "_all"
-                    }],
+                    "columnDefs": [
+                        <?php 
+                        if($tabela == "Prodaja"){
+                            echo "{ className: \"levo_table_border\", targets: 1 },
+                            { className: \"levo_table_border\", targets: 2 },
+                            {  className: \"levo_table_border\", targets: 5 },
+                            { className: \"levo_table_border\", targets: 7 },
+                            {targets: 1, render: $.fn.dataTable.render.moment( 'YYYY-MM-DD HH:mm:ss', 'DD.MM.YYYY HH:mm:ss' )},
+                            {targets: 7, render: $.fn.dataTable.render.moment( 'YYYY-MM-DD HH:mm:ss', 'DD.MM.YYYY HH:mm:ss' )}";
+                            
+                        }  
+                        else if($tabela == "Nacrtovani_Prevzemi"){
+                            echo "{ className: \"levo_table_border\", targets: 1 },
+                            { className: \"levo_table_border\", targets: 3 },
+                            {  className: \"levo_table_border\", targets: 5 },
+                            { className: \"levo_table_border\", targets: 8 },
+                            { \"type\": \"Dan\", targets: 3 },
+                            { \"type\": \"Cas\", targets: 4 },
+                            {targets: 8, render: $.fn.dataTable.render.moment( 'YYYY-MM-DD HH:mm:ss', 'DD.MM.YYYY HH:mm:ss' )}";
+                            
+                        }  
+                        else{
+                            echo "{\"defaultContent\": \"NULL\",";
+                            echo "\"targets\": \"_all\"}";
+                        }
+                            
+                        ?>
+                        
+                        
+                    ],
                     "scrollX": "true"
                 } );
+
+                //Dan sortiranje za Nacrtovani_Prevzemi
+                function STDan(dan) {                
+                    var stevilka;
+                    
+                    if (dan == "Ponedeljek"){
+                        stevilka = 1;
+                    } else if (dan == "Torek"){
+                        stevilka = 2;
+                    } else if (dan == "Sreda") {
+                        stevilka = 3;
+                    } else if (dan == "Četrtek") {
+                        stevilka = 4;
+                    } else if (dan == "Petek") {
+                        stevilka = 5;
+                    } else if(dan == "Sobota"){
+                        stevilka = 6;
+                    } else if(dan == "Nedelja"){
+                        stevilka = 7;
+                    } else {
+                        stevilka = 0;
+                    }
+                    
+                    return stevilka;
+                }
+
+
+                $.fn.dataTableExt.oSort["Dan-desc"] = function (x, y) {
+                    if(STDan(x) < STDan(y)){
+                        return 1;
+                    }
+
+                    return -1;
+                };
+
+                $.fn.dataTableExt.oSort["Dan-asc"] = function (x, y) {
+                    if(STDan(x) > STDan(y)){
+                        return 1;
+                    }
+
+                    return -1;
+                }
+
+
+                //Cas sortiranje za Nacrtovani_Prevzemi
+                function STCas(cas) {                
+                    var stevilka;
+                    
+                    if (cas == "Cel"){
+                        stevilka = 1;
+                    } else if (cas == "Zjutraj"){
+                        stevilka = 2;
+                    } else if (cas == "Sredi") {
+                        stevilka = 3;
+                    } else if (cas == "Zvečer") {
+                        stevilka = 4;
+                    } else {
+                        stevilka = 0;
+                    }
+                    
+                    return stevilka;
+                }
+
+
+                $.fn.dataTableExt.oSort["Cas-desc"] = function (x, y) {
+                    if(STCas(x) < STCas(y)){
+                        return 1;
+                    }
+
+                    return -1;
+                };
+
+                $.fn.dataTableExt.oSort["Cas-asc"] = function (x, y) {
+                    if(STCas(x) > STCas(y)){
+                        return 1;
+                    }
+
+                    return -1;
+                }
+
             } );
             </script>
             <div class="noga">
