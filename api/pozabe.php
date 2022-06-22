@@ -89,7 +89,7 @@ if(mysqli_num_rows($rezultat) > 0){
             //Načrtovani prevzemi glede na datum, ki je vpisan. Najprej ustvari temp podatkovne baze z datumi katere se nanašajo na slovenski napis ("Ponedeljek", "Torek"...)            
             $sqlNacrtovaniPrevzemi = "SET @datum = CONVERT('$kolikonazajzacetek', DATETIME);
 
-            CREATE TEMPORARY TABLE temp1 AS SELECT n.id_nacrtovani_prevzem, n.id_stranke, n.Kolicina, n.Izdelek, n.Dan, @datum AS 'Datum' FROM Nacrtovani_Prevzemi  n WHERE n.Dan = (SELECT CASE WEEKDAY(@datum) 
+            CREATE TEMPORARY TABLE temp1 AS SELECT n.id_nacrtovani_prevzem, n.id_stranke, n.Kolicina, n.Izdelek, n.Dan, n.Cas_Enkrat, @datum AS 'Datum' FROM Nacrtovani_Prevzemi  n WHERE n.Dan = (SELECT CASE WEEKDAY(@datum) 
                 WHEN '0' THEN 'Ponedeljek'
                 WHEN '1' THEN 'Torek'
                 WHEN '2' THEN 'Sreda'
@@ -102,7 +102,7 @@ if(mysqli_num_rows($rezultat) > 0){
             
                 SET @datum = DATE_ADD(@datum, INTERVAL 1 DAY);
                 
-                CREATE TEMPORARY TABLE temp2 AS SELECT n.id_nacrtovani_prevzem, n.id_stranke, n.Kolicina, n.Izdelek, n.Dan, @datum AS 'Datum' FROM Nacrtovani_Prevzemi  n WHERE n.Dan = (SELECT CASE WEEKDAY(@datum) 
+                CREATE TEMPORARY TABLE temp2 AS SELECT n.id_nacrtovani_prevzem, n.id_stranke, n.Kolicina, n.Izdelek, n.Dan, n.Cas_Enkrat, @datum AS 'Datum' FROM Nacrtovani_Prevzemi  n WHERE n.Dan = (SELECT CASE WEEKDAY(@datum) 
                 WHEN '0' THEN 'Ponedeljek'
                 WHEN '1' THEN 'Torek'
                 WHEN '2' THEN 'Sreda'
@@ -115,7 +115,7 @@ if(mysqli_num_rows($rezultat) > 0){
             
                 SET @datum = DATE_ADD(@datum, INTERVAL 1 DAY);
                 
-                CREATE TEMPORARY TABLE temp3 AS SELECT n.id_nacrtovani_prevzem, n.id_stranke, n.Kolicina, n.Izdelek, n.Dan, @datum AS 'Datum' FROM Nacrtovani_Prevzemi  n WHERE n.Dan = (SELECT CASE WEEKDAY(@datum) 
+                CREATE TEMPORARY TABLE temp3 AS SELECT n.id_nacrtovani_prevzem, n.id_stranke, n.Kolicina, n.Izdelek, n.Dan, n.Cas_Enkrat, @datum AS 'Datum' FROM Nacrtovani_Prevzemi  n WHERE n.Dan = (SELECT CASE WEEKDAY(@datum) 
                 WHEN '0' THEN 'Ponedeljek'
                 WHEN '1' THEN 'Torek'
                 WHEN '2' THEN 'Sreda'
@@ -128,7 +128,7 @@ if(mysqli_num_rows($rezultat) > 0){
             
                 SET @datum = DATE_ADD(@datum, INTERVAL 1 DAY);
                 
-                CREATE TEMPORARY TABLE temp4 AS SELECT n.id_nacrtovani_prevzem, n.id_stranke, n.Kolicina, n.Izdelek, n.Dan, @datum AS 'Datum' FROM Nacrtovani_Prevzemi  n WHERE n.Dan = (SELECT CASE WEEKDAY(@datum) 
+                CREATE TEMPORARY TABLE temp4 AS SELECT n.id_nacrtovani_prevzem, n.id_stranke, n.Kolicina, n.Izdelek, n.Dan, n.Cas_Enkrat, @datum AS 'Datum' FROM Nacrtovani_Prevzemi  n WHERE n.Dan = (SELECT CASE WEEKDAY(@datum) 
                 WHEN '0' THEN 'Ponedeljek'
                 WHEN '1' THEN 'Torek'
                 WHEN '2' THEN 'Sreda'
@@ -141,7 +141,7 @@ if(mysqli_num_rows($rezultat) > 0){
             
                 SET @datum = DATE_ADD(@datum, INTERVAL 1 DAY);
                 
-                CREATE TEMPORARY TABLE temp5 AS SELECT n.id_nacrtovani_prevzem, n.id_stranke, n.Kolicina, n.Izdelek, n.Dan, @datum AS 'Datum' FROM Nacrtovani_Prevzemi  n WHERE n.Dan = (SELECT CASE WEEKDAY(@datum) 
+                CREATE TEMPORARY TABLE temp5 AS SELECT n.id_nacrtovani_prevzem, n.id_stranke, n.Kolicina, n.Izdelek, n.Dan, n.Cas_Enkrat, @datum AS 'Datum' FROM Nacrtovani_Prevzemi  n WHERE n.Dan = (SELECT CASE WEEKDAY(@datum) 
                 WHEN '0' THEN 'Ponedeljek'
                 WHEN '1' THEN 'Torek'
                 WHEN '2' THEN 'Sreda'
@@ -154,7 +154,7 @@ if(mysqli_num_rows($rezultat) > 0){
             
                 SET @datum = DATE_ADD(@datum, INTERVAL 1 DAY);
                 
-                CREATE TEMPORARY TABLE temp6 AS SELECT n.id_nacrtovani_prevzem, n.id_stranke, n.Kolicina, n.Izdelek, n.Dan, @datum AS 'Datum' FROM Nacrtovani_Prevzemi  n WHERE n.Dan = (SELECT CASE WEEKDAY(@datum) 
+                CREATE TEMPORARY TABLE temp6 AS SELECT n.id_nacrtovani_prevzem, n.id_stranke, n.Kolicina, n.Izdelek, n.Dan, n.Cas_Enkrat, @datum AS 'Datum' FROM Nacrtovani_Prevzemi  n WHERE n.Dan = (SELECT CASE WEEKDAY(@datum) 
                 WHEN '0' THEN 'Ponedeljek'
                 WHEN '1' THEN 'Torek'
                 WHEN '2' THEN 'Sreda'
@@ -167,7 +167,7 @@ if(mysqli_num_rows($rezultat) > 0){
             
                 SET @datum = DATE_ADD(@datum, INTERVAL 1 DAY);
                 
-                CREATE TEMPORARY TABLE temp7 AS SELECT n.id_nacrtovani_prevzem, n.id_stranke, n.Kolicina, n.Izdelek, n.Dan, @datum AS 'Datum' FROM Nacrtovani_Prevzemi  n WHERE n.Dan = (SELECT CASE WEEKDAY(@datum) 
+                CREATE TEMPORARY TABLE temp7 AS SELECT n.id_nacrtovani_prevzem, n.id_stranke, n.Kolicina, n.Izdelek, n.Dan, n.Cas_Enkrat, @datum AS 'Datum' FROM Nacrtovani_Prevzemi  n WHERE n.Dan = (SELECT CASE WEEKDAY(@datum) 
                 WHEN '0' THEN 'Ponedeljek'
                 WHEN '1' THEN 'Torek'
                 WHEN '2' THEN 'Sreda'
@@ -211,7 +211,7 @@ if(mysqli_num_rows($rezultat) > 0){
 
                     array_push($nacrtovaniprevzemi, array("id_stranke" => $vrstica['id_stranke'], "Izdelek" => $vrstica['Izdelek'], "Datum" => $vrstica['Datum']));
 
-                    array_push($nacrtovaniprevzemiKolicina, array("id_stranke" => $vrstica['id_stranke'], "Izdelek" => $vrstica['Izdelek'], "Datum" => $vrstica['Datum'], "Kolicina" => $vrstica['Kolicina']));
+                    array_push($nacrtovaniprevzemiKolicina, array("id_stranke" => $vrstica['id_stranke'], "Izdelek" => $vrstica['Izdelek'], "Datum" => $vrstica['Datum'], "Kolicina" => $vrstica['Kolicina'], "Cas_Enkrat" => $vrstica['Cas_Enkrat']));
                 }
             }
 
@@ -222,8 +222,18 @@ if(mysqli_num_rows($rezultat) > 0){
 
             foreach ($nacrtovaniprevzemi as $kljuc => $vrednostnacrt) {
 
+                //Preveri če ima načrtovani prevzem vpisan Cas_Enkrat, če ima potem preveri če se datuma ujemta, če se ne ga izvrže
+                if((!empty($nacrtovaniprevzemiKolicina[$kljuc]['Cas_Enkrat']))){
+                    if($nacrtovaniprevzemiKolicina[$kljuc]['Datum'] != $nacrtovaniprevzemiKolicina[$kljuc]['Cas_Enkrat']){
+                        unset($manjkajociArray[$kljuc]);
+                    }
+                }
+
+                //Preveri če se načrtovani prevzem in prodaja ujemata, če se ga uniči
                 foreach($prodaja as $vrednostprodaja){
                     if($vrednostnacrt != $vrednostprodaja){
+                        
+                        
                     }
                     else{
                         unset($manjkajociArray[$kljuc]);
@@ -232,7 +242,7 @@ if(mysqli_num_rows($rezultat) > 0){
 
             }
 
-            //V ta array doda polja Ime in Priimek stranke
+            //V ta array doda polja Ime in Priimek stranke in odstrani polje Cas_Enkrat
             foreach ($manjkajociArray as $kljuc => $vrednost) {
 
                 $sqlStranke = "SELECT Ime, Priimek FROM Stranka WHERE id_stranke = " . $vrednost['id_stranke'] . ";";
@@ -244,6 +254,7 @@ if(mysqli_num_rows($rezultat) > 0){
 
                 $manjkajociArray[$kljuc]['Ime'] = $vrstica['Ime'];
                 $manjkajociArray[$kljuc]['Priimek'] = $vrstica['Priimek'];
+                unset($manjkajociArray[$kljuc]['Cas_Enkrat']);
                 
             }
 
