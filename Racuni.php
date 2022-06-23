@@ -16,9 +16,9 @@ if($_SESSION['Pravila'] == "Admin"){
     <head>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <title>Domov</title>
+        <title>Sestavljanje računov</title>
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="stylesheet" href="Domov.css">
+        <link rel="stylesheet" href="Racuni.css">
     </head>
     <body>
         <div class="vse">
@@ -39,13 +39,7 @@ if($_SESSION['Pravila'] == "Admin"){
             </div>
 
             <div class="vsebina">
-                <div class="izbira">Izberite kaj želite urejati/brati:</div>
-                <div class="bazadiv" style="padding-top: 20px;"><a class="bazaA" href="Branje.php?tabela=Izdelek">Izdeleki</a></div>
-                <div class="bazadiv"><a class="bazaA" href="Branje.php?tabela=Prodaja">Prodaje</a></div>
-                <div class="bazadiv"><a class="bazaA" href="Branje.php?tabela=Stranka">Stranke</a></div>
-                <div class="bazadiv"><a class="bazaA" href="Branje.php?tabela=Nacrtovani_Prevzemi">Načrtovani prevzemi</a></div>
-                <div class="izbira" style="margin-top: 40px;">Računi</div>
-                <div class="bazadiv"><a class="bazaA" href="Racuni.php">Sestavljanje računov</a></div>
+                
             </div>
 
             <div class="noga">

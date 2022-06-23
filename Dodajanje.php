@@ -181,6 +181,8 @@ if(isset($_POST['tabela'])){
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <title>Dodajanje</title>
         <meta name="viewport" content="width=device-width, initial-scale=1">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+        <script src="JS/datalistVsiElemnti.js"></script>
         <link rel="stylesheet" href="Dodajanje.css">
     </head>
     <body>
@@ -347,7 +349,7 @@ if(isset($_POST['tabela'])){
                                                     if(mysqli_num_rows($rezultatStranka) > 0){
                                                         echo "<div class='formvnosItem'>";
                                                         echo "<div class='vnosNaslov'>Stranka:</div>";
-                                                        echo "<input list='Stranke' name='". $vrstica['Field'] ."' />";
+                                                        echo "<input list='Stranke' name='". $vrstica['Field'] ."' id='Stranka'/>";
                                                         echo "<datalist id='Stranke'>";
 
                                                         while($vrsticaStranka = mysqli_fetch_assoc($rezultatStranka)){
@@ -456,6 +458,14 @@ if(isset($_POST['tabela'])){
                 
                 </div>
             </div>
+
+            <script>
+                <?php
+                if($tabela == "Prodaja" || $tabela == "Nacrtovani_Prevzemi"){
+                    echo "PokaziKlikPuscica('Stranka')";
+                }
+                ?>
+            </script>
 
             <div class="noga">
                 <div>
