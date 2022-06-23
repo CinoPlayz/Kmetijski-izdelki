@@ -92,8 +92,9 @@
             );
             
             CREATE TABLE Izdelek(
-                Izdelek VARCHAR(50) PRIMARY KEY	
-            );
+                Izdelek VARCHAR(50) PRIMARY KEY,
+                Merska_enota VARCHAR(10) CHECK(Merska_enota IN('', 'L', 'm3', 'dm3', 'cm3', 't', 'kg', 'dag', 'g', 'kos', 'enot', 'par', 'kpl'))
+            );            
             
             CREATE TABLE Prodaja(
                 id_prodaje INT PRIMARY KEY AUTO_INCREMENT,
@@ -225,8 +226,9 @@
                         );
                         
                         CREATE TABLE Izdelek(
-                            Izdelek VARCHAR(50) PRIMARY KEY	
-                        );
+                            Izdelek VARCHAR(50) PRIMARY KEY,
+                            Merska_enota VARCHAR(10) CHECK(Merska_enota IN('', 'L', 'm3', 'dm3', 'cm3', 't', 'kg', 'dag', 'g', 'kos', 'enot', 'par', 'kpl'))
+                        );                        
                         
                         CREATE TABLE Prodaja(
                             id_prodaje INT PRIMARY KEY AUTO_INCREMENT,

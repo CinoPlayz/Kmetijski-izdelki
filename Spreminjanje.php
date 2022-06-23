@@ -80,24 +80,31 @@ if(isset($_POST['tabela'])){
         if($preskoci === false){
             if(empty($podatekpostSQL) && $tabela != "Nacrtovani_Prevzemi" && $tabele[$i] != "Cas_Enkrat"){
 
-                if($tabele[$i] == "Geslo"){
+                if(empty($podatekpostSQL) && $tabela != "Izdelek" && $tabele[$i] != "Merska_enota"){
+                    if($tabele[$i] == "Geslo"){
                     
-                    $_SESSION['temp'][$tabele[$i]] = "";
-                    array_push($podatkiZaPoslat, array($tabele[$i] => ""));
-                }
-                else{
-                    mysqli_close($povezava);
-
-                    if(isset($primaryPodatek)){
-                        --$i;
-                        header("location: Spreminjanje.php?tabela=$tabela&$primaryKey=$primaryPodatek&napaka=$i");                        
+                        $_SESSION['temp'][$tabele[$i]] = "";
+                        array_push($podatkiZaPoslat, array($tabele[$i] => ""));
                     }
                     else{
-                        header("location: Spreminjanje.php?tabela=$tabela&$primaryKey=$primaryPodatek&napaka=$i");                        
+                        mysqli_close($povezava);
+    
+                        if(isset($primaryPodatek)){
+                            --$i;
+                            header("location: Spreminjanje.php?tabela=$tabela&$primaryKey=$primaryPodatek&napaka=$i");                        
+                        }
+                        else{
+                            header("location: Spreminjanje.php?tabela=$tabela&$primaryKey=$primaryPodatek&napaka=$i");                        
+                        }
+                        
+                        exit;
                     }
-                    
-                    exit;
                 }
+                else{
+                    $_SESSION['temp'][$tabele[$i]] = $podatekpostSQL;
+                    array_push($podatkiZaPoslat, array($tabele[$i] => $podatekpostSQL));
+                }  
+                
                
             }
             else{              

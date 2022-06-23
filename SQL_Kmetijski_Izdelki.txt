@@ -24,8 +24,8 @@ CREATE TABLE Stranka(
 );
 
 CREATE TABLE Izdelek(
-	Izdelek VARCHAR(50) PRIMARY KEY	
-	Merska_Enota VARCHAR(10) CHECK Cas IN('kg', 'enot', 'L', '', NULL)
+	Izdelek VARCHAR(50) PRIMARY KEY,
+	Merska_enota VARCHAR(10) CHECK(Merska_enota IN('', 'L', 'm3', 'dm3', 'cm3', 't', 'kg', 'dag', 'g', 'kos', 'enot', 'par', 'kpl'))
 );
 
 CREATE TABLE Prodaja(

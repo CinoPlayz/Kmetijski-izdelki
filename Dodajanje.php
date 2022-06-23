@@ -63,9 +63,16 @@ if(isset($_POST['tabela'])){
 
         if($preskoci === false){
             if(empty($podatekpostSQL) && $tabela != "Nacrtovani_Prevzemi" && $tabele[$i] != "Cas_Enkrat"){
-                mysqli_close($povezava);
-                header("location: Dodajanje.php?tabela=$tabela&napaka=$i");
-                exit;
+                
+                if(empty($podatekpostSQL) && $tabela != "Izdelek" && $tabele[$i] != "Merska_enota"){
+                    mysqli_close($povezava);
+                    header("location: Dodajanje.php?tabela=$tabela&napaka=$i");
+                    exit;
+                }
+                else{
+                    $_SESSION['temp'][$tabele[$i]] = $podatekpostSQL;
+                    array_push($podatkiZaPoslat, array($tabele[$i] => $podatekpostSQL));
+                }
             }
             else{              
 
