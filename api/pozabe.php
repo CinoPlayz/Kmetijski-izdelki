@@ -242,7 +242,7 @@ if(mysqli_num_rows($rezultat) > 0){
 
             }
 
-            //V ta array doda polja Ime in Priimek stranke in odstrani polje Cas_Enkrat
+            //V ta array doda polja Ime in Priimek stranke, ter Mersko Enoto in odstrani polje Cas_Enkrat
             foreach ($manjkajociArray as $kljuc => $vrednost) {
 
                 $sqlStranke = "SELECT Ime, Priimek FROM Stranka WHERE id_stranke = " . $vrednost['id_stranke'] . ";";
@@ -254,6 +254,20 @@ if(mysqli_num_rows($rezultat) > 0){
 
                 $manjkajociArray[$kljuc]['Ime'] = $vrstica['Ime'];
                 $manjkajociArray[$kljuc]['Priimek'] = $vrstica['Priimek'];
+
+
+
+                $sqlIzdelek= "SELECT Merska_enota FROM Izdelek WHERE Izdelek = '" . $vrednost['Izdelek'] . "';";
+                
+                $rezultatizdelekneki = mysqli_query($povezava, $sqlIzdelek);
+                
+
+                $vrsticaIzdelek = mysqli_fetch_assoc($rezultatizdelekneki);
+
+                $manjkajociArray[$kljuc]['Merska_enota'] = $vrsticaIzdelek['Merska_enota'];
+
+                
+
                 unset($manjkajociArray[$kljuc]['Cas_Enkrat']);
                 
             }

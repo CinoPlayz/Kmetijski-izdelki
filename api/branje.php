@@ -78,10 +78,10 @@ function Branje($tabela, $povezava){
     
             $dan = mysqli_real_escape_string($povezava, $danfilter);
 
-            $sql = "SELECT * FROM $tabela n INNER JOIN Stranka s ON n.id_stranke = s.id_stranke WHERE Dan = '$dan'";
+            $sql = "SELECT * FROM $tabela n INNER JOIN Stranka s ON n.id_stranke = s.id_stranke INNER JOIN Izdelek i ON n.Izdelek = i.Izdelek WHERE Dan = '$dan'";
         }
         else{
-            $sql = "SELECT * FROM $tabela n INNER JOIN Stranka s ON n.id_stranke = s.id_stranke";
+            $sql = "SELECT * FROM $tabela n INNER JOIN Stranka s ON n.id_stranke = s.id_stranke INNER JOIN Izdelek i ON n.Izdelek = i.Izdelek";
         }
     }
     else if($tabela == "Prodaja"){
@@ -90,10 +90,10 @@ function Branje($tabela, $povezava){
     
             $omejitev = mysqli_real_escape_string($povezava, $omejitevfilter);
 
-            $sql = "SELECT * FROM $tabela p INNER JOIN Stranka s ON p.id_stranke = s.id_stranke ORDER BY p.Datum_Prodaje DESC LIMIT $omejitev ";
+            $sql = "SELECT * FROM $tabela p INNER JOIN Stranka s ON p.id_stranke = s.id_stranke INNER JOIN Izdelek i ON p.Izdelek = i.Izdelek ORDER BY p.Datum_Prodaje DESC LIMIT $omejitev ";
         }
         else{
-            $sql = "SELECT *  FROM $tabela p INNER JOIN Stranka s ON p.id_stranke = s.id_stranke ORDER BY p.Datum_Prodaje DESC";
+            $sql = "SELECT *  FROM $tabela p INNER JOIN Stranka s ON p.id_stranke = s.id_stranke INNER JOIN Izdelek i ON p.Izdelek = i.Izdelek ORDER BY p.Datum_Prodaje DESC";
         }
         
     }

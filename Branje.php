@@ -107,6 +107,9 @@ if($_SESSION['Pravila'] == "Admin"){
                                         echo "<th>Količina</th>";
                                         array_push($tabele, array("Koliko", "")); 
 
+                                        echo "<th>Merska Enota</th>";
+                                        array_push($tabele, array("Merska_enota", "")); 
+
                                         echo "<th>Datum Vpisa</th>";
                                         array_push($tabele, array("Datum_Vpisa", ""));                                        
 
@@ -122,6 +125,9 @@ if($_SESSION['Pravila'] == "Admin"){
 
                                         echo "<th>Količina</th>";
                                         array_push($tabele, array("Kolicina", ""));
+
+                                        echo "<th>Merska Enota</th>";
+                                        array_push($tabele, array("Merska_enota", ""));
 
                                         echo "<th>Dan</th>";
                                         array_push($tabele, array("Dan", ""));
@@ -216,19 +222,19 @@ if($_SESSION['Pravila'] == "Admin"){
                             echo "{ className: \"levo_table_border\", targets: 1 },
                             { className: \"levo_table_border\", targets: 2 },
                             {  className: \"levo_table_border\", targets: 5 },
-                            { className: \"levo_table_border\", targets: 7 },
+                            { className: \"levo_table_border\", targets: 8 },
                             {targets: 1, render: $.fn.dataTable.render.moment( 'YYYY-MM-DD HH:mm:ss', 'DD.MM.YYYY HH:mm:ss' )},
-                            {targets: 7, render: $.fn.dataTable.render.moment( 'YYYY-MM-DD HH:mm:ss', 'DD.MM.YYYY HH:mm:ss' )}";
+                            {targets: 8, render: $.fn.dataTable.render.moment( 'YYYY-MM-DD HH:mm:ss', 'DD.MM.YYYY HH:mm:ss' )}";
                             
                         }  
                         else if($tabela == "Nacrtovani_Prevzemi"){
                             echo "{ className: \"levo_table_border\", targets: 1 },
-                            { className: \"levo_table_border\", targets: 3 },
-                            {  className: \"levo_table_border\", targets: 5 },
-                            { className: \"levo_table_border\", targets: 8 },
-                            { \"type\": \"Dan\", targets: 3 },
-                            { \"type\": \"Cas\", targets: 4 },
-                            {targets: 8, render: $.fn.dataTable.render.moment( 'YYYY-MM-DD HH:mm:ss', 'DD.MM.YYYY HH:mm:ss' )}";
+                            { className: \"levo_table_border\", targets: 4 },
+                            {  className: \"levo_table_border\", targets: 6 },
+                            { className: \"levo_table_border\", targets: 9 },
+                            { \"type\": \"Dan\", targets: 4 },
+                            { \"type\": \"Cas\", targets: 5 },
+                            {targets: 9, render: $.fn.dataTable.render.moment( 'YYYY-MM-DD HH:mm:ss', 'DD.MM.YYYY HH:mm:ss' )}";
                             
                         }  
                         else{
