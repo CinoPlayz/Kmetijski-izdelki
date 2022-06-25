@@ -92,6 +92,52 @@ function Branje($tabela, $povezava){
 
             $sql = "SELECT * FROM $tabela p INNER JOIN Stranka s ON p.id_stranke = s.id_stranke INNER JOIN Izdelek i ON p.Izdelek = i.Izdelek ORDER BY p.Datum_Prodaje DESC LIMIT $omejitev ";
         }
+        else if(isset($_GET['DatumOd']) && isset($_GET['DatumDo']) && isset($_GET['Stranka']) && isset($_GET['Izdelek'])){
+            //Za sestavljanje računov
+            
+            $DatumOdfilter = htmlspecialchars($_GET['DatumOd'], ENT_QUOTES);
+    
+            $DatumOd = mysqli_real_escape_string($povezava, $DatumOdfilter);
+
+
+            $DatumDofilter = htmlspecialchars($_GET['DatumDo'], ENT_QUOTES);
+    
+            $DatumDo = mysqli_real_escape_string($povezava, $DatumDofilter);
+
+
+            $Strankafilter = htmlspecialchars($_GET['Stranka'], ENT_QUOTES);            
+    
+            $Stranka = mysqli_real_escape_string($povezava, $Strankafilter);
+
+            $idNahaja = strpos($Stranka, " - ");
+            $id = substr($Stranka, ($idNahaja+3));
+
+
+
+            $izdelekfilter = htmlspecialchars($_GET['Izdelek'], ENT_QUOTES);
+    
+            $Izdelek = mysqli_real_escape_string($povezava, $izdelekfilter);
+
+            //Preveri da niso prazni
+            if(empty($Izdelek) || empty($DatumOd) || empty($DatumDo) || empty($id)){
+                mysqli_close($povezava);
+                http_response_code(400);
+                echo json_encode(array("sporocilo" => "Vse ni vključeno"), JSON_UNESCAPED_UNICODE);
+                exit;
+            }
+            else{
+                if($Izdelek == "*"){
+                    $sql = "SELECT *  FROM $tabela p INNER JOIN Stranka s ON p.id_stranke = s.id_stranke INNER JOIN Izdelek i ON p.Izdelek = i.Izdelek WHERE s.id_stranke = $id AND p.Datum_Prodaje >= '$DatumOd' AND p.Datum_Prodaje < '$DatumDo'  ORDER BY p.Datum_Prodaje DESC";
+                }
+                else{
+                    $sql = "SELECT *  FROM $tabela p INNER JOIN Stranka s ON p.id_stranke = s.id_stranke INNER JOIN Izdelek i ON p.Izdelek = i.Izdelek WHERE i.Izdelek='$Izdelek' AND s.id_stranke = $id AND p.Datum_Prodaje >= '$DatumOd' AND p.Datum_Prodaje < '$DatumDo'  ORDER BY p.Datum_Prodaje DESC";
+                }
+
+            }
+
+            
+            
+        }
         else{
             $sql = "SELECT *  FROM $tabela p INNER JOIN Stranka s ON p.id_stranke = s.id_stranke INNER JOIN Izdelek i ON p.Izdelek = i.Izdelek ORDER BY p.Datum_Prodaje DESC";
         }
