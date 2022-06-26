@@ -111,6 +111,7 @@ body, html {
     display: flex;
     justify-content: center;
     align-items: center;
+    flex-wrap: wrap;
 }
 
 .divdatum{
@@ -177,9 +178,64 @@ input[type=submit]:hover {
     display: none;
 }
 
-.Podatki_table{
-    padding-top: 4vh;
+.izdelki{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-top: 4vh;
+    display: none;
 }
+
+.izdelek{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;  
+    padding-right: 3vw;  
+}
+
+.izdelek:last-child{
+    padding-right: 0;
+}
+
+.izdelek_ime{
+    font-size: 18px;
+}
+
+.Podatki_table{
+    margin-top: 4vh;
+    display: none;
+    border-collapse: collapse;
+    border-spacing: 2vw;
+    border: 1px solid black
+}
+
+.Podatki_table > thead > tr{
+    border-bottom: 1px solid black;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.Podatki_table > * > tr > td{
+    padding-right: 3vw;
+    padding-left: 3vw;    
+}
+
+.Podatki_table_body > tr > td{
+    text-align: center;
+}
+
+.Podatki_table > * > tr > *:nth-child(2){
+    border-left: 1px solid black;  
+    border-right: 1px solid black;  
+}
+
+
 
 
 /*Noga*/

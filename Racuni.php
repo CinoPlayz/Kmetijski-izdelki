@@ -22,6 +22,8 @@ require("PovezavaZBazo.php");
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
         <script src="JS/datalistVsiElemnti.js"></script>
+        <script type="text/javascript" src="DataTables/moment.js"></script>
+        <script type="text/javascript" src="JS/sorttable.js"></script>
         <link rel="stylesheet" href="Racuni.css">
     </head>
     <body>
@@ -110,8 +112,12 @@ require("PovezavaZBazo.php");
 
                         <div class="prazno">Ni podatkov</div>
 
+                        <div class="izdelki">
+
+                        </div>
+
                         <div>
-                            <table class="Podatki_table">
+                            <table class="Podatki_table sortable">
                                 <thead>
                                     <tr>
                                         <th>ID Prodaje</th> 
@@ -134,9 +140,18 @@ require("PovezavaZBazo.php");
             <script>
                 PokaziKlikPuscica('Stranka');
                 $(document).ready(function () {
+
+                    var datumzacetek = moment().subtract(1, 'months').startOf('month').format('YYYY-MM-DD');
+                    var datumkonec = moment().subtract(1, 'months').endOf('month').format('YYYY-MM-DD');
+
+                    $("#DatumOd").attr("value", datumzacetek);
+                    $("#DatumDo").attr("value", datumkonec);
+
                     $("form").submit(function (event) {
 
                         $(".prazno").css("display", "none");
+                        $(".Podatki_table").css("display", "none");
+                        $(".izdelki").css("display", "none");
 
                         //Dobi vse podatke za poslat
                         let DatumOd = $("#DatumOd").val();
@@ -188,7 +203,8 @@ require("PovezavaZBazo.php");
 
                             $(".napaka").css("display", "none");
                             $(".napaka").text("Napaka"); 
-                            $(".Podatki_table_body").empty();
+                            $(".Podatki_table_body").empty();       
+                            $(".izdelki").empty();                        
 
                             var formData = {
                             DatumOd: $("#DatumOd").val(),
@@ -209,9 +225,37 @@ require("PovezavaZBazo.php");
                                 encode: true,
                                 success: function(output, status, xhr) { 
 
+                                    $(".Podatki_table").css("display", "block");
+                                    $(".izdelki").css("display", "flex");
+
+                                    //var izdelki = Array.from(Array(2), () => new Array(2));
+                                    var koliko_izdelkov = 0;
+                                    var izdelki = [];
+                                    var kolicina_izdelek = [];
+
                                     $.each(output.data, function(index, vrednost){
-                                        $(".Podatki_table_body").append("<tr><td>" + vrednost.id_prodaje + "</td><td>" + vrednost.Datum_Prodaje + "</td><td>" + vrednost.Izdelek + "</td><td>" + vrednost.Koliko + "</td><td>" + vrednost.Merska_enota +  "</td></tr>");
+                                        var datum = moment(vrednost.Datum_Prodaje, 'YYYY-MM-DD HH:mm:ss').format("DD.MM.YYYY HH:mm:ss");
+                                        var datumsort = moment(vrednost.Datum_Prodaje, 'YYYY-MM-DD HH:mm:ss').format("YYYYMMDDHHmmss");
+
+                                        $(".Podatki_table_body").append("<tr><td>" + vrednost.id_prodaje + "</td><td sorttable_customkey='" + datumsort + "'>" + datum + "</td><td>" + vrednost.Izdelek + "</td><td>" + vrednost.Koliko + "</td><td>" + vrednost.Merska_enota +  "</td></tr>");
+
+                                        //Pregleda če je izdelek že v arrayu, če ni ga da in da v array kolicina_izdelek novo vrednost za tisto količino
+                                        //če je samo prišteje količino že prej količini
+                                        var izdelekVarrayu = $.inArray(vrednost.Izdelek, izdelki);
+                                        if(izdelekVarrayu !== -1){    
+                                            kolicina_izdelek[izdelekVarrayu] += parseInt(vrednost.Koliko);                                      
+                                        }
+                                        else{
+                                            izdelki.push(vrednost.Izdelek);
+                                            kolicina_izdelek.push(parseInt(vrednost.Koliko));
+                                        }
                                     });
+
+                                    //Izpiše količine za vsak izdelek
+                                    $.each(izdelki, function(index, vrednost){
+                                        $(".izdelki").append("<div class='izdelek'><div class='izdelek_ime'>" + vrednost + "</div><div>" + kolicina_izdelek[index] + "</div></div>");
+                                    });
+
                                     
 
                                 },

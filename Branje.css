@@ -132,6 +132,7 @@ body, html {
 .dodajanjediv{
     padding-left: 30px;
     padding-right: 30px;    
+    padding-bottom: 3vh;
     display: flex;
     justify-content: center;
 }
