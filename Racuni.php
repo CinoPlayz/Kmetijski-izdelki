@@ -232,6 +232,7 @@ require("PovezavaZBazo.php");
                                     var koliko_izdelkov = 0;
                                     var izdelki = [];
                                     var kolicina_izdelek = [];
+                                    var merske_enote = [];
 
                                     $.each(output.data, function(index, vrednost){
                                         var datum = moment(vrednost.Datum_Prodaje, 'YYYY-MM-DD HH:mm:ss').format("DD.MM.YYYY HH:mm:ss");
@@ -248,12 +249,13 @@ require("PovezavaZBazo.php");
                                         else{
                                             izdelki.push(vrednost.Izdelek);
                                             kolicina_izdelek.push(parseInt(vrednost.Koliko));
+                                            merske_enote.push(vrednost.Merska_enota);
                                         }
                                     });
 
                                     //Izpiše količine za vsak izdelek
                                     $.each(izdelki, function(index, vrednost){
-                                        $(".izdelki").append("<div class='izdelek'><div class='izdelek_ime'>" + vrednost + "</div><div>" + kolicina_izdelek[index] + "</div></div>");
+                                        $(".izdelki").append("<div class='izdelek'><div class='izdelek_ime'>" + vrednost + "</div><div>" + kolicina_izdelek[index] + "<span class='niselectable'> </span>" + merske_enote[index] + "</div></div>");
                                     });
 
                                     
