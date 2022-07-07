@@ -45,7 +45,8 @@ if($_SESSION['Pravila'] == "Admin"){
                 <div class="bazadiv"><a class="bazaA" href="Branje.php?tabela=Stranka">Stranke</a></div>
                 <div class="bazadiv"><a class="bazaA" href="Branje.php?tabela=Nacrtovani_Prevzemi">Načrtovani prevzemi</a></div>
                 <div class="izbira" style="margin-top: 40px;">Računi</div>
-                <div class="bazadiv"><a class="bazaA" href="Racuni.php">Sestavljanje računov</a></div>
+                <div class="bazadiv"><a class="bazaA" href="Racuni/Racuni.php">Prikaz podatkov za račune</a></div>
+                <div class="bazadiv"><a class="bazaA" href="Racuni/RacuniXLSX.php">Sestavljanje Excel datoteke</a></div>
             </div>
 
             <div class="noga">

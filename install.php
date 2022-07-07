@@ -94,8 +94,8 @@
             CREATE TABLE Izdelek(
                 Izdelek VARCHAR(50) PRIMARY KEY,
                 Merska_enota VARCHAR(10) CHECK(Merska_enota IN('', 'L', 'm3', 'dm3', 'cm3', 't', 'kg', 'dag', 'g', 'kos', 'enot', 'par', 'kpl')),
-                Cena decimal(15,2),
-                Ekolosko tinyint(1) DEFAULT 0 NOT NULL CHECK(Ekolosko IN(0,1)) 
+                Cena decimal(15,2) DEFAULT 0.00 NOT NULL,
+                Ekolosko VARCHAR(2) DEFAULT 'NE' NOT NULL CHECK(Ekolosko IN('NE', 'DA')) 
             );            
             
             CREATE TABLE Prodaja(
@@ -230,8 +230,8 @@
                         CREATE TABLE Izdelek(
                             Izdelek VARCHAR(50) PRIMARY KEY,
                             Merska_enota VARCHAR(10) CHECK(Merska_enota IN('', 'L', 'm3', 'dm3', 'cm3', 't', 'kg', 'dag', 'g', 'kos', 'enot', 'par', 'kpl')),
-                            Cena decimal(15,2),
-                            Ekolosko tinyint(1) DEFAULT 0 NOT NULL CHECK(Ekolosko IN(0,1)) 
+                            Cena decimal(15,2) DEFAULT 0.00 NOT NULL,
+                            Ekolosko VARCHAR(2) DEFAULT 'NE' NOT NULL CHECK(Ekolosko IN('NE', 'DA')) 
                         );                        
                         
                         CREATE TABLE Prodaja(

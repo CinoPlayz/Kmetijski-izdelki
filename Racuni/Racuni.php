@@ -10,7 +10,7 @@ if($_SESSION['Pravila'] == "Admin"){
     exit;
 }
 
-require("PovezavaZBazo.php");
+require("../PovezavaZBazo.php");
 
 ?>
 
@@ -18,34 +18,34 @@ require("PovezavaZBazo.php");
     <head>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <title>Sestavljanje računov</title>
+        <title>Prikaz podatkov za račune</title>
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-        <script src="JS/datalistVsiElemnti.js"></script>
-        <script type="text/javascript" src="DataTables/moment.js"></script>
-        <script type="text/javascript" src="JS/sorttable.js"></script>
+        <script src="../JS/datalistVsiElemnti.js"></script>
+        <script type="text/javascript" src="../DataTables/moment.js"></script>
+        <script type="text/javascript" src="../JS/sorttable.js"></script>
         <link rel="stylesheet" href="Racuni.css">
     </head>
     <body>
         <div class="vse">
             <div class="glava">
                 <div>
-                    <a href="Domov.php"><img src="Slike/nutrition.svg" width="40px" height="40px"></a>
+                    <a href="../Domov.php"><img src="../Slike/nutrition.svg" width="40px" height="40px"></a>
                 </div>
 
                 <div class="flexfill"></div>
 
                 <div class="odjava">
-                    <span class="odjava"><a href="Odjava.php" class="odjavaA">Odjava</a></span>
+                    <span class="odjava"><a href="../Odjava.php" class="odjavaA">Odjava</a></span>
                 </div>
             </div>
             
             <div class="menu">
-                <div class="menuItem"><a class="menuItemA" href="Domov.php">Domov</a></div>
+                <div class="menuItem"><a class="menuItemA" href="../Domov.php">Domov</a></div>
             </div>
 
             <div class="vsebina">
-                <div class="racuninaslov">Sestavljanje računov</div>
+                <div class="racuninaslov">Prikaz podatkov za račune</div>
                 <div class="formdiv">
                     <form>
                         <div class="divdatuma">
@@ -216,7 +216,7 @@ require("PovezavaZBazo.php");
 
                             $.ajax({
                                 type: "GET",
-                                url: "api/branje.php",
+                                url: "../api/branje.php",
                                 headers: {
                                     'Authorization':'Bearer <?php if(isset($_SESSION['Token'])){echo $_SESSION['Token'];} ?>',
                                 },
@@ -283,11 +283,11 @@ require("PovezavaZBazo.php");
 
             <div class="noga">
                 <div>
-                    <img src="Slike/nutrition.svg" width="80px" height="80px">
+                    <img src="../Slike/nutrition.svg" width="80px" height="80px">
                 </div>
 
                 <div class="nogaMenu">
-                    <div class="nogaMenuItem"><a href="Domov.php" class="nogaMenuItemA">Domov</a></div>
+                    <div class="nogaMenuItem"><a href="../Domov.php" class="nogaMenuItemA">Domov</a></div>
                 </div>
             </div>
         </div>
