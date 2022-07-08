@@ -9,10 +9,10 @@ if($_SESSION['Pravila'] != "Admin"){
     header("location: ../Domov.php");
     exit;
 }
+define('LahkoPovezava', TRUE);
 
 if(isset($_POST['tabela'])){
-
-    define('LahkoPovezava', TRUE);
+    
     require("../PovezavaZBazo.php");
 
     $tabelafilter = filter_input(INPUT_POST, 'tabela', FILTER_SANITIZE_STRING);

@@ -1,12 +1,12 @@
 <?php 
 session_start();
 if(!isset($_SESSION['UprIme']) && !isset($_SESSION['Pravila'])){
-    header("location: Prijava.php");
+    header("location: ../Prijava.php");
     exit;
 }
 
 if($_SESSION['Pravila'] == "Admin"){
-    header("location: Admin/DomovAdmin.php");    
+    header("location: ../Admin/DomovAdmin.php");    
     exit;
 }
 

@@ -127,6 +127,15 @@
                 Cas_Enkrat DATETIME,
                 FOREIGN KEY (id_stranke) REFERENCES Stranka(id_stranke), 
                 FOREIGN KEY (Izdelek) REFERENCES Izdelek(Izdelek)
+            );
+            
+            CREATE TABLE Prenosi(
+                id_prenosa INT PRIMARY KEY AUTO_INCREMENT,
+                Kljuc VARCHAR(16),
+                Ime_datoteke VARCHAR(48),
+                Status_prenesenosti tinyint(1) DEFAULT 0,
+                Prenesel VARCHAR(50),
+                FOREIGN KEY (Prenesel) REFERENCES Uporabnik(Uporabnisko_ime)
             );";
 
             if(mysqli_multi_query($povezava, $sqlustvarjanje)){
@@ -263,6 +272,15 @@
                             Cas_Enkrat DATETIME,
                             FOREIGN KEY (id_stranke) REFERENCES Stranka(id_stranke), 
                             FOREIGN KEY (Izdelek) REFERENCES Izdelek(Izdelek)
+                        );
+                        
+                        CREATE TABLE Prenosi(
+                            id_prenosa INT PRIMARY KEY AUTO_INCREMENT,
+                            Kljuc VARCHAR(16),
+                            Ime_datoteke VARCHAR(48),
+                            Status_prenesenosti tinyint(1) DEFAULT 0,
+                            Prenesel VARCHAR(50),
+                            FOREIGN KEY (Prenesel) REFERENCES Uporabnik(Uporabnisko_ime)
                         );";
 
                         if(mysqli_multi_query($povezava, $sqlustvarjanje)){
