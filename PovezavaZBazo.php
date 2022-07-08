@@ -1,4 +1,9 @@
 <?php 
+        if(!defined('LahkoPovezava')) {
+            http_response_code(403);
+            exit;
+         }
+
             $uporabniskoime = "root";
             $serverip = "localhost";
             $geslo = "";

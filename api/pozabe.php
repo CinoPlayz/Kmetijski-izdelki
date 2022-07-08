@@ -22,6 +22,7 @@ if(empty($headers)){
     exit;
 }
 
+define('LahkoPovezava', TRUE);
 require("../PovezavaZBazo.php");
 
 $headersfilterSQL = mysqli_real_escape_string($povezava, $headers);

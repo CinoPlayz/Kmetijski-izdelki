@@ -10,6 +10,7 @@ if($_SESSION['Pravila'] == "Admin"){
     exit;
 }
 
+define('LahkoPovezava', TRUE);
 require("../PovezavaZBazo.php");
 
 if(isset($_POST['DatumOd']) && isset($_POST['DatumDo']) && isset($_POST['kako_sestavit'])){    

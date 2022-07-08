@@ -19,6 +19,8 @@ if(isset($_POST['upime']) && isset($_POST['geslo'])){
         RedirectZNapako(2);
     }
 
+    define('LahkoPovezava', TRUE);
+
     require("PovezavaZBazo.php");
 
     $up = mysqli_real_escape_string($povezava, $upfilter);

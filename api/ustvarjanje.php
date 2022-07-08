@@ -26,6 +26,7 @@ if(empty($headers)){
     exit;
 }
 
+define('LahkoPovezava', TRUE);
 require("../PovezavaZBazo.php");
 
 //Filtrira header, da nima kej z SQL ter XSS

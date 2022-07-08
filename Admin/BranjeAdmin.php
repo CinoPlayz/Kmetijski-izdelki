@@ -63,6 +63,7 @@ if($_SESSION['Pravila'] != "Admin"){
                         <thead>
                             <tr>
                                 <?php 
+                                define('LahkoPovezava', TRUE);
                                 require("../PovezavaZBazo.php");
                                 $tabelafilter = filter_input(INPUT_GET, 'tabela', FILTER_SANITIZE_STRING);
 

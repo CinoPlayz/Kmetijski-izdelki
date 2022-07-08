@@ -10,6 +10,7 @@ if($_SESSION['Pravila'] == "Admin"){
     exit;
 }
 
+define('LahkoPovezava', TRUE);
 require("../PovezavaZBazo.php");
 
 ?>

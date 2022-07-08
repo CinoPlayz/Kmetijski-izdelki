@@ -2,6 +2,7 @@
 
     header("Content-Type: application/json; charset=UTF-8");
 
+    define('LahkoPovezava', TRUE);
     require("../PovezavaZBazo.php");
 
     $podatki = json_decode(file_get_contents("php://input"));

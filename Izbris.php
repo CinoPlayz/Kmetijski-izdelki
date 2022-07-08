@@ -10,6 +10,8 @@ if($_SESSION['Pravila'] == "Admin"){
     exit;
 }
 
+define('LahkoPovezava', TRUE);
+
 if(isset($_POST['izbris'])){
     require("PovezavaZBazo.php");
     $tabelafilter = filter_input(INPUT_POST, 'tabela', FILTER_SANITIZE_STRING);

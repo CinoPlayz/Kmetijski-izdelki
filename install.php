@@ -1,4 +1,5 @@
 <?php 
+    define('LahkoPovezava', TRUE);
     /*Povezava s podatkovno bazo*/
     if(isset($_POST['ipPB']) && isset($_POST['upPB']) && isset($_POST['gesloPB'])){
         $ipfilter = filter_input(INPUT_POST, 'ipPB', FILTER_SANITIZE_STRING);
@@ -24,6 +25,11 @@
         $datoteka = fopen("PovezavaZBazo.php", "w") or die("Nemorem odpreti datoteke!");
 
         $vpisvdatoteko = "<?php 
+            if(!defined('LahkoPovezava')) {
+                http_response_code(403);
+                exit;
+            }
+            
             \$uporabniskoime = \"$upfilter\";
             \$serverip = \"$ipfilter\";
             \$geslo = \"$geslofilter\";
@@ -41,7 +47,7 @@
         
         fwrite($datoteka, $vpisvdatoteko);
         fclose($datoteka);
-
+        
         require("PovezavaZBazo.php");
 
         if(!$povezava){

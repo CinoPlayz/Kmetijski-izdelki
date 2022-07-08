@@ -10,6 +10,8 @@ if($_SESSION['Pravila'] != "Admin"){
     exit;
 }
 
+define('LahkoPovezava', TRUE);
+
 if(isset($_POST['tabela'])){
 
     require("../PovezavaZBazo.php");
