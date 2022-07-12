@@ -158,6 +158,12 @@ if($_SESSION['Pravila'] == "Admin"){
                                         echo "<th>Ime</th>";
                                         array_push($tabele, array("Ime", ""));
 
+                                        echo "<th>Naslov</th>";
+                                        array_push($tabele, array("Naslov", ""));
+
+                                        echo "<th>Posta</th>";
+                                        array_push($tabele, array("Posta", ""));
+
                                     }                                    
                                     else{
                                         while($vrstica = mysqli_fetch_assoc($rezultat)){
