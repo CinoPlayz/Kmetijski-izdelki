@@ -12,11 +12,10 @@ if(!isset($_SESSION['UprIme']) && !isset($_SESSION['Pravila'])){
 
         $kljucfilter = htmlspecialchars($_GET['kljuc']);
         $kljuc = mysqli_real_escape_string($povezava, $kljucfilter);
-        //TODO poprav da bo pravilno deloval, da se datoteka prenese, izbriše in nato redirecta
+
         if(!empty($kljuc) ){
 
-            
-
+            //Dobi podatke za prenos
             $sql = "SELECT * FROM Prenosi WHERE Kljuc = '$kljuc' LIMIT 1";
 
             $rezultat = mysqli_query($povezava, $sql);
@@ -25,19 +24,21 @@ if(!isset($_SESSION['UprIme']) && !isset($_SESSION['Pravila'])){
 
                 $vrstica = mysqli_fetch_assoc($rezultat);
 
+                //Usrvari spremenljivke z imenom datoteke in pot datoteke
+                $imedatoteke = $vrstica['Ime_datoteke'];
+                $datoteka = 'Ustvarjeni/'. $imedatoteke .'.xlsx';
+
                 if($vrstica['Status_prenesenosti'] == 0){
-                    $imedatoteke = $vrstica['Ime_datoteke'];
-
-                    $datoteka = 'Ustvarjeni/'. $imedatoteke .'.xlsx';
-
+                   
                     if(file_exists($datoteka)){
+
+                        $sqlupdate = "UPDATE Prenosi SET Status_prenesenosti=1 WHERE Kljuc = '$kljuc'";
+                        mysqli_query($povezava, $sqlupdate);
 
                         //odpre datoteko
                         $fp = fopen($datoteka, 'rb');
 
                         $razdeljeno = explode("_", $imedatoteke);
-
-                        //echo 'Content-Disposition: attachment; filename="'. "Podatki ". $razdeljeno[1] ." - ". $razdeljeno[3] .".xlsx".'"';
 
                         //pošlje headerje, za prenos
                         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
@@ -49,18 +50,28 @@ if(!isset($_SESSION['UprIme']) && !isset($_SESSION['Pravila'])){
 
                         //Da v buffer in s tem omogoči da se datoteka prenese do konca preden se izbriše
                         fpassthru($fp);
+
                         //More bit exit drugače je xlsx corruptiran
-                        unlink("Ustvarjeni/$imedatoteke.xlsx");
+                        unlink("$datoteka");
                         exit;
-                        //TODO Spremeni Status_prenesenosti na 1 
                     }    
                 }
-                //TODO če je 1 mora se izbrisat oz. preverit če je izbrisana.
+                else{
+                    //Pogleda če obstaja datoteka in jo izbriše
+                    if(file_exists($datoteka)){
+                        unlink("$datoteka");                        
+                    } 
+                    
+                    header("Location: RacuniXLSX.php");
+                    exit;
+                }
 
                 
-            }
-            
+            }            
                     
         }
     } 
+
+    header("Location: RacuniXLSX.php");
+    exit;
 ?>

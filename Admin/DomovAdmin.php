@@ -44,6 +44,8 @@ if($_SESSION['Pravila'] != "Admin"){
                 <div class="bazadiv"><a class="bazaA" href="BranjeAdmin.php?tabela=Prodaja">Prodaje</a></div>
                 <div class="bazadiv"><a class="bazaA" href="BranjeAdmin.php?tabela=Stranka">Stranke</a></div>
                 <div class="bazadiv"><a class="bazaA" href="BranjeAdmin.php?tabela=Nacrtovani_Prevzemi">Načrtovani prevzemi</a></div>
+                <div class="bazadiv"><a class="bazaA" href="BranjeAdmin.php?tabela=Posta">Posta</a></div>
+                <div class="bazadiv"><a class="bazaA" href="BranjeAdmin.php?tabela=Prenosi">Prenosi</a></div>
             </div>
 
             <div class="noga">

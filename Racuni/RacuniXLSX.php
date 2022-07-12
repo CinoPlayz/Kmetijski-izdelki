@@ -15,7 +15,7 @@ require("../PovezavaZBazo.php");
 
 if(isset($_POST['DatumOd']) && isset($_POST['DatumDo']) && isset($_POST['kako_sestavit'])){   
     
-    unset($_SESSION['kljuc']);
+    //Dobi podatke za ustvarjanje datoteke
     $naprej = true;
 
     $DatumOdfilter = htmlspecialchars($_POST['DatumOd']);
@@ -51,6 +51,7 @@ if(isset($_POST['DatumOd']) && isset($_POST['DatumDo']) && isset($_POST['kako_se
 
     $_SESSION['temp']['Kakosestavit'] = $Kakosestavit;
 
+    //Dobimo podatke za ustvarjanje datoteke
     $sql = "SELECT p.Datum_Prodaje, s.Priimek, s.Ime, i.Izdelek, i.Ekolosko, p.Koliko, i.Merska_enota, i.Cena  FROM Prodaja p INNER JOIN Stranka s ON p.id_stranke = s.id_stranke INNER JOIN Izdelek i ON p.Izdelek = i.Izdelek WHERE p.Datum_Prodaje >= '$DatumOd' AND p.Datum_Prodaje < '$DatumDo'  ORDER BY p.Datum_Prodaje DESC";
 
     $rezultat = mysqli_query($povezava, $sql);
@@ -62,9 +63,11 @@ if(isset($_POST['DatumOd']) && isset($_POST['DatumDo']) && isset($_POST['kako_se
         require_once("XLSX/xlsxwriter.class.php");
         $zadnjanapaka = NULL;
 
+        //Razdeli kako sestaviti datoteke glede na poslane podatke
         if($Kakosestavit == "podatumu"){
 
             while($vrstica = mysqli_fetch_assoc($rezultat)){
+                //Pogleda če je ekolosko, če je dodano za izdelek zraven - ekolosko
                 if($vrstica['Ekolosko'] == "NE"){
                     array_push($podatki, array($vrstica['Datum_Prodaje'], $vrstica['Priimek'], $vrstica['Ime'], $vrstica['Izdelek'], $vrstica['Koliko'], $vrstica['Merska_enota'], $vrstica['Cena']));
                 }
@@ -74,7 +77,7 @@ if(isset($_POST['DatumOd']) && isset($_POST['DatumDo']) && isset($_POST['kako_se
             }
 
             
-
+            //Ustvari XLSX datoteko
             $glava = array(
                 'Datum Prodaje' => 'DD.MM.YYYY',
                 'Priimek' => 'string',
@@ -97,7 +100,7 @@ if(isset($_POST['DatumOd']) && isset($_POST['DatumDo']) && isset($_POST['kako_se
             //Ustvari svoj error hendler, tako da se napake lažje prikažejo
             set_error_handler("ErrorHandler");
 
-            //Usrvari random besedo za ime datoteke
+            //Usrvari random besedo za ime datoteke in kljuc
             $vsecrke = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
 
             $random = '';
@@ -112,6 +115,7 @@ if(isset($_POST['DatumOd']) && isset($_POST['DatumDo']) && isset($_POST['kako_se
 
             $writer->writeToFile('Ustvarjeni/' . $imedatoteke . '.xlsx');
 
+            //Če je kaka napaka pri ustvarjanju jo izbiše
             if(isset($GLOBALS['napaka_global']) && !empty($GLOBALS['napaka_global'])){    
 
                 if(strpos($GLOBALS['napaka_global'], "Renaming temporary file failed: Permission denied")){
@@ -126,17 +130,14 @@ if(isset($_POST['DatumOd']) && isset($_POST['DatumDo']) && isset($_POST['kako_se
                     exit; 
                 }
             }
-            else{
-                               
-
+            else{                              
+                //Vstavi kljuc, ime datoteke in uporabniško ime v tabelo Prenosi
                 $sql = "INSERT INTO Prenosi(Kljuc, Ime_datoteke, Prenesel) VALUES('$random','$imedatoteke', '" . $_SESSION['UprIme'] . "' )";
 
                 mysqli_query($povezava, $sql);
 
-                unset($_SESSION['temp']);
-
                 mysqli_close($povezava);
-                //header("Location: prenos.php?kljuc=$random");
+                //Redirecta nazaj in da kljuc v session
                 header("Location: RacuniXLSX.php");
                 $_SESSION['kljuc'] = $random;
                 exit; 
@@ -146,7 +147,25 @@ if(isset($_POST['DatumOd']) && isset($_POST['DatumDo']) && isset($_POST['kako_se
 
         }
         else{
-            
+            $stranke = array();
+            $izdelki = array();
+
+            /*SELECT p.Datum_Prodaje, s.Priimek, s.Ime, i.Izdelek, i.Ekolosko, SUM(p.Koliko) AS 'Skupaj_kolicina', i.Merska_enota, i.Cena  FROM Prodaja p 
+INNER JOIN Stranka s ON p.id_stranke = s.id_stranke 
+INNER JOIN Izdelek i ON p.Izdelek = i.Izdelek 
+WHERE p.Datum_Prodaje >= '2022-06-01' AND p.Datum_Prodaje < '2022-06-30' 
+GROUP BY s.id_stranke, i.Izdelek
+ORDER BY p.Datum_Prodaje DESC;*/
+
+            while($vrstica = mysqli_fetch_assoc($rezultat)){
+                //Pogleda če je ekolosko, če je dodano za izdelek zraven - ekolosko
+                if($vrstica['Ekolosko'] == "NE"){
+                    array_push($podatki, array($vrstica['Datum_Prodaje'], $vrstica['Priimek'], $vrstica['Ime'], $vrstica['Izdelek'], $vrstica['Koliko'], $vrstica['Merska_enota'], $vrstica['Cena']));
+                }
+                else{
+                    array_push($podatki, array($vrstica['Datum_Prodaje'], $vrstica['Priimek'], $vrstica['Ime'], $vrstica['Izdelek'] . " - Ekološko", $vrstica['Koliko'], $vrstica['Merska_enota'], $vrstica['Cena']));
+                }
+            } 
         }
 
     }
@@ -278,7 +297,15 @@ function ErrorHandler($errno, $errstr, $errfile, $errline) {
                 </div>
                 <?php 
                     if(isset( $_SESSION['kljuc'])){
-                        echo "<iframe width='1' height='1' frameborder='0' src='prenos.php?kljuc=". $_SESSION['kljuc'] ."'></iframe>";
+                        echo "<div class='prenostext'>Datoteka je sestavljena</div>";
+                        
+                        echo "<div class='prenos'>Kliknite <a id='prenosA' href='prenos.php?kljuc=". $_SESSION['kljuc'] ."'>tukaj</a>, če se ne prenese avtomatsko</div>";
+
+                        echo "<script> var prenos = setTimeout(function () {
+                            window.location = document.getElementById('prenosA').href;
+                        }, 1000);</script>";
+                        unset($_SESSION['kljuc']);
+                        unset($_SESSION['temp']);
                     }
                 
                 ?>

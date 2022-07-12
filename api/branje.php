@@ -47,7 +47,7 @@ if(mysqli_num_rows($rezultat) > 0){
            Branje($tabela, $povezava);            
         }
         else{
-            if($tabela == "Uporabnik"){
+            if($tabela == "Uporabnik" || $tabela == "Prenosi" || $tabela == "Posta"){
                 mysqli_close($povezava);
                 http_response_code(403); 
                 exit;

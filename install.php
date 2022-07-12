@@ -1,5 +1,6 @@
 <?php 
     define('LahkoPovezava', TRUE);
+    define('LahkoPosta', TRUE);
     /*Povezava s podatkovno bazo*/
     if(isset($_POST['ipPB']) && isset($_POST['upPB']) && isset($_POST['gesloPB'])){
         $ipfilter = filter_input(INPUT_POST, 'ipPB', FILTER_SANITIZE_STRING);
@@ -72,6 +73,7 @@
     if(isset($_POST['inicealizacija'])){
         if($_POST['inicealizacija'] == "DA"){
             require("PovezavaZBazo.php");
+            include("Posta.php");
             $sqlustvarjanje = "DROP DATABASE IF EXISTS Kmetijski_Izdelki;
 
             CREATE DATABASE Kmetijski_Izdelki;
@@ -91,10 +93,18 @@
                 Pravila VARCHAR(9) NOT NULL DEFAULT 'Uporabnik' CHECK(Pravila IN('Admin', 'Uporabnik'))
                 );
             
+            CREATE TABLE Posta(
+                Postana_stevilka INT PRIMARY KEY,
+                Kraj VARCHAR(50) NOT NULL
+            );
+            
             CREATE TABLE Stranka(
                 id_stranke INT PRIMARY KEY AUTO_INCREMENT,
                 Ime VARCHAR(50) NOT NULL,
-                Priimek VARCHAR(50) NOT NULL
+                Priimek VARCHAR(50) NOT NULL,
+                Naslov VARCHAR(100),
+                Posta INT,
+                FOREIGN KEY (Posta) REFERENCES Posta(Postana_stevilka)
             );
             
             CREATE TABLE Izdelek(
@@ -136,7 +146,7 @@
                 Status_prenesenosti tinyint(1) DEFAULT 0,
                 Prenesel VARCHAR(50),
                 FOREIGN KEY (Prenesel) REFERENCES Uporabnik(Uporabnisko_ime)
-            );";
+            ); $postainstall";
 
             if(mysqli_multi_query($povezava, $sqlustvarjanje)){
                 mysqli_close($povezava);
@@ -174,6 +184,7 @@
     if(isset($_POST['inicealizacijaNov']) && isset($_POST['imepb'])){
         if($_POST['inicealizacijaNov'] == "DA"){
             require("PovezavaZBazo.php");
+            include("Posta.php");
 
             $imefilter = filter_input(INPUT_POST, 'imepb', FILTER_SANITIZE_STRING);
 
@@ -236,10 +247,18 @@
                             Pravila VARCHAR(9) NOT NULL DEFAULT 'Uporabnik' CHECK(Pravila IN('Admin', 'Uporabnik'))
                             );
                         
+                        CREATE TABLE Posta(
+                            Postana_stevilka INT PRIMARY KEY,
+                            Kraj VARCHAR(50) NOT NULL
+                        );
+                        
                         CREATE TABLE Stranka(
                             id_stranke INT PRIMARY KEY AUTO_INCREMENT,
                             Ime VARCHAR(50) NOT NULL,
-                            Priimek VARCHAR(50) NOT NULL
+                            Priimek VARCHAR(50) NOT NULL,
+                            Naslov VARCHAR(100),
+                            Posta INT,
+                            FOREIGN KEY (Posta) REFERENCES Posta(Postana_stevilka)
                         );
                         
                         CREATE TABLE Izdelek(
@@ -281,7 +300,7 @@
                             Status_prenesenosti tinyint(1) DEFAULT 0,
                             Prenesel VARCHAR(50),
                             FOREIGN KEY (Prenesel) REFERENCES Uporabnik(Uporabnisko_ime)
-                        );";
+                        ); $postainstall";
 
                         if(mysqli_multi_query($povezava, $sqlustvarjanje)){
                             mysqli_close($povezava);

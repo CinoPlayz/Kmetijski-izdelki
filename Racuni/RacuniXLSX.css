@@ -163,7 +163,8 @@ input[type=submit]:hover {
 
 .prenos{        
     text-align: center; 
-    font-size: 18px;   
+    font-size: 18px; 
+    margin-top: 1vh;  
 }
 
 .prenos > a {

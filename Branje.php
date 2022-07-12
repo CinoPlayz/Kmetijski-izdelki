@@ -71,7 +71,7 @@ if($_SESSION['Pravila'] == "Admin"){
 
                                 $tabela = mysqli_real_escape_string($povezava, $tabelafilter);
 
-                                if($tabela == "Uporabnik"){
+                                if($tabela == "Uporabnik" || $tabela == "Prenosi" || $tabela == "Posta"){
                                     mysqli_close($povezava);
                                     header("location: Domov.php");
                                     exit;
