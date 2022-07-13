@@ -10,6 +10,8 @@ if($_SESSION['Pravila'] == "Admin"){
     exit;
 }
 
+unset($_SESSION['temp']);
+
 ?>
 <html>
     <head>
@@ -133,7 +135,7 @@ if($_SESSION['Pravila'] == "Admin"){
                                         echo "<th>Dan</th>";
                                         array_push($tabele, array("Dan", ""));
 
-                                        echo "<th>Cas</th>";
+                                        echo "<th>Čas</th>";
                                         array_push($tabele, array("Cas", ""));
 
                                         echo "<th>ID Stranke</th>";
