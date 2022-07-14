@@ -163,8 +163,11 @@ unset($_SESSION['temp']);
                                         echo "<th>Naslov</th>";
                                         array_push($tabele, array("Naslov", ""));
 
-                                        echo "<th>Posta</th>";
+                                        echo "<th>Pošta</th>";
                                         array_push($tabele, array("Posta", ""));
+
+                                        echo "<th>Kraj</th>";
+                                        array_push($tabele, array("Kraj", ""));
 
                                     }                                    
                                     else{
@@ -245,7 +248,10 @@ unset($_SESSION['temp']);
                             { \"type\": \"Cas\", targets: 5 },
                             {targets: 9, render: $.fn.dataTable.render.moment( 'YYYY-MM-DD HH:mm:ss', 'DD.MM.YYYY HH:mm:ss' )}";
                             
-                        }  
+                        } 
+                        else if($tabela == "Stranka"){
+                            echo "{ className: \"levo_table_border\", targets: 3}";
+                        } 
                         else{
                             echo "{\"defaultContent\": \"NULL\",";
                             echo "\"targets\": \"_all\"}";

@@ -143,6 +143,10 @@ function Branje($tabela, $povezava){
         }
         
     }
+    else if($tabela == "Stranka"){
+        //Izpis podatkov za tabelo Stranka
+        $sql = "SELECT id_stranke, Ime, Priimek, Naslov, s.Posta, Kraj FROM $tabela s LEFT JOIN Posta p ON s.Posta = p.Postana_stevilka";
+    }
     else{
         $sql = "SELECT * FROM $tabela";
     }
