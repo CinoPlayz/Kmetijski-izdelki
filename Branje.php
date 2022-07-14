@@ -87,7 +87,7 @@ unset($_SESSION['temp']);
 
                                 if($rezultat == true && mysqli_num_rows($rezultat) > 0){
 
-                                    //Preveri če je tabela Prodaja oz. Načrtovani_Prevzemi, če je zapiše drugačni zapored stolpcev
+                                    //Preveri če je tabela Prodaja oz. Načrtovani_Prevzemi, Stranka in Izdelki če je zapiše drugačni zapored stolpcev
                                     if($tabela == "Prodaja"){
                                         echo "<th>ID Prodaje</th>";
                                         array_push($tabele, array("id_prodaje", "PRI"));
@@ -169,6 +169,19 @@ unset($_SESSION['temp']);
                                         echo "<th>Kraj</th>";
                                         array_push($tabele, array("Kraj", ""));
 
+                                    }    
+                                    else if($tabela == "Izdelek"){
+                                        echo "<th>Izdelek</th>";
+                                        array_push($tabele, array("Izdelek", "PRI"));
+
+                                        echo "<th>Merska enota</th>";
+                                        array_push($tabele, array("Merska_enota", ""));
+
+                                        echo "<th>Cena</th>";
+                                        array_push($tabele, array("Cena", ""));
+
+                                        echo "<th>Ekološko</th>";
+                                        array_push($tabele, array("Ekolosko", ""));
                                     }                                    
                                     else{
                                         while($vrstica = mysqli_fetch_assoc($rezultat)){
@@ -253,7 +266,7 @@ unset($_SESSION['temp']);
                             echo "{ className: \"levo_table_border\", targets: 3}";
                         } 
                         else{
-                            echo "{\"defaultContent\": \"NULL\",";
+                            echo "{\"defaultContent\": \"\",";
                             echo "\"targets\": \"_all\"}";
                         }
                             

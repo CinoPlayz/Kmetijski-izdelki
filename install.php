@@ -142,7 +142,7 @@
             CREATE TABLE Prenosi(
                 id_prenosa INT PRIMARY KEY AUTO_INCREMENT,
                 Kljuc VARCHAR(16),
-                Ime_datoteke VARCHAR(48),
+                Ime_datoteke VARCHAR(58),
                 Status_prenesenosti tinyint(1) DEFAULT 0,
                 Prenesel VARCHAR(50),
                 FOREIGN KEY (Prenesel) REFERENCES Uporabnik(Uporabnisko_ime)
@@ -296,7 +296,7 @@
                         CREATE TABLE Prenosi(
                             id_prenosa INT PRIMARY KEY AUTO_INCREMENT,
                             Kljuc VARCHAR(16),
-                            Ime_datoteke VARCHAR(48),
+                            Ime_datoteke VARCHAR(58),
                             Status_prenesenosti tinyint(1) DEFAULT 0,
                             Prenesel VARCHAR(50),
                             FOREIGN KEY (Prenesel) REFERENCES Uporabnik(Uporabnisko_ime)

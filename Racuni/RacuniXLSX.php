@@ -51,28 +51,28 @@ if(isset($_POST['DatumOd']) && isset($_POST['DatumDo']) && isset($_POST['kako_se
 
     $_SESSION['temp']['Kakosestavit'] = $Kakosestavit;
 
-    //Dobimo podatke za ustvarjanje datoteke
-    $sql = "SELECT p.Datum_Prodaje, s.Priimek, s.Ime, i.Izdelek, i.Ekolosko, p.Koliko, i.Merska_enota, i.Cena  FROM Prodaja p INNER JOIN Stranka s ON p.id_stranke = s.id_stranke INNER JOIN Izdelek i ON p.Izdelek = i.Izdelek WHERE p.Datum_Prodaje >= '$DatumOd' AND p.Datum_Prodaje < '$DatumDo'  ORDER BY p.Datum_Prodaje DESC";
+    require_once("XLSX/xlsxwriter.class.php");
+    $zadnjanapaka = NULL;
 
-    $rezultat = mysqli_query($povezava, $sql);
+    //Razdeli kako sestaviti datoteke glede na poslane podatke
+    if($Kakosestavit == "podatumu"){
 
-    $podatki = array();       
+        //Dobimo podatke za ustvarjanje datoteke
+        $sql = "SELECT p.Datum_Prodaje, s.Priimek, s.Ime, s.Naslov, s.Posta, po.Kraj, i.Izdelek, i.Ekolosko, p.Koliko, i.Merska_enota, i.Cena  FROM Prodaja p INNER JOIN Stranka s ON p.id_stranke = s.id_stranke INNER JOIN Izdelek i ON p.Izdelek = i.Izdelek LEFT JOIN Posta po ON s.Posta = po.Postana_stevilka WHERE p.Datum_Prodaje >= '$DatumOd' AND p.Datum_Prodaje < '$DatumDo'  ORDER BY p.Datum_Prodaje DESC";
 
-    if($rezultat == true && mysqli_num_rows($rezultat) > 0){
+        $rezultat = mysqli_query($povezava, $sql);
 
-        require_once("XLSX/xlsxwriter.class.php");
-        $zadnjanapaka = NULL;
+        $podatki = array();  
 
-        //Razdeli kako sestaviti datoteke glede na poslane podatke
-        if($Kakosestavit == "podatumu"){
-
+        if($rezultat == true && mysqli_num_rows($rezultat) > 0){    
+            
             while($vrstica = mysqli_fetch_assoc($rezultat)){
                 //Pogleda če je ekolosko, če je dodano za izdelek zraven - ekolosko
                 if($vrstica['Ekolosko'] == "NE"){
-                    array_push($podatki, array($vrstica['Datum_Prodaje'], $vrstica['Priimek'], $vrstica['Ime'], $vrstica['Izdelek'], $vrstica['Koliko'], $vrstica['Merska_enota'], $vrstica['Cena']));
+                    array_push($podatki, array($vrstica['Datum_Prodaje'], $vrstica['Priimek'], $vrstica['Ime'], $vrstica['Naslov'], $vrstica['Posta'], $vrstica['Kraj'], $vrstica['Izdelek'], $vrstica['Koliko'], $vrstica['Merska_enota'], $vrstica['Cena']));
                 }
                 else{
-                    array_push($podatki, array($vrstica['Datum_Prodaje'], $vrstica['Priimek'], $vrstica['Ime'], $vrstica['Izdelek'] . " - Ekološko", $vrstica['Koliko'], $vrstica['Merska_enota'], $vrstica['Cena']));
+                    array_push($podatki, array($vrstica['Datum_Prodaje'], $vrstica['Priimek'], $vrstica['Ime'], $vrstica['Naslov'], $vrstica['Posta'], $vrstica['Kraj'], $vrstica['Izdelek'] . " - Ekološko", $vrstica['Koliko'], $vrstica['Merska_enota'], $vrstica['Cena']));
                 }
             }
 
@@ -82,8 +82,11 @@ if(isset($_POST['DatumOd']) && isset($_POST['DatumDo']) && isset($_POST['kako_se
                 'Datum Prodaje' => 'DD.MM.YYYY',
                 'Priimek' => 'string',
                 'Ime' => 'string',
+                'Naslov' => 'string',
+                'Poštna številka' => 'integer',
+                'Kraj' => 'string',
                 'Izdelek' => 'string',
-                'Koliko' => 'integer',
+                'Količina' => 'integer',
                 'Merska Enota' => 'string',
                 'Cena' => 'euro'
             );
@@ -111,7 +114,7 @@ if(isset($_POST['DatumOd']) && isset($_POST['DatumDo']) && isset($_POST['kako_se
                 $random .= $vsecrke[$indeks];
             }
 
-            $imedatoteke = "Racun_" . $DatumOd . "_-_" . $DatumDo . "_(" . $random . ")";
+            $imedatoteke = "Racun_" . $DatumOd . "_-_" . $DatumDo . "_(" . $random . ")_-_Datum";
 
             $writer->writeToFile('Ustvarjeni/' . $imedatoteke . '.xlsx');
 
@@ -141,41 +144,131 @@ if(isset($_POST['DatumOd']) && isset($_POST['DatumDo']) && isset($_POST['kako_se
                 header("Location: RacuniXLSX.php");
                 $_SESSION['kljuc'] = $random;
                 exit; 
-            }
-            
-
-
+            }            
+           
         }
         else{
-            $stranke = array();
-            $izdelki = array();
+            $_SESSION['temp']['DatumOd'] = $DatumOd;
+            $_SESSION['temp']['DatumDo'] = $DatumDo;
+            $_SESSION['temp']['Kakosestavit'] = $Kakosestavit;
+            header("Location: RacuniXLSX.php?napaka=5");
+            exit;
+        }
 
-            /*SELECT p.Datum_Prodaje, s.Priimek, s.Ime, i.Izdelek, i.Ekolosko, SUM(p.Koliko) AS 'Skupaj_kolicina', i.Merska_enota, i.Cena  FROM Prodaja p 
-INNER JOIN Stranka s ON p.id_stranke = s.id_stranke 
-INNER JOIN Izdelek i ON p.Izdelek = i.Izdelek 
-WHERE p.Datum_Prodaje >= '2022-06-01' AND p.Datum_Prodaje < '2022-06-30' 
-GROUP BY s.id_stranke, i.Izdelek
-ORDER BY p.Datum_Prodaje DESC;*/
+        
+
+
+    }
+    else{
+
+        //Sql za dobivanje podatkov po izdelku skupaj
+        $sql = "SELECT s.Priimek, s.Ime, s.Naslov, s.Posta, po.Kraj, i.Izdelek, i.Ekolosko, SUM(p.Koliko) AS 'Skupaj_kolicina', i.Merska_enota, i.Cena  FROM Prodaja p 
+        INNER JOIN Stranka s ON p.id_stranke = s.id_stranke 
+        INNER JOIN Izdelek i ON p.Izdelek = i.Izdelek 
+        LEFT JOIN Posta po ON s.Posta = po.Postana_stevilka
+        WHERE p.Datum_Prodaje >= '$DatumOd' AND p.Datum_Prodaje < '$DatumDo' 
+        GROUP BY s.id_stranke, i.Izdelek
+        ORDER BY s.Priimek, s.Ime DESC;";
+
+        $rezultat = mysqli_query($povezava, $sql);
+
+        $podatki = array();       
+
+        if($rezultat == true && mysqli_num_rows($rezultat) > 0){
 
             while($vrstica = mysqli_fetch_assoc($rezultat)){
                 //Pogleda če je ekolosko, če je dodano za izdelek zraven - ekolosko
                 if($vrstica['Ekolosko'] == "NE"){
-                    array_push($podatki, array($vrstica['Datum_Prodaje'], $vrstica['Priimek'], $vrstica['Ime'], $vrstica['Izdelek'], $vrstica['Koliko'], $vrstica['Merska_enota'], $vrstica['Cena']));
+                    array_push($podatki, array($vrstica['Priimek'], $vrstica['Ime'], $vrstica['Naslov'], $vrstica['Posta'], $vrstica['Kraj'], $vrstica['Izdelek'], $vrstica['Skupaj_kolicina'], $vrstica['Merska_enota'], $vrstica['Cena']));
                 }
                 else{
-                    array_push($podatki, array($vrstica['Datum_Prodaje'], $vrstica['Priimek'], $vrstica['Ime'], $vrstica['Izdelek'] . " - Ekološko", $vrstica['Koliko'], $vrstica['Merska_enota'], $vrstica['Cena']));
+                    array_push($podatki, array($vrstica['Priimek'], $vrstica['Ime'], $vrstica['Naslov'], $vrstica['Posta'], $vrstica['Kraj'], $vrstica['Izdelek'] . " - Ekološko", $vrstica['Skupaj_kolicina'], $vrstica['Merska_enota'], $vrstica['Cena']));
                 }
             } 
+
+            //Ustvari XLSX datoteko
+            $glava = array(
+                'Priimek' => 'string',
+                'Ime' => 'string',
+                'Naslov' => 'string',
+                'Poštna številka' => 'integer',
+                'Kraj' => 'string',
+                'Izdelek' => 'string',
+                'Količina Skupaj' => 'integer',
+                'Merska Enota' => 'string',
+                'Cena' => 'euro'
+            );
+
+            
+        
+            $writer = new XLSXWriter();
+            $writer->writeSheetHeader('Prodaja', $glava );
+
+            foreach($podatki as $vrstica){ 
+                $writer->writeSheetRow('Prodaja', $vrstica);
+            }
+            
+            //Ustvari svoj error hendler, tako da se napake lažje prikažejo
+            set_error_handler("ErrorHandler");
+
+            //Usrvari random besedo za ime datoteke in kljuc
+            $vsecrke = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+
+            $random = '';
+
+            for($i = 0; $i < 16; $i++){
+                $indeks = random_int(1, strlen($vsecrke) - 1);
+
+                $random .= $vsecrke[$indeks];
+            }
+
+            $imedatoteke = "Racun_" . $DatumOd . "_-_" . $DatumDo . "_(" . $random . ")_-_Izdelki";
+
+            $writer->writeToFile('Ustvarjeni/' . $imedatoteke . '.xlsx');
+
+            //Če je kaka napaka pri ustvarjanju jo izbiše
+            if(isset($GLOBALS['napaka_global']) && !empty($GLOBALS['napaka_global'])){    
+
+                if(strpos($GLOBALS['napaka_global'], "Renaming temporary file failed: Permission denied")){
+                    unset($GLOBALS['napaka_global']);
+                    header("Location: RacuniXLSX.php?napaka=4");
+                    exit;
+                }
+                else{
+                    $zapis = $GLOBALS['napaka_global'];
+                    unset($GLOBALS['napaka_global']);
+                    header("Location: RacuniXLSX.php?napaka=Neka&zapis=". $zapis);
+                    exit; 
+                }
+            }
+            else{                              
+                //Vstavi kljuc, ime datoteke in uporabniško ime v tabelo Prenosi
+                $sql = "INSERT INTO Prenosi(Kljuc, Ime_datoteke, Prenesel) VALUES('$random','$imedatoteke', '" . $_SESSION['UprIme'] . "' )";
+
+                mysqli_query($povezava, $sql);
+
+                mysqli_close($povezava);
+                //Redirecta nazaj in da kljuc v session
+                header("Location: RacuniXLSX.php");
+                $_SESSION['kljuc'] = $random;
+                exit; 
+            }       
+
+
+        }
+        else{
+            $_SESSION['temp']['DatumOd'] = $DatumOd;
+            $_SESSION['temp']['DatumDo'] = $DatumDo;
+            $_SESSION['temp']['Kakosestavit'] = $Kakosestavit;
+            header("Location: RacuniXLSX.php?napaka=5");
+            exit;
         }
 
+        
     }
-    else{
-        $_SESSION['temp']['DatumOd'] = $DatumOd;
-        $_SESSION['temp']['DatumDo'] = $DatumDo;
-        $_SESSION['temp']['Kakosestavit'] = $Kakosestavit;
-        header("Location: RacuniXLSX.php?napaka=5");
-        exit; 
-    }
+
+         
+    
 
 
     

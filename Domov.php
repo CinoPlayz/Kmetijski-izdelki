@@ -10,6 +10,8 @@ if($_SESSION['Pravila'] == "Admin"){
     exit;
 }
 
+unset($_SESSION['temp']);
+
 ?>
 
 <html>

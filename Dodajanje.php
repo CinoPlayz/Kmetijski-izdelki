@@ -368,7 +368,7 @@ function Izjeme($tabela, $stolpec){
                                                     else{
                                                         echo "<div class='formvnosItem'>
                                                         <div class='vnosNaslov'>". str_replace("_", " ", $vrstica['Field']).":</div>
-                                                        <input type='number' name='". $vrstica['Field'] ."' class='ipPB'  step='.01'>
+                                                        <input type='number' name='". $vrstica['Field'] ."' class='ipPB'  step='.01' value='0.00'>
                                                         </div>";
                                                     }
                                                 }

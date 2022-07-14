@@ -40,9 +40,19 @@ if(!isset($_SESSION['UprIme']) && !isset($_SESSION['Pravila'])){
 
                         $razdeljeno = explode("_", $imedatoteke);
 
+                        $konecdatoteke = "";
+                        
+                        //Preveri ali je sestavljeno po datumu ali izdelkih, odvisno od sestave da ime konec datoteke
+                        if($razdeljeno[6] == "Izdelki"){
+                            $konecdatoteke = "Izdelki skupaj";
+                        }
+                        else{
+                            $konecdatoteke = "Po datumu";
+                        }
+
                         //pošlje headerje, za prenos
                         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-                        header('Content-Disposition: attachment; filename="'. "Podatki ". $razdeljeno[1] ." - ". $razdeljeno[3] .".xlsx".'"');
+                        header('Content-Disposition: attachment; filename="'. "Podatki ". $razdeljeno[1] ." - ". $razdeljeno[3] ." - ". $konecdatoteke .".xlsx".'"');
                         header('Content-Transfer-Encoding: binary');
                         header("Content-Length: " . filesize($datoteka));
                         header('Expires: 0');
