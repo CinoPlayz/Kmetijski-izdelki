@@ -46,6 +46,9 @@ if($_SESSION['Pravila'] != "Admin"){
                 <div class="bazadiv"><a class="bazaA" href="BranjeAdmin.php?tabela=Nacrtovani_Prevzemi">Načrtovani prevzemi</a></div>
                 <div class="bazadiv"><a class="bazaA" href="BranjeAdmin.php?tabela=Posta">Posta</a></div>
                 <div class="bazadiv"><a class="bazaA" href="BranjeAdmin.php?tabela=Prenosi">Prenosi</a></div>
+
+                <div class="izbira" style="margin-top: 5vh;">Administracija:</div>
+                <div class="bazadiv" style="padding-top: 10px;"><a class="bazaA" href="IzbrisTokenovAdmin.php">Izbris Tokenov</a></div>
             </div>
 
             <div class="noga">

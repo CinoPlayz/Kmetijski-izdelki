@@ -1,0 +1,200 @@
+body, html {
+    font-family: "Segoe UI", sans-serif;
+    margin: 0;			
+    padding: 0;			
+}
+
+.vse {
+    display: grid;
+    grid-template-areas: 
+    'glava glava glava'
+    'menu menu menu'	      		
+    'vsebina vsebina vsebina'
+    'vsebina vsebina vsebina'	
+    'vsebina vsebina vsebina'			
+    'noga noga noga';									
+    grid-template-rows: auto auto 1fr auto ;
+    grid-template-columns: 1fr 1fr;
+    background-color: #212225;  
+    min-height: 100vh;
+}
+
+.glava{
+    grid-area: glava;
+    display: flex;			
+	flex-direction: row;
+    padding: 4px;    
+}
+
+.menu{
+    grid-area: menu;
+    display:flex;  
+    background-color: #2C2D30;  
+    padding: 10px;
+    justify-content: center;
+
+}
+
+.vsebina{
+    grid-area: vsebina;
+    background-color: white;
+}
+
+.noga{
+    grid-area: noga;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    padding: 8px;
+}
+
+/*Glava*/
+.odjava{
+    height: fit-content;
+    padding: 2px;
+    font-size: 20px;
+    padding-right: 5px;
+    padding-top: 4px;
+}
+
+.odjavaA{
+    color: white;
+    text-decoration: none;
+}
+
+.odjavaA:hover{
+    padding: 1px;
+    border-radius: 4px;
+    background-color: #787c87;
+    align-items: center;
+
+}
+
+.flexfill{
+    flex-grow: 1;
+}
+
+/*Menu*/
+.menuItem{
+    color: white;
+    font-size: 20px;
+}
+
+.menuItemA{
+    color: white;
+    text-decoration: none;
+}
+
+.menuItemA:hover{
+    padding: 1px;
+    border-radius: 4px;
+    background-color: #787c87;
+    align-items: center;
+}
+
+/*Vsebina*/
+
+.uspesno{
+    color: green; 
+    font-size: 18px; 
+    font-weight: 700;
+    background-color: #ccffcc; 
+    padding-top: 4px;
+    padding-bottom: 4px;    
+    border: 1px solid green;
+    border-radius: 10px;  
+}
+
+.uspesnoizbrisano{
+    padding-left: 5vw;
+    padding-right: 5vw;
+    padding-top: 1vh;
+}
+
+.izberivse{
+    margin-bottom: 3px;
+    border-bottom: 1px black solid;
+}
+
+.izbiradiv{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    flex-direction: row;
+}
+
+.uporabniki{
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: column;
+    margin-top: 3vh;
+    margin-right: 6vw;
+}
+
+.uporabnik{
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+}
+
+.vrstatokenadiv{
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 3vh;
+}
+
+.napaka{
+    color:red;
+    font-size: 20px;
+    padding-top: 3vh;
+    text-align: center;
+}
+
+.submitdiv{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    padding-top: 4vh;
+}
+
+input[type=submit] {
+    border-radius: 5px;
+    border: none;
+    padding: 4px;
+    color: white;
+    background-color: #fa9638;
+    text-align: center;
+    font-size: 18px;
+}
+
+input[type=submit]:hover {
+    background-color: #F98012;
+}
+
+/*Noga*/
+.nogaMenu{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding-left: 10px;
+}
+
+.nogaMenuItem{
+    color: white;
+    font-size: 20px;
+}
+
+.nogaMenuItemA{
+    color: white;
+    padding: 1px;
+    text-decoration: none;
+}
+
+.nogaMenuItemA:hover{
+    border-radius: 4px;
+    background-color: #787c87;
+    align-items: center;
+}
