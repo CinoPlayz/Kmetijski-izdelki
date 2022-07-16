@@ -265,7 +265,7 @@ function Izjeme($tabela, $stolpec){
                                 <?php 
                                     require("../PovezavaZBazo.php");
 
-                                    $tabelafilter = filter_input(INPUT_GET, 'tabela', FILTER_SANITIZE_STRING);
+                                    $tabelafilter = htmlspecialchars($_GET['tabela'], ENT_QUOTES);
 
                                     $tabela = mysqli_real_escape_string($povezava, $tabelafilter);
 

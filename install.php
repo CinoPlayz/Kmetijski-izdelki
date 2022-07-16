@@ -3,9 +3,9 @@
     define('LahkoPosta', TRUE);
     /*Povezava s podatkovno bazo*/
     if(isset($_POST['ipPB']) && isset($_POST['upPB']) && isset($_POST['gesloPB'])){
-        $ipfilter = filter_input(INPUT_POST, 'ipPB', FILTER_SANITIZE_STRING);
-        $upfilter = filter_input(INPUT_POST, 'upPB', FILTER_SANITIZE_STRING);
-        $geslofilter = filter_input(INPUT_POST, 'gesloPB', FILTER_SANITIZE_STRING);
+        $ipfilter = htmlspecialchars($_POST['ipPB'], ENT_QUOTES);
+        $upfilter = htmlspecialchars($_POST['upPB'], ENT_QUOTES);
+        $geslofilter = htmlspecialchars($_POST['gesloPB'], ENT_QUOTES);
 
         if(empty($ipfilter)){
             RedirectZNapako(1);
@@ -186,7 +186,7 @@
             require("PovezavaZBazo.php");
             include("Posta.php");
 
-            $imefilter = filter_input(INPUT_POST, 'imepb', FILTER_SANITIZE_STRING);
+            $imefilter = htmlspecialchars($_POST['imepb'], ENT_QUOTES);
 
             if(empty($imefilter)){
                 RedirectZNapakoIncializacijaNap("imepb", $povezava, 1);
@@ -374,9 +374,9 @@
     if(isset($_POST['upAdmin']) && isset($_POST['gesloAdmin']) && isset($_POST['gesloPoAdmin'])){
         require("PovezavaZBazo.php");
 
-        $upfilter = filter_input(INPUT_POST, 'upAdmin', FILTER_SANITIZE_STRING);
-        $geslofilter = filter_input(INPUT_POST, 'gesloAdmin', FILTER_SANITIZE_STRING);
-        $gesloponovnofilter = filter_input(INPUT_POST, 'gesloPoAdmin', FILTER_SANITIZE_STRING);
+        $upfilter = htmlspecialchars($_POST['upAdmin'], ENT_QUOTES);
+        $geslofilter = htmlspecialchars($_POST['gesloAdmin'], ENT_QUOTES);
+        $gesloponovnofilter = htmlspecialchars($_POST['gesloPoAdmin'], ENT_QUOTES);
 
         if(empty($upfilter)){
             RedirectZNapakoAdmin(1, $povezava);
