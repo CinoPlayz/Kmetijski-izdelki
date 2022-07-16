@@ -42,7 +42,7 @@ $rezultat = mysqli_query($povezava, $sql);
 
 if(mysqli_num_rows($rezultat) > 0){
     if(isset($_GET['tabela'])){
-        $tabelafilter = filter_input(INPUT_GET, 'tabela', FILTER_SANITIZE_STRING);
+        $tabelafilter = htmlspecialchars($_GET['tabela'], ENT_QUOTES);
 
         $tabela = mysqli_real_escape_string($povezava, $tabelafilter);
 
@@ -55,7 +55,7 @@ if(mysqli_num_rows($rezultat) > 0){
             $Stolpci = BranjeStolpcev($tabela, $povezava);
         }
         else{
-            if($tabela == "Uporabnik"){
+            if($tabela == "Uporabnik" || $tabela == "Prenosi" || $tabela == "Posta"){
                 mysqli_close($povezava);
                 http_response_code(403); 
                 exit;

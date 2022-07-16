@@ -36,7 +36,7 @@ $rezultat = mysqli_query($povezava, $sql);
 
 if(mysqli_num_rows($rezultat) > 0){
     if(isset($_GET['tabela'])){
-        $tabelafilter = filter_input(INPUT_GET, 'tabela', FILTER_SANITIZE_STRING);
+        $tabelafilter = htmlspecialchars($_GET['tabela'], ENT_QUOTES);
 
         $tabela = mysqli_real_escape_string($povezava, $tabelafilter);
 
@@ -74,7 +74,7 @@ else{
 function Branje($tabela, $povezava){
     if($tabela == "Nacrtovani_Prevzemi"){
         if(isset($_GET['dan'])){
-            $danfilter = filter_input(INPUT_GET, 'dan', FILTER_SANITIZE_STRING);
+            $danfilter = htmlspecialchars($_GET['dan'], ENT_QUOTES);
     
             $dan = mysqli_real_escape_string($povezava, $danfilter);
 
@@ -86,7 +86,7 @@ function Branje($tabela, $povezava){
     }
     else if($tabela == "Prodaja"){
         if(isset($_GET['omejitev'])){
-            $omejitevfilter = filter_input(INPUT_GET, 'omejitev', FILTER_SANITIZE_STRING);
+            $omejitevfilter = htmlspecialchars($_GET['omejitev'], ENT_QUOTES);
     
             $omejitev = mysqli_real_escape_string($povezava, $omejitevfilter);
 

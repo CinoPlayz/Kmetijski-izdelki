@@ -15,7 +15,7 @@ if(isset($_POST['tabela'])){
     
     require("../PovezavaZBazo.php");
 
-    $tabelafilter = filter_input(INPUT_POST, 'tabela', FILTER_SANITIZE_STRING);
+    $tabelafilter = htmlspecialchars($_POST['tabela'], ENT_QUOTES);
 
     $tabela = mysqli_real_escape_string($povezava, $tabelafilter);
 
@@ -53,7 +53,7 @@ if(isset($_POST['tabela'])){
     for($i = 0; $i < count($tabele); $i++){
         $preskoci = false;
 
-        $podatekpost = filter_input(INPUT_POST, $tabele[$i], FILTER_SANITIZE_STRING);
+        $podatekpost = htmlspecialchars($_POST[$tabele[$i]], ENT_QUOTES);
 
         $podatekpostSQL = mysqli_real_escape_string($povezava, $podatekpost);
 
@@ -62,32 +62,56 @@ if(isset($_POST['tabela'])){
             $preskoci = true;
         }
 
+        if($tabela == "Prodaja" && $tabele[$i] == "Datum_Vpisa"){
+            array_push($podatkiZaPoslat, array($tabele[$i] => date('Y-m-d H:i:s')));
+            $preskoci = true;
+        }
+
         if($preskoci === false){
-            if(empty($podatekpostSQL) && $tabela != "Nacrtovani_Prevzemi" && $tabele[$i] != "Cas_Enkrat"){
-                mysqli_close($povezava);
-                header("location: DodajanjeAdmin.php?tabela=$tabela&napaka=$i");
-                exit;
+            //Pregleda za izjeme kjer so lahko podatki prazni
+            if(Izjeme($tabela, $tabele[$i])){               
+                $_SESSION['temp'][$tabele[$i]] = $podatekpostSQL;
+                array_push($podatkiZaPoslat, array($tabele[$i] => $podatekpostSQL));
+            
             }
-            else{              
+            else{ 
+                if(!empty($podatekpostSQL)){
+                    //Parsira podatke tako da so pravilni za poslat
+                    if($tabela == "Nacrtovani_Prevzemi" && $tabele[$i] == "id_stranke"){
+                        $idNahaja = strpos($podatekpostSQL, " - ");
+                        $id = substr($podatekpostSQL, ($idNahaja+3));
+                        array_push($podatkiZaPoslat, array($tabele[$i] => $id));
+                    }
+                    else if($tabela == "Izdelek" && $tabele[$i] == "Cena"){
+                        $cena = str_replace(",", ".", $podatekpostSQL);
+                        array_push($podatkiZaPoslat, array($tabele[$i] => $cena));
 
-                if($tabela == "Nacrtovani_Prevzemi" && $tabele[$i] == "id_stranke"){
-                    $idNahaja = strpos($podatekpostSQL, " - ");
-                    $id = substr($podatekpostSQL, ($idNahaja+3));
-                    array_push($podatkiZaPoslat, array($tabele[$i] => $id));
-
+                    }
+                    else if($tabela == "Prodaja" && $tabele[$i] == "id_stranke"){
+                        $idNahaja = strpos($podatekpostSQL, " - ");
+                        $id = substr($podatekpostSQL, ($idNahaja+3));
+                        array_push($podatkiZaPoslat, array($tabele[$i] => $id));
+                    } 
+                    else if($tabela == "Stranka" && $tabele[$i] == "Posta"){
+                        $postaNahaja = strpos($podatekpostSQL, " - ");
+                        $posta = substr($podatekpostSQL, 0, $postaNahaja);
+                        array_push($podatkiZaPoslat, array($tabele[$i] => $posta));
+                    }            
+                    else{
+                        $_SESSION['temp'][$tabele[$i]] = $podatekpostSQL;
+                        array_push($podatkiZaPoslat, array($tabele[$i] => $podatekpostSQL));
+                    }  
                 }
-                else if($tabela == "Prodaja" && $tabele[$i] == "id_stranke"){
-                    $idNahaja = strpos($podatekpostSQL, " - ");
-                    $id = substr($podatekpostSQL, ($idNahaja+3));
-                    array_push($podatkiZaPoslat, array($tabele[$i] => $id));
-                }            
                 else{
-                    $_SESSION['temp'][$tabele[$i]] = $podatekpostSQL;
-                    array_push($podatkiZaPoslat, array($tabele[$i] => $podatekpostSQL));
-                }  
+                    mysqli_close($povezava);
+                    header("location: DodajanjeAdmin.php?tabela=$tabela&napaka=$i");
+                    exit;
+                }
                         
             }
         } 
+    
+
     }
 
     //Parsiranje za pošiljanje, ker json_encode() ne deluje pravilno
@@ -176,6 +200,33 @@ if(isset($_POST['tabela'])){
 }
 
 
+function Izjeme($tabela, $stolpec){
+    $vrni = false;
+
+    switch ($tabela){
+        case "Nacrtovani_Prevzemi":
+            if($stolpec == "Cas_Enkrat"){
+                $vrni = true;
+            }
+            break;
+        case "Izdelek":
+            if($stolpec == "Merska_enota"){
+                $vrni = true;
+            }
+            break;
+        case "Stranka":
+            if($stolpec == "Naslov" || $stolpec == "Posta"){
+                $vrni = true;
+            }
+            break;
+
+    }
+    return $vrni;
+
+}
+
+
+
 ?>
 <html>
     <head>
@@ -184,6 +235,8 @@ if(isset($_POST['tabela'])){
         <title>Dodajanje Admin</title>
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="stylesheet" href="DodajanjeAdmin.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+        <script src="../JS/datalistVsiElemnti.js"></script>
     </head>
     <body>
         <div class="vse">
@@ -269,23 +322,11 @@ if(isset($_POST['tabela'])){
                                                 else if($vrstica['Key'] == "MUL" && $vrstica['Field'] == "Uporabnisko_ime" && $tabela = "Prodaja"){
                                                     //Nej ne prikaže (Za tabelo Prodaja)
                                                 } 
-                                                //Če je Datum_Prodaje za vnos prikaže vnos z izbero datuma
-                                                else if($vrstica['Field'] == "Datum_Prodaje" && $tabela = "Prodaja"){
-                                                    if(isset($_SESSION['temp'][$vrstica['Field']])){
-                                                        echo "<div class='formvnosItem' style='display:flex; flex-direction: column; align-items: center;'>
-                                                        <div class='vnosNaslov'>". str_replace("_", " ", $vrstica['Field']).":</div>
-                                                        <input type='date' name='". $vrstica['Field'] ."' class='ipPB' value='". $_SESSION['temp'][$vrstica['Field']] ."'>
-                                                        </div>";
-                                                    }
-                                                    else{
-                                                        echo "<div class='formvnosItem' style='display:flex; flex-direction: column; align-items: center;'>
-                                                        <div class='vnosNaslov'>". str_replace("_", " ", $vrstica['Field']).":</div>
-                                                        <input type='date' name='". $vrstica['Field'] ."' class='ipPB'>
-                                                        </div>";
-                                                    }
-                                                }
-                                                //Če je Datum_Vpisa za vnos prikaže vnos z izbero datuma
                                                 else if($vrstica['Field'] == "Datum_Vpisa" && $tabela = "Prodaja"){
+                                                    //Nej ne prikaže (Za tabelo Prodaja)
+                                                }
+                                                //Če je Datum_Prodaje za vnos prikaže vnos z izbero datuma
+                                                else if($vrstica['Field'] == "Datum_Prodaje" && $tabela == "Prodaja"){
                                                     if(isset($_SESSION['temp'][$vrstica['Field']])){
                                                         echo "<div class='formvnosItem' style='display:flex; flex-direction: column; align-items: center;'>
                                                         <div class='vnosNaslov'>". str_replace("_", " ", $vrstica['Field']).":</div>
@@ -295,22 +336,67 @@ if(isset($_POST['tabela'])){
                                                     else{
                                                         echo "<div class='formvnosItem' style='display:flex; flex-direction: column; align-items: center;'>
                                                         <div class='vnosNaslov'>". str_replace("_", " ", $vrstica['Field']).":</div>
+                                                        <input type='date' name='". $vrstica['Field'] ."' class='ipPB'>
+                                                        </div>";
+                                                    }
+                                                }                                                
+                                                //Če je Cas_Enkrat za vnos prikaže vnos z izbero datuma
+                                                else if($vrstica['Field'] == "Cas_Enkrat" && $tabela == "Nacrtovani_Prevzemi"){
+                                                    if(isset($_SESSION['temp'][$vrstica['Field']])){
+                                                        echo "<div class='formvnosItem' style='display:flex; flex-direction: column; align-items: center;'>
+                                                        <div class='vnosNaslov'>Čas Enkrat:</div>
+                                                        <input type='date' name='". $vrstica['Field'] ."' class='ipPB' value='". $_SESSION['temp'][$vrstica['Field']] ."'>
+                                                        </div>";
+                                                    }
+                                                    else{
+                                                        echo "<div class='formvnosItem' style='display:flex; flex-direction: column; align-items: center;'>
+                                                        <div class='vnosNaslov'>Datum za enkratni prevzem:</div>
                                                         <input type='date' name='". $vrstica['Field'] ."' class='ipPB'>
                                                         </div>";
                                                     }
                                                 }
-                                                //Če je Cas_Enkrat za vnos prikaže vnos z izbero datuma
-                                                else if($vrstica['Field'] == "Cas_Enkrat" && $tabela = "Nacrtovani_Prevzemi"){
+                                                //Če je Cena za vnos prikaže vnos za številke
+                                                else if($vrstica['Field'] == "Cena" && $tabela == "Izdelek"){
                                                     if(isset($_SESSION['temp'][$vrstica['Field']])){
-                                                        echo "<div class='formvnosItem' style='display:flex; flex-direction: column; align-items: center;'>
+                                                        echo "<div class='formvnosItem'>
                                                         <div class='vnosNaslov'>". str_replace("_", " ", $vrstica['Field']).":</div>
-                                                        <input type='date' name='". $vrstica['Field'] ."' class='ipPB' value='". $_SESSION['temp'][$vrstica['Field']] ."'>
+                                                        <input type='number' name='". $vrstica['Field'] ."' class='ipPB' value='". $_SESSION['temp'][$vrstica['Field']] ."' step='.01'>
                                                         </div>";
                                                     }
                                                     else{
-                                                        echo "<div class='formvnosItem' style='display:flex; flex-direction: column; align-items: center;'>
+                                                        echo "<div class='formvnosItem'>
                                                         <div class='vnosNaslov'>". str_replace("_", " ", $vrstica['Field']).":</div>
-                                                        <input type='date' name='". $vrstica['Field'] ."' class='ipPB'>
+                                                        <input type='number' name='". $vrstica['Field'] ."' class='ipPB'  step='.01' value='0.00'>
+                                                        </div>";
+                                                    }
+                                                }
+                                                //Če je Količina za vnos prikaže vnos za številke v tabeli prodaja
+                                                else if($vrstica['Field'] == "Koliko" && $tabela == "Prodaja"){
+                                                    if(isset($_SESSION['temp'][$vrstica['Field']])){
+                                                        echo "<div class='formvnosItem'>
+                                                        <div class='vnosNaslov'>Količina:</div>
+                                                        <input type='number' name='". $vrstica['Field'] ."' class='ipPB' value='". $_SESSION['temp'][$vrstica['Field']] ."'>
+                                                        </div>";
+                                                    }
+                                                    else{
+                                                        echo "<div class='formvnosItem'>
+                                                        <div class='vnosNaslov'>Količina:</div>
+                                                        <input type='number' name='". $vrstica['Field'] ."' class='ipPB'>
+                                                        </div>";
+                                                    }
+                                                }
+                                                //Če je Količina za vnos prikaže vnos za številke v tabeli prodaja
+                                                else if($vrstica['Field'] == "Kolicina" && $tabela == "Nacrtovani_Prevzemi"){
+                                                    if(isset($_SESSION['temp'][$vrstica['Field']])){
+                                                        echo "<div class='formvnosItem'>
+                                                        <div class='vnosNaslov'>Količina:</div>
+                                                        <input type='number' name='". $vrstica['Field'] ."' class='ipPB' value='". $_SESSION['temp'][$vrstica['Field']] ."'>
+                                                        </div>";
+                                                    }
+                                                    else{
+                                                        echo "<div class='formvnosItem'>
+                                                        <div class='vnosNaslov'>Količina:</div>
+                                                        <input type='number' name='". $vrstica['Field'] ."' class='ipPB'>
                                                         </div>";
                                                     }
                                                 }
@@ -321,12 +407,26 @@ if(isset($_POST['tabela'])){
                                                     $rezultatIzdelek = mysqli_query($povezava, $sql);
 
                                                     if(mysqli_num_rows($rezultatIzdelek) > 0){
+
+                                                        $sessionIzdelek = false;
+
+                                                        //Če je shranjen izdelk v sessionu da vrednost v sessionIzdelek
+                                                        if(isset($_SESSION['temp'][$vrstica['Field']])){
+                                                            $sessionIzdelek = $_SESSION['temp'][$vrstica['Field']];
+                                                        }
+
                                                         echo "<div class='formvnosItem' style='display:flex; flex-direction: column; align-items: center;'>
                                                                 <div class='vnosNaslov'>". str_replace("_", " ", $vrstica['Field']).":</div>
                                                                 <select name='". $vrstica['Field'] ."' class='select'>";
                                                     
                                                         while($vrsticaIzdelek = mysqli_fetch_assoc($rezultatIzdelek)){
-                                                            echo "<option value='" . $vrsticaIzdelek["Izdelek"] . "'>". $vrsticaIzdelek["Izdelek"] ."</option>";
+                                                            //Če je seessionIzdelek enak trenutnemu izdelku potem bo ta izbran
+                                                            if($sessionIzdelek == $vrsticaIzdelek["Izdelek"]){
+                                                                echo "<option value='" . $vrsticaIzdelek["Izdelek"] . "' selected>". $vrsticaIzdelek["Izdelek"] ."</option>";
+                                                            }
+                                                            else{
+                                                                echo "<option value='" . $vrsticaIzdelek["Izdelek"] . "'>". $vrsticaIzdelek["Izdelek"] ."</option>";
+                                                            }
                                 
                                                             
                                                         }
@@ -341,13 +441,63 @@ if(isset($_POST['tabela'])){
                                                     $rezultatStranka = mysqli_query($povezava, $sql);
 
                                                     if(mysqli_num_rows($rezultatStranka) > 0){
+
+                                                        $sessionStranka = false;
+
+                                                        //Če je shranjena stranka v sessionu da vrednost v sessionStranka
+                                                        if(isset($_SESSION['temp'][$vrstica['Field']])){
+                                                            $sessionStranka = $_SESSION['temp'][$vrstica['Field']];
+                                                        }
+
                                                         echo "<div class='formvnosItem'>";
                                                         echo "<div class='vnosNaslov'>Stranka:</div>";
-                                                        echo "<input list='Stranke' name='". $vrstica['Field'] ."' />";
+                                                        echo "<input list='Stranke' name='". $vrstica['Field'] ."' id='Stranka'/>";
                                                         echo "<datalist id='Stranke'>";
 
                                                         while($vrsticaStranka = mysqli_fetch_assoc($rezultatStranka)){
-                                                            echo "<option value='" . $vrsticaStranka['Priimek'] . " " . $vrsticaStranka['Ime'] . " - " . $vrsticaStranka['id_stranke'] . "'>";
+
+                                                            //Če je seessionStranka enak trenutnemu izdelku potem bo ta izbran
+                                                            if($sessionStranka == $vrsticaStranka['id_stranke']){
+                                                                echo "<option value='" . $vrsticaStranka['Priimek'] . " " . $vrsticaStranka['Ime'] . " - " . $vrsticaStranka['id_stranke'] . "' selected>";
+                                                            }
+                                                            else{
+                                                                echo "<option value='" . $vrsticaStranka['Priimek'] . " " . $vrsticaStranka['Ime'] . " - " . $vrsticaStranka['id_stranke'] . "'>";
+                                                            }
+                                                        }
+                                                        echo "</datalist>";
+                                                        echo "</div>";
+                                                    }
+
+                                                }
+                                                //Če je Posta kot vnos vendar, če je foreign key da dropdown za izbiro poste
+                                                else if($vrstica['Key'] == "MUL" && $vrstica['Field'] == "Posta" ){                                                    
+
+                                                    $sql = "SELECT Postana_stevilka, Kraj FROM Posta";
+
+                                                    $rezultatPosta = mysqli_query($povezava, $sql);
+
+                                                    if(mysqli_num_rows($rezultatPosta) > 0){
+
+                                                        $sessionPosta = false;
+
+                                                        //Če je shranjena posta v sessionu da vrednost v sessionPosta
+                                                        if(isset($_SESSION['temp'][$vrstica['Field']])){
+                                                            $sessionPosta = $_SESSION['temp'][$vrstica['Field']];
+                                                        }
+
+                                                        echo "<div class='formvnosItem'>";
+                                                        echo "<div class='vnosNaslov'>Pošta:</div>";
+                                                        echo "<input list='Postalist' name='". $vrstica['Field'] ."' id='Posta'/>";
+                                                        echo "<datalist id='Postalist'>";
+
+                                                        while($vrsticaPosta = mysqli_fetch_assoc($rezultatPosta)){
+                                                            //Če je sessionPosta enak trenutni posti potem bo ta izbran
+                                                            if($sessionPosta == $vrsticaPosta['Postana_stevilka']){
+                                                                echo "<option value='" . $vrsticaPosta['Postana_stevilka'] . " - " . $vrsticaPosta['Kraj'] . "' selected>";
+                                                            }
+                                                            else{
+                                                                echo "<option value='" . $vrsticaPosta['Postana_stevilka'] . " - " . $vrsticaPosta['Kraj'] . "'>";
+                                                            }
                                                         }
                                                         echo "</datalist>";
                                                         echo "</div>";
@@ -361,11 +511,30 @@ if(isset($_POST['tabela'])){
                                                         for($i = 0; $i < count($omejitve); $i++){
                                                             if(isset($omejitve[$i][$vrstica['Field']])){
 
-                                                                echo "<div class='formvnosItem' style='display:flex; flex-direction: column; align-items: center;'>
-                                                                <div class='vnosNaslov'>". str_replace("_", " ", $vrstica['Field']).":</div>
-                                                                <select name='". $vrstica['Field'] ."' class='select'>";
+                                                                $sessionVrednost = false;
+
+                                                                //Če je shranjena vrednost v sessionu da vrednost v sessionVrednost
+                                                                if(isset($_SESSION['temp'][$vrstica['Field']])){
+                                                                    $sessionVrednost = $_SESSION['temp'][$vrstica['Field']];
+                                                                }
+
+                                                                echo "<div class='formvnosItem' style='display:flex; flex-direction: column; align-items: center;'>";
+                                                                if($vrstica['Field'] == "Cas"){
+                                                                    echo "<div class='vnosNaslov'>Čas:</div>";
+                                                                }
+                                                                else{
+                                                                    echo "<div class='vnosNaslov'>". str_replace("_", " ", $vrstica['Field']).":</div>";
+                                                                }
+                                                                
+                                                                echo "<select name='". $vrstica['Field'] ."' class='select'>";
                                                                     foreach($omejitve[$i][$vrstica['Field']] as $omejitev){
-                                                                        echo "<option value='$omejitev'>$omejitev</option>";
+                                                                        //Če je sessionPosta enak trenutni posti potem bo ta izbran
+                                                                        if($sessionVrednost == $omejitev){
+                                                                            echo "<option value='$omejitev' selected>$omejitev</option>";
+                                                                        }
+                                                                        else{
+                                                                            echo "<option value='$omejitev'>$omejitev</option>";
+                                                                        }
                                                                     }
                                                                     
 
@@ -427,21 +596,44 @@ if(isset($_POST['tabela'])){
                                 </div> 
 
                                 <?php 
+                                    //Dobi napako
                                     if(isset($_GET['napaka'])){
 
-                                        if(isset($tabele[$_GET['napaka']])){
-                                            if($tabela = "Prodaja" && $tabele[$_GET['napaka']] == "id_stranke"){
-                                                echo "<div class='napaka'>Vpišite veljaveno Stranko</div>";
+                                        //Pogleda če obstajaja sporocila.php, če so jih includa in uporabi, drugače izpiše default
+                                        if(file_exists("Sporocila.php")){     
+
+                                            //Preveri, če obstaja stolpec za to napako, če uporabi sporocila.php drugače jo samo izpiše
+                                            if(isset($tabele[$_GET['napaka']])){
+
+                                                define('LahkoSporocila', TRUE);
+                                                include("Sporocila.php");
+
+                                                //Vrne true če ni prepoznana naoaka, drugače samo izpiše napako
+                                                if(NapakaSporocilo($tabela, $tabele[$_GET['napaka']])){
+                                                    $napaka = str_replace ( '%20', ' ', $_GET['napaka']);
+                                                    echo "<div class='napaka'>$napaka</div>";
+                                                }
+
                                             }
                                             else{
-                                                echo "<div class='napaka'>Vpišite veljaveno ". str_replace("_", " ", $tabele[$_GET['napaka']]) ."</div>";
+                                                $napaka = str_replace ( '%20', ' ', $_GET['napaka']);
+                                                echo "<div class='napaka'>$napaka</div>";
                                             }
                                         }
                                         else{
-                                            $napaka = str_replace ( '%20', ' ', $_GET['napaka']);
-                                            echo "<div class='napaka'>$napaka</div>";
+                                            if(isset($tabele[$_GET['napaka']])){
+                                                if($tabela == "Prodaja" && $tabele[$_GET['napaka']] == "id_stranke"){
+                                                    echo "<div class='napaka'>Vpišite veljavno Stranko</div>";
+                                                }
+                                                else{
+                                                    echo "<div class='napaka'>Vpišite veljavno ". str_replace("_", " ", $tabele[$_GET['napaka']]) ."</div>";
+                                                }
+                                            }
+                                            else{
+                                                $napaka = str_replace ( '%20', ' ', $_GET['napaka']);
+                                                echo "<div class='napaka'>$napaka</div>";
+                                            }
                                         }
-
                                     }
                                 
                                 ?>
@@ -452,6 +644,18 @@ if(isset($_POST['tabela'])){
                 
                 </div>
             </div>
+
+            <script>
+                <?php
+                if($tabela == "Prodaja" || $tabela == "Nacrtovani_Prevzemi"){
+                    echo "PokaziKlikPuscica('Stranka')";
+                }
+
+                if($tabela == "Stranka"){
+                    echo "PokaziKlikPuscica('Posta')";
+                }
+                ?>
+            </script>
 
             <div class="noga">
                 <div>

@@ -42,7 +42,7 @@ if(isset($_POST['poslano'])){
         }
 
 
-        //Izbriše podatke uporabnikom
+        //Izbriše token uporabnikom
 
         if(empty($_POST['kateri_uporabniki'])){
             mysqli_close($povezava);
@@ -54,6 +54,7 @@ if(isset($_POST['poslano'])){
             $podatekfilter = htmlspecialchars($podatekVnos, ENT_QUOTES);
             $podatek = mysqli_real_escape_string($povezava, $podatekfilter);
 
+            //Izbriše token glede na vrsto
             if(in_array("Mobilni", $KateriToken)){
                 $sql = "UPDATE Uporabnik SET TokenAndroid = NULL WHERE Uporabnisko_ime='$podatek';";
                 mysqli_query($povezava, $sql);

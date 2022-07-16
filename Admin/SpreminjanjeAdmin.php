@@ -16,7 +16,7 @@ if(isset($_POST['tabela'])){
 
     require("../PovezavaZBazo.php");
 
-    $tabelafilter = filter_input(INPUT_POST, 'tabela', FILTER_SANITIZE_STRING);
+    $tabelafilter = htmlspecialchars($_POST['tabela'], ENT_QUOTES);
 
     $tabela = mysqli_real_escape_string($povezava, $tabelafilter);
 
@@ -60,7 +60,7 @@ if(isset($_POST['tabela'])){
     for($i = 0; $i < count($tabele); $i++){
         $preskoci = false;
 
-        $podatekpost = filter_input(INPUT_POST, $tabele[$i], FILTER_SANITIZE_STRING);
+        $podatekpost = htmlspecialchars($_POST[$tabele[$i]], ENT_QUOTES);
 
         $podatekpostSQL = mysqli_real_escape_string($povezava, $podatekpost);
 
@@ -73,17 +73,51 @@ if(isset($_POST['tabela'])){
             $preskoci = true;
         }
 
+        if($tabela == "Prodaja" && $tabele[$i] == "Datum_Vpisa"){
+            array_push($podatkiZaPoslat, array($tabele[$i] => date('Y-m-d H:i:s')));
+            $preskoci = true;
+        }
+        
         if($preskoci === false){
-            if(empty($podatekpostSQL) && $tabela != "Nacrtovani_Prevzemi" && $tabele[$i] != "Cas_Enkrat"){
+            if(Izjeme($tabela, $tabele[$i])){
 
-                if($tabele[$i] == "Geslo"){
-                    
-                    $_SESSION['temp'][$tabele[$i]] = "";
-                    array_push($podatkiZaPoslat, array($tabele[$i] => ""));
+                $_SESSION['temp'][$tabele[$i]] = $podatekpostSQL;
+                array_push($podatkiZaPoslat, array($tabele[$i] => $podatekpostSQL));                
+                
+               
+            }
+            else{           
+
+                if(!empty($podatekpostSQL)){
+                    //Parsira podatke tako da so pravilni za poslat
+                    if($tabela == "Nacrtovani_Prevzemi" && $tabele[$i] == "id_stranke"){
+                        $idNahaja = strpos($podatekpostSQL, " - ");
+                        $id = substr($podatekpostSQL, ($idNahaja+3));
+                        array_push($podatkiZaPoslat, array($tabele[$i] => $id));
+                    }
+                    else if($tabela == "Izdelek" && $tabele[$i] == "Cena"){
+                        $cena = str_replace(",", ".", $podatekpostSQL);
+                        array_push($podatkiZaPoslat, array($tabele[$i] => $cena));
+
+                    }
+                    else if($tabela == "Prodaja" && $tabele[$i] == "id_stranke"){
+                        $idNahaja = strpos($podatekpostSQL, " - ");
+                        $id = substr($podatekpostSQL, ($idNahaja+3));
+                        array_push($podatkiZaPoslat, array($tabele[$i] => $id));
+                    } 
+                    else if($tabela == "Stranka" && $tabele[$i] == "Posta"){
+                        $postaNahaja = strpos($podatekpostSQL, " - ");
+                        $posta = substr($podatekpostSQL, 0, $postaNahaja);
+                        array_push($podatkiZaPoslat, array($tabele[$i] => $posta));
+                    }            
+                    else{
+                        $_SESSION['temp'][$tabele[$i]] = $podatekpostSQL;
+                        array_push($podatkiZaPoslat, array($tabele[$i] => $podatekpostSQL));
+                    }  
                 }
                 else{
                     mysqli_close($povezava);
-
+    
                     if(isset($primaryPodatek)){
                         --$i;
                         header("location: SpreminjanjeAdmin.php?tabela=$tabela&$primaryKey=$primaryPodatek&napaka=$i");                        
@@ -91,28 +125,9 @@ if(isset($_POST['tabela'])){
                     else{
                         header("location: SpreminjanjeAdmin.php?tabela=$tabela&$primaryKey=$primaryPodatek&napaka=$i");                        
                     }
-                    
+                        
                     exit;
                 }
-               
-            }
-            else{              
-
-                if($tabela == "Nacrtovani_Prevzemi" && $tabele[$i] == "id_stranke"){
-                    $idNahaja = strpos($podatekpostSQL, " - ");
-                    $id = substr($podatekpostSQL, ($idNahaja+3));
-                    array_push($podatkiZaPoslat, array($tabele[$i] => $id));
-
-                }
-                else if($tabela == "Prodaja" && $tabele[$i] == "id_stranke"){
-                    $idNahaja = strpos($podatekpostSQL, " - ");
-                    $id = substr($podatekpostSQL, ($idNahaja+3));
-                    array_push($podatkiZaPoslat, array($tabele[$i] => $id));
-                }            
-                else{
-                    $_SESSION['temp'][$tabele[$i]] = $podatekpostSQL;
-                    array_push($podatkiZaPoslat, array($tabele[$i] => $podatekpostSQL));
-                }  
                         
             }
         } 
@@ -137,8 +152,7 @@ if(isset($_POST['tabela'])){
     
     $jsonZaPoslat .= "}";
    
-    mysqli_close($povezava);
-    
+    mysqli_close($povezava);    
 
     //Dobimo URL za curl
     $povnaslov =  $_SERVER['SERVER_NAME'] . $_SERVER['PHP_SELF'];
@@ -203,6 +217,37 @@ if(isset($_POST['tabela'])){
 
 }
 
+function Izjeme($tabela, $stolpec){
+    $vrni = false;
+
+    switch ($tabela){
+        case "Nacrtovani_Prevzemi":
+            if($stolpec == "Cas_Enkrat"){
+                $vrni = true;
+            }
+            break;
+        case "Izdelek":
+            if($stolpec == "Merska_enota"){
+                $vrni = true;
+            }
+            break;
+        case "Stranka":
+            if($stolpec == "Naslov" || $stolpec == "Posta"){
+                $vrni = true;
+            }
+            break;
+        case "Uporabnik":
+            if($stolpec == "Geslo"){
+                $vrni = true;
+            }
+            break;
+
+    }
+    return $vrni;
+
+}
+
+
 ?>
 <html>
     <head>
@@ -211,6 +256,8 @@ if(isset($_POST['tabela'])){
         <title>Spreminjanje Admin</title>
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="stylesheet" href="SpreminjanjeAdmin.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+        <script src="../JS/datalistVsiElemnti.js"></script>
     </head>
     <body>
         <div class="vse">
@@ -239,7 +286,7 @@ if(isset($_POST['tabela'])){
                                 <?php 
                                     require("../PovezavaZBazo.php");
 
-                                    $tabelafilter = filter_input(INPUT_GET, 'tabela', FILTER_SANITIZE_STRING);
+                                    $tabelafilter = htmlspecialchars($_GET['tabela'], ENT_QUOTES);
 
                                     $tabela = mysqli_real_escape_string($povezava, $tabelafilter);
 
@@ -296,7 +343,7 @@ if(isset($_POST['tabela'])){
                                             }
                                         }
 
-                                        $primaryfilter = filter_input(INPUT_GET, $primaryKey[0], FILTER_SANITIZE_STRING);
+                                        $primaryfilter = htmlspecialchars($_GET[$primaryKey[0]], ENT_QUOTES);
 
                                         $primary = mysqli_real_escape_string($povezava, $primaryfilter);
 
@@ -586,20 +633,43 @@ if(isset($_POST['tabela'])){
                                 </div> 
 
                                 <?php 
-                                    if(isset($_GET['napaka'])){
+                                      //Dobi napako 
+                                      if(isset($_GET['napaka'])){
 
-                                        if(isset($tabele[$_GET['napaka']])){
-                                            if($tabela = "Prodaja" && $tabele[$_GET['napaka']] == "id_stranke"){
-                                                echo "<div class='napaka'>Vpišite veljaveno Stranko</div>";
+                                        //Pogleda če obstajaja sporocila.php, če so jih includa in uporabi, drugače izpiše default
+                                        if(file_exists("Sporocila.php")){     
+
+                                            //Preveri, če obstaja stolpec za to napako, če uporabi sporocila.php drugače jo samo izpiše
+                                            if(isset($tabele[$_GET['napaka']])){
+
+                                                define('LahkoSporocila', TRUE);
+                                                include("Sporocila.php");
+
+                                                //Vrne true če ni prepoznana naoaka, drugače samo izpiše napako
+                                                if(NapakaSporocilo($tabela, $tabele[$_GET['napaka']])){
+                                                    $napaka = str_replace ( '%20', ' ', $_GET['napaka']);
+                                                    echo "<div class='napaka'>$napaka</div>";
+                                                }
+
                                             }
                                             else{
-                                                echo "<div class='napaka'>Vpišite veljavno ". str_replace("_", " ", $tabele[$_GET['napaka']]) ."</div>";
-                                                
+                                                $napaka = str_replace ( '%20', ' ', $_GET['napaka']);
+                                                echo "<div class='napaka'>$napaka</div>";
                                             }
                                         }
                                         else{
-                                            $napaka = str_replace ( '%20', ' ', $_GET['napaka']);
-                                            echo "<div class='napaka'>$napaka</div>";
+                                            if(isset($tabele[$_GET['napaka']])){
+                                                if($tabela == "Prodaja" && $tabele[$_GET['napaka']] == "id_stranke"){
+                                                    echo "<div class='napaka'>Vpišite veljavno Stranko</div>";
+                                                }
+                                                else{
+                                                    echo "<div class='napaka'>Vpišite veljavno ". str_replace("_", " ", $tabele[$_GET['napaka']]) ."</div>";
+                                                }
+                                            }
+                                            else{
+                                                $napaka = str_replace ( '%20', ' ', $_GET['napaka']);
+                                                echo "<div class='napaka'>$napaka</div>";
+                                            }
                                         }
 
                                     }
@@ -612,6 +682,20 @@ if(isset($_POST['tabela'])){
                 
                 </div>
             </div>
+
+            <script> 
+
+            <?php                
+            if($tabela == "Prodaja" || $tabela == "Nacrtovani_Prevzemi"){
+                echo "PokaziKlikPuscica('Stranka')";
+            }
+
+            if($tabela == "Stranka"){
+                echo "PokaziKlikPuscica('Posta')";
+            }
+            ?>
+
+            </script>
 
             <div class="noga">
                 <div>

@@ -14,9 +14,15 @@ define('LahkoPovezava', TRUE);
 
 if(isset($_POST['izbris'])){
     require("PovezavaZBazo.php");
-    $tabelafilter = filter_input(INPUT_POST, 'tabela', FILTER_SANITIZE_STRING);
+    $tabelafilter = htmlspecialchars($_POST['tabela'], ENT_QUOTES);
 
     $tabela = mysqli_real_escape_string($povezava, $tabelafilter);
+
+    if($tabela == "Uporabnik" || $tabela == "Prenosi" || $tabela == "Posta"){
+        mysqli_close($povezava);
+        header("location: Domov.php");
+        exit;
+    }
 
 
     if($_POST['izbris'] == "DA"){
@@ -37,7 +43,7 @@ if(isset($_POST['izbris'])){
 
         
 
-        $podatekfilter = filter_input(INPUT_POST, $stolpec, FILTER_SANITIZE_STRING);
+        $podatekfilter = htmlspecialchars($_POST[$stolpec], ENT_QUOTES);
 
         $podatek = mysqli_real_escape_string($povezava, $podatekfilter);
 
@@ -148,9 +154,15 @@ if(isset($_POST['izbris'])){
             <?php 
                 require("PovezavaZBazo.php");
 
-                $tabelafilter = filter_input(INPUT_GET, 'tabela', FILTER_SANITIZE_STRING);
+                $tabelafilter = htmlspecialchars($_GET['tabela'], ENT_QUOTES);
 
                 $tabela = mysqli_real_escape_string($povezava, $tabelafilter); 
+
+                if($tabela == "Uporabnik" || $tabela == "Prenosi" || $tabela == "Posta"){
+                    mysqli_close($povezava);
+                    header("location: Domov.php");
+                    exit;
+                }
 
                 $stolpec = "";
 
@@ -166,7 +178,7 @@ if(isset($_POST['izbris'])){
                     }
 
                     if(!empty($stolpec)){
-                        $podatekfilter = filter_input(INPUT_GET, $stolpec , FILTER_SANITIZE_STRING);
+                        $podatekfilter = htmlspecialchars($_GET[$stolpec], ENT_QUOTES);
 
                         $podatek = mysqli_real_escape_string($povezava, $podatekfilter);
                     }

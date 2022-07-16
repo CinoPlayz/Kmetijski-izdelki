@@ -7,8 +7,8 @@ if(isset($_SESSION['UprIme']) || isset($_SESSION['Pravila'])){
 }
 
 if(isset($_POST['upime']) && isset($_POST['geslo'])){
-    $upfilter = filter_input(INPUT_POST, 'upime', FILTER_SANITIZE_STRING);
-    $geslofilter = filter_input(INPUT_POST, 'geslo', FILTER_SANITIZE_STRING);
+    $upfilter = htmlspecialchars($_POST['upime'], ENT_QUOTES);
+    $geslofilter = htmlspecialchars($_POST['geslo'], ENT_QUOTES);
 
     if(empty($upfilter)){
         RedirectZNapako(1);

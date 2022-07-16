@@ -16,9 +16,15 @@ if(isset($_POST['tabela'])){
 
     require("PovezavaZBazo.php");
 
-    $tabelafilter = filter_input(INPUT_POST, 'tabela', FILTER_SANITIZE_STRING);
+    $tabelafilter = htmlspecialchars($_POST['tabela'], ENT_QUOTES);
 
     $tabela = mysqli_real_escape_string($povezava, $tabelafilter);
+
+    if($tabela == "Uporabnik" || $tabela == "Prenosi" || $tabela == "Posta"){
+        mysqli_close($povezava);
+        header("location: Domov.php");
+        exit;
+    }
 
     $sql = "SHOW columns FROM $tabela;";
 
@@ -54,7 +60,7 @@ if(isset($_POST['tabela'])){
     for($i = 0; $i < count($tabele); $i++){
         $preskoci = false;
 
-        $podatekpost = filter_input(INPUT_POST, $tabele[$i], FILTER_SANITIZE_STRING);
+        $podatekpost = htmlspecialchars($_POST[$tabele[$i]], ENT_QUOTES);
 
         $podatekpostSQL = mysqli_real_escape_string($povezava, $podatekpost);
 
@@ -131,7 +137,7 @@ if(isset($_POST['tabela'])){
     
     
     $jsonZaPoslat .= "}";
-   
+        
     mysqli_close($povezava);
 
     //Dobimo URL za curl
@@ -261,11 +267,11 @@ function Izjeme($tabela, $stolpec){
                                 <?php 
                                     require("PovezavaZBazo.php");
 
-                                    $tabelafilter = filter_input(INPUT_GET, 'tabela', FILTER_SANITIZE_STRING);
+                                    $tabelafilter = htmlspecialchars($_GET['tabela'], ENT_QUOTES);
 
                                     $tabela = mysqli_real_escape_string($povezava, $tabelafilter);
 
-                                    if($tabela == "Uporabnik"){
+                                    if($tabela == "Uporabnik" || $tabela == "Prenosi" || $tabela == "Posta"){
                                         mysqli_close($povezava);
                                         header("location: Domov.php");
                                         exit;
