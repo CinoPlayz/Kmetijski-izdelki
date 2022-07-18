@@ -87,8 +87,13 @@ if(isset($_POST['tabela'])){
                
             }
             else{           
+                //Če je slučajno vpisana 0 za koliko pri tabeli Prodaja
+                $izjemaza0 = false;
+                if($tabele[$i] == "Koliko" && $podatekpostSQL == "0"){
+                    $izjemaza0 = true;
+                }
 
-                if(!empty($podatekpostSQL)){
+                if(!empty($podatekpostSQL) || $izjemaza0 == true){
                     //Parsira podatke tako da so pravilni za poslat
                     if($tabela == "Nacrtovani_Prevzemi" && $tabele[$i] == "id_stranke"){
                         $idNahaja = strpos($podatekpostSQL, " - ");

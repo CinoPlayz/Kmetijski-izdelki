@@ -107,7 +107,7 @@ if(mysqli_num_rows($rezultat) > 0){
             else{
                 if($Stolpci[$i][1] == "NO"){
                 
-                    if(empty($podatkifilter)){
+                    if(empty($podatkifilter) && ($stolpec == "Koliko" && $podatkifilter == "0")){
                         if($stolpec == "Geslo"){
                         
                         }
