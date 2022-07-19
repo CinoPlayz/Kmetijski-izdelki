@@ -166,7 +166,7 @@ if(isset($_POST['DatumOd']) && isset($_POST['DatumDo']) && isset($_POST['kako_se
         INNER JOIN Stranka s ON p.id_stranke = s.id_stranke 
         INNER JOIN Izdelek i ON p.Izdelek = i.Izdelek 
         LEFT JOIN Posta po ON s.Posta = po.Postana_stevilka
-        WHERE p.Datum_Prodaje >= '$DatumOd' AND p.Datum_Prodaje =< '$DatumDo 23:59:59' 
+        WHERE p.Datum_Prodaje >= '$DatumOd' AND p.Datum_Prodaje <= '$DatumDo 23:59:59' 
         GROUP BY s.id_stranke, i.Izdelek
         ORDER BY s.Priimek, s.Ime DESC;";
 
