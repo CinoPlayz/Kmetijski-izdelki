@@ -87,10 +87,16 @@ if(isset($_POST['tabela'])){
         if($preskoci === false){
             if(Izjeme($tabela, $tabele[$i])){
 
-                $_SESSION['temp'][$tabele[$i]] = $podatekpostSQL;
-                array_push($podatkiZaPoslat, array($tabele[$i] => $podatekpostSQL));                 
+                if($tabela == "Stranka" && $tabele[$i] == "Posta"){
+                    $postaNahaja = strpos($podatekpostSQL, " - ");
+                    $posta = substr($podatekpostSQL, 0, $postaNahaja);
+                    array_push($podatkiZaPoslat, array($tabele[$i] => $posta));
+                }
+                else{
+                    $_SESSION['temp'][$tabele[$i]] = $podatekpostSQL;
+                    array_push($podatkiZaPoslat, array($tabele[$i] => $podatekpostSQL));
+                }
                 
-               
             }
             else{           
                 //Če je slučajno vpisana 0 za koliko pri tabeli Prodaja
