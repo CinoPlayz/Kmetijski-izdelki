@@ -58,7 +58,7 @@ if(isset($_POST['DatumOd']) && isset($_POST['DatumDo']) && isset($_POST['kako_se
     if($Kakosestavit == "podatumu"){
 
         //Dobimo podatke za ustvarjanje datoteke
-        $sql = "SELECT p.Datum_Prodaje, s.Priimek, s.Ime, s.Naslov, s.Posta, po.Kraj, i.Izdelek, i.Ekolosko, p.Koliko, i.Merska_enota, i.Cena  FROM Prodaja p INNER JOIN Stranka s ON p.id_stranke = s.id_stranke INNER JOIN Izdelek i ON p.Izdelek = i.Izdelek LEFT JOIN Posta po ON s.Posta = po.Postana_stevilka WHERE p.Datum_Prodaje >= '$DatumOd' AND p.Datum_Prodaje < '$DatumDo'  ORDER BY p.Datum_Prodaje DESC";
+        $sql = "SELECT p.Datum_Prodaje, s.Priimek, s.Ime, s.Naslov, s.Posta, po.Kraj, i.Izdelek, i.Ekolosko, p.Koliko, i.Merska_enota, i.Cena  FROM Prodaja p INNER JOIN Stranka s ON p.id_stranke = s.id_stranke INNER JOIN Izdelek i ON p.Izdelek = i.Izdelek LEFT JOIN Posta po ON s.Posta = po.Postana_stevilka WHERE p.Datum_Prodaje >= '$DatumOd' AND p.Datum_Prodaje <= '$DatumDo 23:59:59'  ORDER BY p.Datum_Prodaje DESC";
 
         $rezultat = mysqli_query($povezava, $sql);
 
@@ -166,7 +166,7 @@ if(isset($_POST['DatumOd']) && isset($_POST['DatumDo']) && isset($_POST['kako_se
         INNER JOIN Stranka s ON p.id_stranke = s.id_stranke 
         INNER JOIN Izdelek i ON p.Izdelek = i.Izdelek 
         LEFT JOIN Posta po ON s.Posta = po.Postana_stevilka
-        WHERE p.Datum_Prodaje >= '$DatumOd' AND p.Datum_Prodaje < '$DatumDo' 
+        WHERE p.Datum_Prodaje >= '$DatumOd' AND p.Datum_Prodaje =< '$DatumDo 23:59:59' 
         GROUP BY s.id_stranke, i.Izdelek
         ORDER BY s.Priimek, s.Ime DESC;";
 

@@ -127,10 +127,10 @@ function Branje($tabela, $povezava){
             }
             else{
                 if($Izdelek == "*"){
-                    $sql = "SELECT *  FROM $tabela p INNER JOIN Stranka s ON p.id_stranke = s.id_stranke INNER JOIN Izdelek i ON p.Izdelek = i.Izdelek WHERE s.id_stranke = $id AND p.Datum_Prodaje >= '$DatumOd' AND p.Datum_Prodaje < '$DatumDo'  ORDER BY p.Datum_Prodaje DESC";
+                    $sql = "SELECT *  FROM $tabela p INNER JOIN Stranka s ON p.id_stranke = s.id_stranke INNER JOIN Izdelek i ON p.Izdelek = i.Izdelek WHERE s.id_stranke = $id AND p.Datum_Prodaje >= '$DatumOd' AND p.Datum_Prodaje <= '$DatumDo 23:59:59'  ORDER BY p.Datum_Prodaje DESC";
                 }
                 else{
-                    $sql = "SELECT *  FROM $tabela p INNER JOIN Stranka s ON p.id_stranke = s.id_stranke INNER JOIN Izdelek i ON p.Izdelek = i.Izdelek WHERE i.Izdelek='$Izdelek' AND s.id_stranke = $id AND p.Datum_Prodaje >= '$DatumOd' AND p.Datum_Prodaje < '$DatumDo'  ORDER BY p.Datum_Prodaje DESC";
+                    $sql = "SELECT *  FROM $tabela p INNER JOIN Stranka s ON p.id_stranke = s.id_stranke INNER JOIN Izdelek i ON p.Izdelek = i.Izdelek WHERE i.Izdelek='$Izdelek' AND s.id_stranke = $id AND p.Datum_Prodaje >= '$DatumOd' AND p.Datum_Prodaje <= '$DatumDo 23:59:59'  ORDER BY p.Datum_Prodaje DESC";
                 }
 
             }
