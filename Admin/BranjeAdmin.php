@@ -264,6 +264,11 @@ if($_SESSION['Pravila'] != "Admin"){
                         
                         
                     ],
+                    <?php 
+                        if($tabela == "Prodaja"){
+                            echo "order: [[1, 'desc']],";
+                        }
+                    ?>
                     "scrollX": "true"
                 } );
 

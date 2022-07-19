@@ -274,6 +274,11 @@ unset($_SESSION['temp']);
                         
                         
                     ],
+                    <?php 
+                        if($tabela == "Prodaja"){
+                            echo "order: [[1, 'desc']],";
+                        }
+                    ?>
                     "scrollX": "true"
                 } );
 
