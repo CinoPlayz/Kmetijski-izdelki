@@ -480,6 +480,69 @@ function Izjeme($tabela, $stolpec){
                                                         </div>";
                                                     }
                                                 }
+                                                //Če je Cena za vnos prikaže vnos za številke
+                                                else if($vrstica['Field'] == "Cena" && $tabela == "Izdelek"){
+                                                    if(isset($_SESSION['temp'][$vrstica['Field']])){
+                                                        echo "<div class='formvnosItem'>
+                                                        <div class='vnosNaslov'>". str_replace("_", " ", $vrstica['Field']).":</div>
+                                                        <input type='number' name='". $vrstica['Field'] ."' class='ipPB' value='". $_SESSION['temp'][$vrstica['Field']] ."' step='.01'>
+                                                        </div>";
+                                                    }
+                                                    else if(isset($VrsticaPodatki[$vrstica['Field']])){
+                                                        echo "<div class='formvnosItem'>
+                                                        <div class='vnosNaslov'>". str_replace("_", " ", $vrstica['Field']).":</div>
+                                                        <input type='number' name='". $vrstica['Field'] ."' class='ipPB'  step='.01' value='". $VrsticaPodatki[$vrstica['Field']] ."'>
+                                                        </div>";
+                                                    }
+                                                    else{
+                                                        echo "<div class='formvnosItem'>
+                                                        <div class='vnosNaslov'>". str_replace("_", " ", $vrstica['Field']).":</div>
+                                                        <input type='number' name='". $vrstica['Field'] ."' class='ipPB'  step='.01' value='0.00'>
+                                                        </div>";
+                                                    }
+                                                }
+                                                 //Če je Količina za vnos prikaže vnos za številke v tabeli prodaja
+                                                 else if($vrstica['Field'] == "Koliko" && $tabela == "Prodaja"){
+                                                    if(isset($_SESSION['temp'][$vrstica['Field']])){
+                                                        echo "<div class='formvnosItem'>
+                                                        <div class='vnosNaslov'>Količina:</div>
+                                                        <input type='number' name='". $vrstica['Field'] ."' class='ipPB' value='". $_SESSION['temp'][$vrstica['Field']] ."'>
+                                                        </div>";
+                                                    }
+                                                    else if(isset($VrsticaPodatki[$vrstica['Field']])){
+                                                        echo "<div class='formvnosItem'>
+                                                        <div class='vnosNaslov'>Količina:</div>
+                                                        <input type='number' name='". $vrstica['Field'] ."' class='ipPB' value='". $VrsticaPodatki[$vrstica['Field']] ."'>
+                                                        </div>";
+                                                    }
+                                                    else{
+                                                        echo "<div class='formvnosItem'>
+                                                        <div class='vnosNaslov'>Količina:</div>
+                                                        <input type='number' name='". $vrstica['Field'] ."' class='ipPB'>
+                                                        </div>";
+                                                    }
+                                                }
+                                                //Če je Količina za vnos prikaže vnos za številke v tabeli Nacrtovani_Prevzemi
+                                                else if($vrstica['Field'] == "Kolicina" && $tabela == "Nacrtovani_Prevzemi"){
+                                                    if(isset($_SESSION['temp'][$vrstica['Field']])){
+                                                        echo "<div class='formvnosItem'>
+                                                        <div class='vnosNaslov'>Količina:</div>
+                                                        <input type='number' name='". $vrstica['Field'] ."' class='ipPB' value='". $_SESSION['temp'][$vrstica['Field']] ."'>
+                                                        </div>";
+                                                    }
+                                                     else if(isset($VrsticaPodatki[$vrstica['Field']])){
+                                                        echo "<div class='formvnosItem'>
+                                                        <div class='vnosNaslov'>Količina:</div>
+                                                        <input type='number' name='". $vrstica['Field'] ."' class='ipPB' value='". $VrsticaPodatki[$vrstica['Field']] ."'>
+                                                        </div>";
+                                                    }
+                                                    else{
+                                                        echo "<div class='formvnosItem'>
+                                                        <div class='vnosNaslov'>Količina:</div>
+                                                        <input type='number' name='". $vrstica['Field'] ."' class='ipPB'>
+                                                        </div>";
+                                                    }
+                                                }
                                                 //Če je Izdelek kot vnos vendar, če je foreign key da dropdown za izbiro
                                                 else if($vrstica['Key'] == "MUL" && $vrstica['Field'] == "Izdelek" ){
                                                     $sql = "SELECT Izdelek FROM Izdelek";
@@ -555,6 +618,47 @@ function Izjeme($tabela, $stolpec){
                                                     }
 
                                                 }
+                                                //Če je Posta kot vnos vendar, če je foreign key da dropdown za izbiro poste
+                                                else if($vrstica['Key'] == "MUL" && $vrstica['Field'] == "Posta" ){      
+                                                    
+                                                    //Dobi posto glede na Primary key(Postana_stevilka)
+                                                    $postaGledeVpis = array("Postana_stevilka" => "", "Kraj" => "");
+
+                                                    if(isset($VrsticaPodatki[$vrstica['Field']])){
+                                                        $sql = "SELECT Postana_stevilka, Kraj FROM Posta WHERE Postana_stevilka=". $VrsticaPodatki[$vrstica['Field']]. "";
+
+                                                        $rezultatPostaGledeVpis = mysqli_query($povezava, $sql);
+
+                                                        $postaGledeVpis = mysqli_fetch_assoc($rezultatPostaGledeVpis);
+                                                    }
+
+
+                                                    $sql = "SELECT Postana_stevilka, Kraj FROM Posta";
+
+                                                    $rezultatPosta = mysqli_query($povezava, $sql);
+
+                                                    if(mysqli_num_rows($rezultatPosta) > 0){
+
+                                                        //Preveri, če je vpisan podatek o Pošti
+                                                        if(isset($VrsticaPodatki[$vrstica['Field']])){
+                                                            $obstaja = "da";
+                                                        }
+
+                                                        echo "<div class='formvnosItem'>";
+                                                        echo "<div class='vnosNaslov'>Pošta:</div>";
+                                                        echo "<input list='Postalist' name='". $vrstica['Field'] ."' id='Posta' value='". $postaGledeVpis['Postana_stevilka'] ." - ". $postaGledeVpis['Kraj'] ."'/>";
+                                                        echo "<datalist id='Postalist'>";
+
+                                                        while($vrsticaPosta = mysqli_fetch_assoc($rezultatPosta)){
+                                                            echo "<option value='" . $vrsticaPosta["Postana_stevilka"] . " - ". $vrsticaPosta["Kraj"] ."'></option>";
+                                                        
+                                                        }
+
+                                                        echo "</datalist>";
+                                                        echo "</div>";
+                                                    }
+
+                                                }
                                                 else{
                                                     $nadaljuj = "da";
                                                     //Preveri če ima kolumn omejitve, če jih ima jih da v dropdown za izbiro
@@ -562,9 +666,15 @@ function Izjeme($tabela, $stolpec){
                                                         for($i = 0; $i < count($omejitve); $i++){
                                                             if(isset($omejitve[$i][$vrstica['Field']])){
 
-                                                                echo "<div class='formvnosItem' style='display:flex; flex-direction: column; align-items: center;'>
-                                                                <div class='vnosNaslov'>". str_replace("_", " ", $vrstica['Field']).":</div>
-                                                                <select name='". $vrstica['Field'] ."' class='select'>";
+                                                                echo "<div class='formvnosItem' style='display:flex; flex-direction: column; align-items: center;'>";
+                                                                if($vrstica['Field'] == "Cas"){
+                                                                    echo "<div class='vnosNaslov'>Čas:</div>";
+                                                                }
+                                                                else{
+                                                                    echo "<div class='vnosNaslov'>". str_replace("_", " ", $vrstica['Field']).":</div>";
+                                                                }
+                                                                
+                                                                echo "<select name='". $vrstica['Field'] ."' class='select'>";
                                                                     foreach($omejitve[$i][$vrstica['Field']] as $omejitev){
 
                                                                         if($omejitev == $VrsticaPodatki[$vrstica['Field']]){

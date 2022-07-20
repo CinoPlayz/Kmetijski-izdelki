@@ -406,7 +406,7 @@ function Izjeme($tabela, $stolpec){
                                                         </div>";
                                                     }
                                                 }
-                                                //Če je Količina za vnos prikaže vnos za številke v tabeli prodaja
+                                                //Če je Količina za vnos prikaže vnos za številke v tabeli Nacrtovani_Prevzemi
                                                 else if($vrstica['Field'] == "Kolicina" && $tabela == "Nacrtovani_Prevzemi"){
                                                     if(isset($_SESSION['temp'][$vrstica['Field']])){
                                                         echo "<div class='formvnosItem'>
