@@ -186,19 +186,19 @@ if(mysqli_num_rows($rezultat) > 0){
 
             //Združi spodnje tabele kot eden rezultat
 
-            $sqlNacrtovaniPrevzemiPodatki = "SELECT * FROM temp1
-                        UNION
-                        SELECT * FROM temp2
-                        UNION
-                        SELECT * FROM temp3
-                        UNION
-                        SELECT * FROM temp4
-                        UNION
-                        SELECT * FROM temp5
+            $sqlNacrtovaniPrevzemiPodatki = "SELECT * FROM temp7
                         UNION
                         SELECT * FROM temp6
                         UNION
-                        SELECT * FROM temp7;";
+                        SELECT * FROM temp5
+                        UNION
+                        SELECT * FROM temp4
+                        UNION
+                        SELECT * FROM temp3
+                        UNION
+                        SELECT * FROM temp2
+                        UNION
+                        SELECT * FROM temp1;";
 
             //Te podatke da v array za primerjat ter enega, v katerega je še vpisana količina
 
