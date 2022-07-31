@@ -79,12 +79,18 @@ if(mysqli_num_rows($rezultat) > 0){
                 $podatkifilterSQL = mysqli_real_escape_string($povezava, $podatki->$stolpec);
                 
                 $podatkifilter = htmlspecialchars($podatkifilterSQL, ENT_QUOTES);
+            } 
+            //Preveri će je slučajno podatek za stolpec koliko in je 0 zgornji empty vrne true za ta pogoj vspodaj
+            else if ($stolpec == "Koliko" && $podatki->$stolpec == "0"){
+                $podatkifilterSQL = mysqli_real_escape_string($povezava, $podatki->$stolpec);
+                
+                $podatkifilter = htmlspecialchars($podatkifilterSQL, ENT_QUOTES);
             }  
 
 
             if($Stolpci[$i][1] == "NO"){
                
-                if(empty($podatkifilter) && ($stolpec == "Koliko" && $podatkifilter == "0")){
+                if(empty($podatkifilter) && ($stolpec == "Koliko" && $podatkifilter != "0")){
                     mysqli_close($povezava);
                     http_response_code(400);
                     echo json_encode(array("sporocilo" => "Vse ni vključeno"), JSON_UNESCAPED_UNICODE);
