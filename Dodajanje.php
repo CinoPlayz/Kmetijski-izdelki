@@ -111,6 +111,7 @@ if(isset($_POST['tabela'])){
                         $idNahaja = strpos($podatekpostSQL, " - ");
                         $id = substr($podatekpostSQL, ($idNahaja+3));
                         array_push($podatkiZaPoslat, array($tabele[$i] => $id));
+                        $_SESSION['temp'][$tabele[$i]] = $podatekpostSQL;
                     } 
                     else if($tabela == "Stranka" && $tabele[$i] == "Posta"){
                         $postaNahaja = strpos($podatekpostSQL, " - ");
@@ -150,12 +151,20 @@ if(isset($_POST['tabela'])){
     
     
     $jsonZaPoslat .= "}";
-        
-    mysqli_close($povezava);
 
-    //Dobimo URL za curl
-    $povnaslov =  $_SERVER['SERVER_NAME'] . $_SERVER['PHP_SELF'];
-    $urldel = str_replace("Dodajanje.php", "api/ustvarjanje.php", $povnaslov) . "?tabela=" . urlencode($tabela);;
+    mysqli_close($povezava);
+    
+    //Preverimo če naj prezri ponavljajoče vnose za tabelo prodaja je to
+    if(isset($_POST['prisilnivpis']) && $_POST['prisilnivpis'] == "ja"){
+        //Dobimo URL za curl
+        $povnaslov =  $_SERVER['SERVER_NAME'] . $_SERVER['PHP_SELF'];
+        $urldel = str_replace("Dodajanje.php", "api/ustvarjanje.php", $povnaslov) . "?tabela=" . urlencode($tabela) . "&prisilnivpis=ja";
+    }
+    else{
+        //Dobimo URL za curl
+        $povnaslov =  $_SERVER['SERVER_NAME'] . $_SERVER['PHP_SELF'];
+        $urldel = str_replace("Dodajanje.php", "api/ustvarjanje.php", $povnaslov) . "?tabela=" . urlencode($tabela);
+    }
 
     //URL spremenimo tako da presledge zamenjamo z %20 (rabi bit encodan)
     $urlneki = str_replace ( ' ', '%20', $urldel);
@@ -340,10 +349,10 @@ function Izjeme($tabela, $stolpec){
                                                 else if($vrstica['Key'] == "PRI" && $vrstica['Extra'] == "auto_increment" ){
                                                     //Nej ne prikaže
                                                 }
-                                                else if($vrstica['Key'] == "MUL" && $vrstica['Field'] == "Uporabnisko_ime" && $tabela = "Prodaja"){
+                                                else if($vrstica['Key'] == "MUL" && $vrstica['Field'] == "Uporabnisko_ime" && $tabela == "Prodaja"){
                                                     //Nej ne prikaže (Za tabelo Prodaja)
                                                 } 
-                                                else if($vrstica['Field'] == "Datum_Vpisa" && $tabela = "Prodaja"){
+                                                else if($vrstica['Field'] == "Datum_Vpisa" && $tabela == "Prodaja"){
                                                     //Nej ne prikaže (Za tabelo Prodaja)
                                                 }
                                                 //Če je Datum_Prodaje za vnos prikaže vnos z izbero datuma
@@ -472,18 +481,12 @@ function Izjeme($tabela, $stolpec){
 
                                                         echo "<div class='formvnosItem'>";
                                                         echo "<div class='vnosNaslov'>Stranka:</div>";
-                                                        echo "<input list='Stranke' name='". $vrstica['Field'] ."' id='Stranka'/>";
+                                                        echo "<input list='Stranke' name='". $vrstica['Field'] ."' id='Stranka' value='$sessionStranka'/>";
                                                         echo "<datalist id='Stranke'>";
 
                                                         while($vrsticaStranka = mysqli_fetch_assoc($rezultatStranka)){
-
-                                                            //Če je seessionStranka enak trenutnemu izdelku potem bo ta izbran
-                                                            if($sessionStranka == $vrsticaStranka['id_stranke']){
-                                                                echo "<option value='" . $vrsticaStranka['Priimek'] . " " . $vrsticaStranka['Ime'] . " - " . $vrsticaStranka['id_stranke'] . "' selected>";
-                                                            }
-                                                            else{
-                                                                echo "<option value='" . $vrsticaStranka['Priimek'] . " " . $vrsticaStranka['Ime'] . " - " . $vrsticaStranka['id_stranke'] . "'>";
-                                                            }
+                                                            echo "<option value='" . $vrsticaStranka['Priimek'] . " " . $vrsticaStranka['Ime'] . " - " . $vrsticaStranka['id_stranke'] . "'>";
+                                                        
                                                         }
                                                         echo "</datalist>";
                                                         echo "</div>";
@@ -586,7 +589,7 @@ function Izjeme($tabela, $stolpec){
                                                 if($vrstica['Key'] == "PRI" && $vrstica['Extra'] == "auto_increment" ){
                                                     //Naj ne da v tabele
                                                 }
-                                                else if($vrstica['Key'] == "MUL" && $vrstica['Field'] == "Uporabnisko_ime" && $tabela = "Prodaja"){
+                                                else if($vrstica['Key'] == "MUL" && $vrstica['Field'] == "Uporabnisko_ime" && $tabela == "Prodaja"){
                                                     //Naj ne da v tabele
                                                 } 
                                                 else{
@@ -595,6 +598,14 @@ function Izjeme($tabela, $stolpec){
                                                 
                                             }
                                            
+                                        }
+
+                                        //Prezri ponavljajoče vnose za tebelo prodaja
+                                        if($tabela == "Prodaja"){
+                                            echo "<div class='formvnosItem'>";
+                                            echo "<input type='checkbox' name='prisilnivpis' value='ja'>";
+                                            echo "<span>Prezri ponavljajoč vnos</span>";
+                                            echo "</div>";
                                         }
 
                                         echo "<input type='hidden' name='tabela' value='$tabela'>";

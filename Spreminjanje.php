@@ -409,11 +409,11 @@ function Izjeme($tabela, $stolpec){
                                                             <input type='text' name='". $vrstica['Field'] ."Nov' class='ipPB' value='". $VrsticaPodatki[$vrstica['Field']] ."'>
                                                             </div>";
                                                 }
-                                                else if($vrstica['Key'] == "MUL" && $vrstica['Field'] == "Uporabnisko_ime" && $tabela = "Prodaja"){
+                                                else if($vrstica['Key'] == "MUL" && $vrstica['Field'] == "Uporabnisko_ime" && $tabela == "Prodaja"){
                                                     //Nej ne prikaže (Za tabelo Prodaja)
                                                 } 
                                                 //Če je Datum_Prodaje za vnos prikaže vnos z izbero datuma
-                                                else if($vrstica['Field'] == "Datum_Prodaje" && $tabela = "Prodaja"){
+                                                else if($vrstica['Field'] == "Datum_Prodaje" && $tabela == "Prodaja"){
                                                     if(isset($_SESSION['temp'][$vrstica['Field']])){
                                                         echo "<div class='formvnosItem' style='display:flex; flex-direction: column; align-items: center;'>
                                                         <div class='vnosNaslov'>". str_replace("_", " ", $vrstica['Field']).":</div>
@@ -438,7 +438,7 @@ function Izjeme($tabela, $stolpec){
                                                     }
                                                 }
                                                 //Če je Datum_Vpisa za vnos prikaže vnos z izbero datuma
-                                                else if($vrstica['Field'] == "Datum_Vpisa" && $tabela = "Prodaja"){
+                                                else if($vrstica['Field'] == "Datum_Vpisa" && $tabela == "Prodaja"){
                                                     if(isset($_SESSION['temp'][$vrstica['Field']])){
                                                         echo "<div class='formvnosItem' style='display:flex; flex-direction: column; align-items: center;'>
                                                         <div class='vnosNaslov'>". str_replace("_", " ", $vrstica['Field']).":</div>
@@ -727,7 +727,7 @@ function Izjeme($tabela, $stolpec){
                                                 if($vrstica['Key'] == "PRI" && $vrstica['Extra'] == "auto_increment" ){
                                                     //Naj ne da v tabele
                                                 }
-                                                else if($vrstica['Key'] == "MUL" && $vrstica['Field'] == "Uporabnisko_ime" && $tabela = "Prodaja"){
+                                                else if($vrstica['Key'] == "MUL" && $vrstica['Field'] == "Uporabnisko_ime" && $tabela == "Prodaja"){
                                                     //Naj ne da v tabele
                                                 } 
                                                 else{

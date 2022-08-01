@@ -63,7 +63,7 @@ if(mysqli_num_rows($rezultat) > 0){
             else{
                 $Stolpci = BranjeStolpcev($tabela, $povezava);
             }
-        }
+        }        
 
         $podatki = json_decode(file_get_contents("php://input"));
 
@@ -145,6 +145,35 @@ if(mysqli_num_rows($rezultat) > 0){
                   
             }          
         }
+
+
+        //Preveri če je tabela prodaja in če je sličajno že vpisan podatek za to stranko na isti dan
+        //Če je slučajno prisilnivpis sputsti ta del kode
+        if(!isset($_GET['prisilnivpis'])){
+
+            if($tabela == "Prodaja"){
+                //Dobi datumprodaje in ustvari končni in začetni datum za ta dan
+                $datumprodaje_ustvarjen = date_create($StolpciZPodatki[0][1]);
+                $datumprodaje_zacetek =  date_format($datumprodaje_ustvarjen, 'Y-m-d') . " 00:00:00";
+                $datumprodaje_konec =  date_format($datumprodaje_ustvarjen, 'Y-m-d') . " 23:59:59";
+    
+                $idstranke = $StolpciZPodatki[3][1];
+                $izdelek = $StolpciZPodatki[5][1];
+    
+    
+                $sql = "SELECT * FROM Prodaja WHERE Datum_Prodaje >= '$datumprodaje_zacetek' AND Datum_Prodaje <= '$datumprodaje_konec' AND id_stranke = $idstranke AND Izdelek = '$izdelek';";
+                
+                $rezultatObstaja = mysqli_query($povezava, $sql);
+    
+                if(mysqli_num_rows($rezultatObstaja) > 0){
+                    mysqli_close($povezava);
+                    http_response_code(400);
+                    echo json_encode(array("sporocilo" => "Vnos za isto stranko na ta dan za ta izdelek že obstaja"), JSON_UNESCAPED_UNICODE);
+                    exit;
+                }
+            }
+        }
+
 
         //SQL stavek razdljen v dva dela za vnos ter kako velik je array $StolpciZpodatki
         $sqlPrviDel = "INSERT INTO $tabela(";
