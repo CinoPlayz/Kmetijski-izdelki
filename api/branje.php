@@ -150,7 +150,7 @@ function Branje($tabela, $povezava){
             
         }
         else{
-            $stmt = $povezava->prepare("SELECT * Prodaja FROM  p INNER JOIN Stranka s ON p.id_stranke = s.id_stranke INNER JOIN Izdelek i ON p.Izdelek = i.Izdelek ORDER BY p.Datum_Prodaje DESC");
+            $stmt = $povezava->prepare("SELECT * FROM Prodaja p INNER JOIN Stranka s ON p.id_stranke = s.id_stranke INNER JOIN Izdelek i ON p.Izdelek = i.Izdelek ORDER BY p.Datum_Prodaje DESC");
         }
         
     }

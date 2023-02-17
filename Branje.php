@@ -67,11 +67,7 @@ unset($_SESSION['temp']);
                         <thead>
                             <tr>
                                 <?php 
-                                define('LahkoPovezava', TRUE);
-                                require("PovezavaZBazo.php");
-                                $tabelafilter = htmlspecialchars($_GET['tabela'], ENT_QUOTES);
-
-                                $tabela = mysqli_real_escape_string($povezava, $tabelafilter);
+                                $tabela = htmlspecialchars($_GET['tabela'], ENT_QUOTES);
 
                                 if($tabela == "Uporabnik" || $tabela == "Prenosi" || $tabela == "Posta"){
                                     mysqli_close($povezava);
@@ -79,120 +75,132 @@ unset($_SESSION['temp']);
                                     exit;
                                 }
 
-                                $sql = "SHOW columns FROM $tabela;";
-
-                                $rezultat = mysqli_query($povezava, $sql);
-
                                 $tabele = array();
 
-                                if($rezultat == true && mysqli_num_rows($rezultat) > 0){
+                                //Preveri če je tabela Prodaja oz. Načrtovani_Prevzemi, Stranka in Izdelki če je zapiše drugačni zapored stolpcev
+                                if($tabela == "Prodaja"){
+                                    echo "<th>ID Prodaje</th>";
+                                    array_push($tabele, array("id_prodaje", "PRI"));
 
-                                    //Preveri če je tabela Prodaja oz. Načrtovani_Prevzemi, Stranka in Izdelki če je zapiše drugačni zapored stolpcev
-                                    if($tabela == "Prodaja"){
-                                        echo "<th>ID Prodaje</th>";
-                                        array_push($tabele, array("id_prodaje", "PRI"));
+                                    echo "<th>Datum Prodaje</th>";
+                                    array_push($tabele, array("Datum_Prodaje", ""));
 
-                                        echo "<th>Datum Prodaje</th>";
-                                        array_push($tabele, array("Datum_Prodaje", ""));
+                                    echo "<th>ID Stranke</th>";
+                                    array_push($tabele, array("id_stranke", "MOL"));
 
-                                        echo "<th>ID Stranke</th>";
-                                        array_push($tabele, array("id_stranke", "MOL"));
+                                    echo "<th>Priimek</th>";
+                                    array_push($tabele, array("Priimek", "MOL"));
 
-                                        echo "<th>Priimek</th>";
-                                        array_push($tabele, array("Priimek", "MOL"));
+                                    echo "<th>Ime</th>";
+                                    array_push($tabele, array("Ime", "MOL"));     
+                                                                        
+                                    echo "<th>Izdelek</th>";
+                                    array_push($tabele, array("Izdelek", "MOL"));
 
-                                        echo "<th>Ime</th>";
-                                        array_push($tabele, array("Ime", "MOL"));     
-                                                                            
-                                        echo "<th>Izdelek</th>";
-                                        array_push($tabele, array("Izdelek", "MOL"));
+                                    echo "<th>Količina</th>";
+                                    array_push($tabele, array("Koliko", "")); 
 
-                                        echo "<th>Količina</th>";
-                                        array_push($tabele, array("Koliko", "")); 
+                                    echo "<th>Merska Enota</th>";
+                                    array_push($tabele, array("Merska_enota", "")); 
 
-                                        echo "<th>Merska Enota</th>";
-                                        array_push($tabele, array("Merska_enota", "")); 
+                                    echo "<th>Datum Vpisa</th>";
+                                    array_push($tabele, array("Datum_Vpisa", ""));                                        
 
-                                        echo "<th>Datum Vpisa</th>";
-                                        array_push($tabele, array("Datum_Vpisa", ""));                                        
-
-                                        echo "<th>Vpisal</th>";
-                                        array_push($tabele, array("Uporabnisko_ime", "MOL"));
-                                    }
-                                    else if($tabela == "Nacrtovani_Prevzemi"){
-                                        echo "<th>ID Nacrtovanega Prevzema</th>";
-                                        array_push($tabele, array("id_nacrtovani_prevzem", "PRI"));
-
-                                        echo "<th>Izdelek</th>";
-                                        array_push($tabele, array("Izdelek", "MOL"));
-
-                                        echo "<th>Količina</th>";
-                                        array_push($tabele, array("Kolicina", ""));
-
-                                        echo "<th>Merska Enota</th>";
-                                        array_push($tabele, array("Merska_enota", ""));
-
-                                        echo "<th>Dan</th>";
-                                        array_push($tabele, array("Dan", ""));
-
-                                        echo "<th>Čas</th>";
-                                        array_push($tabele, array("Cas", ""));
-
-                                        echo "<th>ID Stranke</th>";
-                                        array_push($tabele, array("id_stranke", "MOL"));
-
-                                        echo "<th>Priimek</th>";
-                                        array_push($tabele, array("Priimek", "MOL"));
-
-                                        echo "<th>Ime</th>";
-                                        array_push($tabele, array("Ime", "MOL"));     
-
-                                        echo "<th>Datum Enkratnega prevzema</th>";
-                                        array_push($tabele, array("Cas_Enkrat", ""));      
-                                    }
-                                    else if($tabela == "Stranka"){
-                                        echo "<th>ID Stranke</th>";
-                                        array_push($tabele, array("id_stranke", "PRI"));
-
-                                        echo "<th>Priimek</th>";
-                                        array_push($tabele, array("Priimek", ""));
-
-                                        echo "<th>Ime</th>";
-                                        array_push($tabele, array("Ime", ""));
-
-                                        echo "<th>Naslov</th>";
-                                        array_push($tabele, array("Naslov", ""));
-
-                                        echo "<th>Pošta</th>";
-                                        array_push($tabele, array("Posta", ""));
-
-                                        echo "<th>Kraj</th>";
-                                        array_push($tabele, array("Kraj", ""));
-
-                                    }    
-                                    else if($tabela == "Izdelek"){
-                                        echo "<th>Izdelek</th>";
-                                        array_push($tabele, array("Izdelek", "PRI"));
-
-                                        echo "<th>Merska enota</th>";
-                                        array_push($tabele, array("Merska_enota", ""));
-
-                                        echo "<th>Cena</th>";
-                                        array_push($tabele, array("Cena", ""));
-
-                                        echo "<th>Ekološko</th>";
-                                        array_push($tabele, array("Ekolosko", ""));
-                                    }                                    
-                                    else{
-                                        while($vrstica = mysqli_fetch_assoc($rezultat)){
-                                            echo "<th>". str_replace("_", " ", $vrstica['Field'])."</th>";
-                                            array_push($tabele, array($vrstica['Field'], $vrstica['Key']));
-                                                                                    
-                                        }
-                                    }
-                                    
+                                    echo "<th>Vpisal</th>";
+                                    array_push($tabele, array("Uporabnisko_ime", "MOL"));
                                 }
-                                
+                                else if($tabela == "Nacrtovani_Prevzemi"){
+                                    echo "<th>ID Načrtovanega Prevzema</th>";
+                                    array_push($tabele, array("id_nacrtovani_prevzem", "PRI"));
+
+                                    echo "<th>Izdelek</th>";
+                                    array_push($tabele, array("Izdelek", "MOL"));
+
+                                    echo "<th>Količina</th>";
+                                    array_push($tabele, array("Kolicina", ""));
+
+                                    echo "<th>Merska Enota</th>";
+                                    array_push($tabele, array("Merska_enota", ""));
+
+                                    echo "<th>Dan</th>";
+                                    array_push($tabele, array("Dan", ""));
+
+                                    echo "<th>Čas</th>";
+                                    array_push($tabele, array("Cas", ""));
+
+                                    echo "<th>ID Stranke</th>";
+                                    array_push($tabele, array("id_stranke", "MOL"));
+
+                                    echo "<th>Priimek</th>";
+                                    array_push($tabele, array("Priimek", "MOL"));
+
+                                    echo "<th>Ime</th>";
+                                    array_push($tabele, array("Ime", "MOL"));     
+
+                                    echo "<th>Datum Enkratnega prevzema</th>";
+                                    array_push($tabele, array("Cas_Enkrat", ""));      
+                                }
+                                else if($tabela == "Stranka"){
+                                    echo "<th>ID Stranke</th>";
+                                    array_push($tabele, array("id_stranke", "PRI"));
+
+                                    echo "<th>Priimek</th>";
+                                    array_push($tabele, array("Priimek", ""));
+
+                                    echo "<th>Ime</th>";
+                                    array_push($tabele, array("Ime", ""));
+
+                                    echo "<th>Naslov</th>";
+                                    array_push($tabele, array("Naslov", ""));
+
+                                    echo "<th>Pošta</th>";
+                                    array_push($tabele, array("Posta", ""));
+
+                                    echo "<th>Kraj</th>";
+                                    array_push($tabele, array("Kraj", ""));
+
+                                }    
+                                else if($tabela == "Izdelek"){
+                                    echo "<th>Izdelek</th>";
+                                    array_push($tabele, array("Izdelek", "PRI"));
+
+                                    echo "<th>Merska enota</th>";
+                                    array_push($tabele, array("Merska_enota", ""));
+
+                                    echo "<th>Cena</th>";
+                                    array_push($tabele, array("Cena", ""));
+
+                                    echo "<th>Ekološko</th>";
+                                    array_push($tabele, array("Ekolosko", ""));
+                                }  
+                                else if($tabela == "Uporabnik"){
+                                    echo "<th>Uporabniško ime</th>";
+                                    array_push($tabele, array("Uporabnisko_ime", "PRI"));
+
+                                    echo "<th>Ime</th>";
+                                    array_push($tabele, array("Ime", ""));
+
+                                    echo "<th>Priimek</th>";
+                                    array_push($tabele, array("Priimek", ""));
+
+                                    echo "<th>Geslo</th>";
+                                    array_push($tabele, array("Geslo", ""));
+
+                                    echo "<th>Token Web</th>";
+                                    array_push($tabele, array("TokenWeb", ""));
+
+                                    echo "<th>Token Android</th>";
+                                    array_push($tabele, array("TokenAndroid", ""));
+
+                                    echo "<th>Pravila</th>";
+                                    array_push($tabele, array("Pravila", ""));
+                                }                                     
+                                else{
+                                    //Neka napaka
+                                    mysqli_close($povezava);
+                                    header("location: Domov.php");
+                                    exit;
+                                }
                                 
 
                                 ?>
