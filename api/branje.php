@@ -28,11 +28,16 @@ $headersfilterSQL = mysqli_real_escape_string($povezava, $headers);
 $headersfilter = htmlspecialchars($headersfilterSQL, ENT_QUOTES);
 
 $token = str_replace("Bearer ", "", $headersfilter);
+$tokensha = hash("sha256", $token);
 
-
-$sql = "SELECT * FROM Uporabnik WHERE TokenWeb='". hash("sha256", $token) . "' OR TokenAndroid='". hash("sha256", $token) . "'";
-
-$rezultat = mysqli_query($povezava, $sql);
+//Nastavi statment
+$stmt = $povezava->prepare("SELECT * FROM Uporabnik WHERE TokenWeb=? OR TokenAndroid=?");
+//Da spremenljivke v statmente
+$stmt->bind_param("ss", $tokensha, $tokensha);
+//Izvede statment
+$stmt->execute();
+//Dobi rezultate
+$rezultat = $stmt->get_result();
 
 if(mysqli_num_rows($rezultat) > 0){
     if(isset($_GET['tabela'])){
@@ -72,16 +77,19 @@ else{
 
 
 function Branje($tabela, $povezava){
+    $stmt = "";
+
     if($tabela == "Nacrtovani_Prevzemi"){
         if(isset($_GET['dan'])){
             $danfilter = htmlspecialchars($_GET['dan'], ENT_QUOTES);
     
             $dan = mysqli_real_escape_string($povezava, $danfilter);
 
-            $sql = "SELECT * FROM $tabela n INNER JOIN Stranka s ON n.id_stranke = s.id_stranke INNER JOIN Izdelek i ON n.Izdelek = i.Izdelek WHERE Dan = '$dan'";
+            $stmt = $povezava->prepare("SELECT * FROM Nacrtovani_Prevzemi n INNER JOIN Stranka s ON n.id_stranke = s.id_stranke INNER JOIN Izdelek i ON n.Izdelek = i.Izdelek WHERE Dan = ?");
+            $stmt->bind_param("s", $dan);
         }
         else{
-            $sql = "SELECT * FROM $tabela n INNER JOIN Stranka s ON n.id_stranke = s.id_stranke INNER JOIN Izdelek i ON n.Izdelek = i.Izdelek";
+            $stmt = $povezava->prepare("SELECT * FROM Nacrtovani_Prevzemi n INNER JOIN Stranka s ON n.id_stranke = s.id_stranke INNER JOIN Izdelek i ON n.Izdelek = i.Izdelek");            
         }
     }
     else if($tabela == "Prodaja"){
@@ -90,7 +98,8 @@ function Branje($tabela, $povezava){
     
             $omejitev = mysqli_real_escape_string($povezava, $omejitevfilter);
 
-            $sql = "SELECT * FROM $tabela p INNER JOIN Stranka s ON p.id_stranke = s.id_stranke INNER JOIN Izdelek i ON p.Izdelek = i.Izdelek ORDER BY p.Datum_Prodaje DESC LIMIT $omejitev ";
+            $stmt = $povezava->prepare("SELECT * FROM Prodaja p INNER JOIN Stranka s ON p.id_stranke = s.id_stranke INNER JOIN Izdelek i ON p.Izdelek = i.Izdelek ORDER BY p.Datum_Prodaje DESC LIMIT ?");
+            $stmt->bind_param("i", $omejitev);
         }
         else if(isset($_GET['DatumOd']) && isset($_GET['DatumDo']) && isset($_GET['Stranka']) && isset($_GET['Izdelek'])){
             //Za sestavljanje računov
@@ -127,10 +136,12 @@ function Branje($tabela, $povezava){
             }
             else{
                 if($Izdelek == "*"){
-                    $sql = "SELECT *  FROM $tabela p INNER JOIN Stranka s ON p.id_stranke = s.id_stranke INNER JOIN Izdelek i ON p.Izdelek = i.Izdelek WHERE s.id_stranke = $id AND p.Datum_Prodaje >= '$DatumOd' AND p.Datum_Prodaje <= '$DatumDo 23:59:59'  ORDER BY p.Datum_Prodaje DESC";
+                    $stmt = $povezava->prepare("SELECT * FROM Prodaja p INNER JOIN Stranka s ON p.id_stranke = s.id_stranke INNER JOIN Izdelek i ON p.Izdelek = i.Izdelek WHERE s.id_stranke = ? AND p.Datum_Prodaje >= ? AND p.Datum_Prodaje <= CONCAT(?, ' 23:59:59')  ORDER BY p.Datum_Prodaje DESC");
+                    $stmt->bind_param("iss", $id, $DatumOd, $DatumDo);
                 }
-                else{
-                    $sql = "SELECT *  FROM $tabela p INNER JOIN Stranka s ON p.id_stranke = s.id_stranke INNER JOIN Izdelek i ON p.Izdelek = i.Izdelek WHERE i.Izdelek='$Izdelek' AND s.id_stranke = $id AND p.Datum_Prodaje >= '$DatumOd' AND p.Datum_Prodaje <= '$DatumDo 23:59:59'  ORDER BY p.Datum_Prodaje DESC";
+                else{                    
+                    $stmt = $povezava->prepare("SELECT * FROM Prodaja p INNER JOIN Stranka s ON p.id_stranke = s.id_stranke INNER JOIN Izdelek i ON p.Izdelek = i.Izdelek WHERE i.Izdelek=? AND s.id_stranke = ? AND p.Datum_Prodaje >= ? AND p.Datum_Prodaje <= CONCAT(?, ' 23:59:59')  ORDER BY p.Datum_Prodaje DESC");
+                    $stmt->bind_param("siss", $Izdelek, $id, $DatumOd, $DatumDo);
                 }
 
             }
@@ -139,22 +150,39 @@ function Branje($tabela, $povezava){
             
         }
         else{
-            $sql = "SELECT *  FROM $tabela p INNER JOIN Stranka s ON p.id_stranke = s.id_stranke INNER JOIN Izdelek i ON p.Izdelek = i.Izdelek ORDER BY p.Datum_Prodaje DESC";
+            $stmt = $povezava->prepare("SELECT * Prodaja FROM  p INNER JOIN Stranka s ON p.id_stranke = s.id_stranke INNER JOIN Izdelek i ON p.Izdelek = i.Izdelek ORDER BY p.Datum_Prodaje DESC");
         }
         
     }
     else if($tabela == "Stranka"){
         //Izpis podatkov za tabelo Stranka
-        $sql = "SELECT id_stranke, Ime, Priimek, Naslov, s.Posta, Kraj FROM $tabela s LEFT JOIN Posta p ON s.Posta = p.Postana_stevilka";
+        $stmt = $povezava->prepare("SELECT id_stranke, Ime, Priimek, Naslov, s.Posta, Kraj FROM Stranka s LEFT JOIN Posta p ON s.Posta = p.Postana_stevilka");
+    }
+    else if($tabela == "Izdelek"){
+        $stmt = $povezava->prepare("SELECT * FROM Izdelek");
+    }
+    else if($tabela == "Posta"){
+        $stmt = $povezava->prepare("SELECT * FROM Posta");
+    }
+    else if($tabela == "Prenosi"){
+        $stmt = $povezava->prepare("SELECT * FROM Prenosi");
+    }
+    else if($tabela == "Uporabnik"){
+        $stmt = $povezava->prepare("SELECT * FROM Uporabnik");
     }
     else{
-        $sql = "SELECT * FROM $tabela";
+        mysqli_close($povezava);
+        http_response_code(400);
+        exit;
     }
 
 
     
-            
-    $rezultat = mysqli_query($povezava, $sql);
+    $stmt->execute();
+    //Dobi rezultate
+    $rezultat = $stmt->get_result();
+
+    //$rezultat = mysqli_query($povezava, $sql);
     if($rezultat == true && mysqli_num_rows($rezultat) > 0){
 
         $podatki = array();                
