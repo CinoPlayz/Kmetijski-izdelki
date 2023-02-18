@@ -18,6 +18,14 @@ if(isset($_POST['izbris'])){
 
     $tabela = mysqli_real_escape_string($povezava, $tabelafilter);
 
+    //Preveri če je tabela ena, ki je že navedena s tem se izognemo injekciji saj je samo določena dovoljena
+    $tabele_dovoljene = array("Uporabnik", "Prenosi", "Posta", "Prodaja", "Nacrtovani_Prevzemi", "Stranka", "Izdelek");
+    if (!in_array($tabela, $tabele_dovoljene)){
+        mysqli_close($povezava);
+        header("location: DomovAdmin.php");
+        exit;
+    }
+
 
     if($_POST['izbris'] == "DA"){
 
@@ -152,6 +160,14 @@ if(isset($_POST['izbris'])){
 
                 $tabela = mysqli_real_escape_string($povezava, $tabelafilter); 
 
+                //Preveri če je tabela ena, ki je že navedena s tem se izognemo injekciji saj je samo določena dovoljena
+                $tabele_dovoljene = array("Uporabnik", "Prenosi", "Posta", "Prodaja", "Nacrtovani_Prevzemi", "Stranka", "Izdelek");
+                if (!in_array($tabela, $tabele_dovoljene)){
+                    mysqli_close($povezava);
+                    header("location: DomovAdmin.php");
+                    exit;
+                }
+
                 $stolpec = "";
 
                 $sql = "SHOW columns FROM $tabela;";
@@ -198,11 +214,10 @@ if(isset($_POST['izbris'])){
 
                 <?php 
                     if(isset($_GET['napaka'])){
-                        $napaka = str_replace ( '%20', ' ', $_GET['napaka']);
-                        echo "<div class='napaka'>$napaka</div>";                        
-
-                    }
-                
+                        $napakanonSenitized = str_replace ( '%20', ' ', $_GET['napaka']);
+                        $napaka = htmlspecialchars($napakanonSenitized, ENT_QUOTES);
+                        echo "<div class='napaka'>$napaka</div>";       
+                    }                
                 ?>
 
                 <div class="prepricani" style="color: red;">To bo izbrisalo naslednje podatke:</div>
@@ -221,16 +236,28 @@ if(isset($_POST['izbris'])){
                     while($vrstica = mysqli_fetch_array($rezultatStolpci)){
                         echo "<th>" . str_replace("_", " ", $vrstica['Field'])  . "</th>";
                     }
+                   
+                    //Statmenta select stavek ($tabela in $stolpec dobimo od strežnika ni user input)
+                    $sql = "SELECT * FROM $tabela WHERE $stolpec";
 
-                    if(is_numeric($podatek)){
-                        $sql = "SELECT * FROM $tabela WHERE $stolpec=$podatek;";
+                    if (is_numeric($podatek)){
+                        $stmt = $povezava->prepare("$sql=?;");
+                        $stmt->bind_param("i", $podatek); 
                     }
                     else{
-                        $sql = "SELECT * FROM $tabela WHERE $stolpec='$podatek';";
+                        $stmt = $povezava->prepare("$sql=?;");
+                        $stmt->bind_param("s", $podatek); 
                     }
+                
+                    $stmt->execute();
+                    $rezultat = $stmt->get_result();
 
-
-                    $rezultat = mysqli_query($povezava, $sql);
+                    //Preveri če je navedeni podatek sploh obstaja oz. če je rezultat če ni samo redirecta
+                    if (mysqli_num_rows($rezultat) == 0){
+                        mysqli_close($povezava);
+                        header("location: Domov.php");
+                        exit;
+                    }
 
                     while($vrstica = mysqli_fetch_row($rezultat)){
                         echo "<tr>";
@@ -270,15 +297,9 @@ if(isset($_POST['izbris'])){
                         $tabelainQuery = array();
                         for($i = 0; $i < count($ForeignKeyTabeleAtribut); $i++){
 
-                            if(is_numeric($podatek)){
-                                $sql = "SELECT * FROM ". $ForeignKeyTabeleAtribut[$i]['TABLE_NAME'] . " WHERE " . $ForeignKeyTabeleAtribut[$i]['COLUMN_NAME'] . "=$podatek;";
-                            }
-                            else{
-                                $sql = "SELECT * FROM ". $ForeignKeyTabeleAtribut[$i]['TABLE_NAME'] . " WHERE " . $ForeignKeyTabeleAtribut[$i]['COLUMN_NAME'] . "='$podatek';";
-                            }
-
+                            $sql = "SELECT * FROM ". $ForeignKeyTabeleAtribut[$i]['TABLE_NAME'] . " WHERE " . $ForeignKeyTabeleAtribut[$i]['COLUMN_NAME'];
+                        
                             array_push($tabelainQuery, array($ForeignKeyTabeleAtribut[$i]['TABLE_NAME'], $sql));
-                            
                         }
 
                         for($i = 0; $i < count($tabelainQuery); $i++){
@@ -293,8 +314,20 @@ if(isset($_POST['izbris'])){
                             while($vrstica = mysqli_fetch_array($rezultatStolpci)){
                                 echo "<th>" . str_replace("_", " ", $vrstica['Field'])  . "</th>";
                             }
+                            
+                            //Da podatek v sql statment
+                            $stmt = "";
+                            if(is_numeric($podatek)){
+                                $stmt = $povezava->prepare($tabelainQuery[$i][1] ."=?;");
+                                $stmt->bind_param("i", $podatek);        
+                            }
+                            else{
+                                $stmt = $povezava->prepare($tabelainQuery[$i][1] ."=?;");
+                                $stmt->bind_param("s", $podatek);  
+                            }
 
-                            $rezultat = mysqli_query($povezava, $tabelainQuery[$i][1]);
+                            $stmt->execute();
+                            $rezultat = $stmt->get_result();
 
                             while($vrstica = mysqli_fetch_row($rezultat)){
                                 echo "<tr>";

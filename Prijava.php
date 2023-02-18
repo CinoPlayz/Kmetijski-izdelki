@@ -39,9 +39,11 @@ if(isset($_POST['upime']) && isset($_POST['geslo'])){
 
     unset($_SESSION['temp']);
 
-    $sql = "SELECT Geslo, Pravila FROM Uporabnik WHERE Uporabnisko_ime='$up'";
+    $stmt = $povezava->prepare("SELECT Geslo, Pravila FROM Uporabnik WHERE Uporabnisko_ime=?");
+    $stmt->bind_param("s", $up); 
+    $stmt->execute();
 
-    $rezultat = mysqli_query($povezava, $sql);
+    $rezultat = $stmt->get_result();
     if(mysqli_num_rows($rezultat) > 0){
 
         $vrstica = mysqli_fetch_assoc($rezultat);
@@ -53,8 +55,11 @@ if(isset($_POST['upime']) && isset($_POST['geslo'])){
             $token = newToken(80);
             $_SESSION['Token'] = $token;
 
-            $sql = "UPDATE Uporabnik SET TokenWeb = '" . hash("sha256", $token) . "' WHERE Uporabnisko_ime='$up'";
-            mysqli_query($povezava, $sql);
+            $token = hash("sha256", $token);
+
+            $stmt = $povezava->prepare("UPDATE Uporabnik SET TokenWeb=? WHERE Uporabnisko_ime=?");
+            $stmt->bind_param("ss", $token, $up); 
+            $stmt->execute();
 
             mysqli_close($povezava);
             header("location: Domov.php");

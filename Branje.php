@@ -172,29 +172,7 @@ unset($_SESSION['temp']);
 
                                     echo "<th>Ekološko</th>";
                                     array_push($tabele, array("Ekolosko", ""));
-                                }  
-                                else if($tabela == "Uporabnik"){
-                                    echo "<th>Uporabniško ime</th>";
-                                    array_push($tabele, array("Uporabnisko_ime", "PRI"));
-
-                                    echo "<th>Ime</th>";
-                                    array_push($tabele, array("Ime", ""));
-
-                                    echo "<th>Priimek</th>";
-                                    array_push($tabele, array("Priimek", ""));
-
-                                    echo "<th>Geslo</th>";
-                                    array_push($tabele, array("Geslo", ""));
-
-                                    echo "<th>Token Web</th>";
-                                    array_push($tabele, array("TokenWeb", ""));
-
-                                    echo "<th>Token Android</th>";
-                                    array_push($tabele, array("TokenAndroid", ""));
-
-                                    echo "<th>Pravila</th>";
-                                    array_push($tabele, array("Pravila", ""));
-                                }                                     
+                                }                                
                                 else{
                                     //Neka napaka
                                     mysqli_close($povezava);

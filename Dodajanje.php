@@ -20,7 +20,9 @@ if(isset($_POST['tabela'])){
 
     $tabela = mysqli_real_escape_string($povezava, $tabelafilter);
 
-    if($tabela == "Uporabnik" || $tabela == "Prenosi" || $tabela == "Posta"){
+    //Preveri če je tabela ena, ki je že navedena s tem se izognemo injekciji saj je samo določena dovoljena
+    $tabele_dovoljene = array("Prodaja", "Nacrtovani_Prevzemi", "Stranka", "Izdelek");
+    if (!in_array($tabela, $tabele_dovoljene)){
         mysqli_close($povezava);
         header("location: Domov.php");
         exit;
@@ -293,11 +295,14 @@ function Izjeme($tabela, $stolpec){
 
                                     $tabela = mysqli_real_escape_string($povezava, $tabelafilter);
 
-                                    if($tabela == "Uporabnik" || $tabela == "Prenosi" || $tabela == "Posta"){
+                                    //Preveri če je tabela ena, ki je že navedena s tem se izognemo injekciji saj je samo določena dovoljena
+                                    $tabele_dovoljene = array("Prodaja", "Nacrtovani_Prevzemi", "Stranka", "Izdelek");
+                                    if (!in_array($tabela, $tabele_dovoljene)){
                                         mysqli_close($povezava);
                                         header("location: Domov.php");
                                         exit;
                                     }
+
 
                                     $sql = "SHOW columns FROM $tabela;";
 
@@ -642,13 +647,15 @@ function Izjeme($tabela, $stolpec){
 
                                                 //Vrne true če ni prepoznana naoaka, drugače samo izpiše napako
                                                 if(NapakaSporocilo($tabela, $tabele[$_GET['napaka']])){
-                                                    $napaka = str_replace ( '%20', ' ', $_GET['napaka']);
+                                                    $napakaNonSenitized = str_replace ( '%20', ' ', $_GET['napaka']);
+                                                    $napaka = htmlspecialchars($napakaNonSenitized, ENT_QUOTES);
                                                     echo "<div class='napaka'>$napaka</div>";
                                                 }
 
                                             }
                                             else{
-                                                $napaka = str_replace ( '%20', ' ', $_GET['napaka']);
+                                                $napakaNonSenitized = str_replace ( '%20', ' ', $_GET['napaka']);
+                                                $napaka = htmlspecialchars($napakaNonSenitized, ENT_QUOTES);
                                                 echo "<div class='napaka'>$napaka</div>";
                                             }
                                         }
@@ -662,7 +669,8 @@ function Izjeme($tabela, $stolpec){
                                                 }
                                             }
                                             else{
-                                                $napaka = str_replace ( '%20', ' ', $_GET['napaka']);
+                                                $napakaNonSenitized = str_replace ( '%20', ' ', $_GET['napaka']);
+                                                $napaka = htmlspecialchars($napakaNonSenitized, ENT_QUOTES);
                                                 echo "<div class='napaka'>$napaka</div>";
                                             }
                                         }

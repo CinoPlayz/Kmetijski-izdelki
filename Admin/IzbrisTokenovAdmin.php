@@ -50,19 +50,22 @@ if(isset($_POST['poslano'])){
             exit;
         }
 
+        $stmtAndroid = $povezava->prepare("UPDATE Uporabnik SET TokenAndroid = NULL WHERE Uporabnisko_ime=?");
+        $stmtWeb = $povezava->prepare("UPDATE Uporabnik SET TokenWeb = NULL WHERE Uporabnisko_ime=?");        
+
         foreach($_POST['kateri_uporabniki'] as $podatekVnos){
             $podatekfilter = htmlspecialchars($podatekVnos, ENT_QUOTES);
             $podatek = mysqli_real_escape_string($povezava, $podatekfilter);
 
             //Izbriše token glede na vrsto
             if(in_array("Mobilni", $KateriToken)){
-                $sql = "UPDATE Uporabnik SET TokenAndroid = NULL WHERE Uporabnisko_ime='$podatek';";
-                mysqli_query($povezava, $sql);
+                $stmtAndroid->bind_param("s", $podatek);
+                $stmtAndroid->execute();
             }
 
             if(in_array("Web", $KateriToken)){
-                $sql = "UPDATE Uporabnik SET TokenWeb = NULL WHERE Uporabnisko_ime='$podatek';";
-                mysqli_query($povezava, $sql);
+                $stmtWeb->bind_param("s", $podatek);
+                $stmtWeb->execute();
             }
 
         }
@@ -79,8 +82,13 @@ if(isset($_POST['poslano'])){
 
 function VeljavniToken($token){
     require("../PovezavaZBazo.php");
-    $sql = "SELECT * FROM Uporabnik WHERE TokenWeb = '" . hash("sha256", $token) . "';";
-    $rezultat = mysqli_query($povezava, $sql);
+
+    $tokensha = hash("sha256", $token);
+
+    $stmt = $povezava->prepare("SELECT * FROM Uporabnik WHERE TokenWeb = ?");
+    $stmt->bind_param("s", $tokensha);
+    $stmt->execute();
+    $rezultat = $stmt->get_result();
 
     $veljaven = false;
 

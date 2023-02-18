@@ -5,16 +5,14 @@ if(isset($_SESSION['Token'])){
     define('LahkoPovezava', TRUE);
     require("PovezavaZBazo.php");
 
-    $sql = "UPDATE Uporabnik SET TokenWeb = NULL WHERE TokenWeb='". hash("sha256", $_SESSION['Token']) . "'";
-
-   mysqli_query($povezava, $sql);
+    $stmt = $povezava->prepare("UPDATE Uporabnik SET TokenWeb = NULL WHERE TokenWeb=?;");
+    $token = hash("sha256", $_SESSION['Token']);
+    $stmt->bind_param("s", $token); 
+    $stmt->execute();
 }
-
 
 session_unset();
 session_destroy();
-
-
 
 header("location: Prijava.php");
 exit;

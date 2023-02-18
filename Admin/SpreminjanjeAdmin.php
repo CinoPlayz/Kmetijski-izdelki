@@ -20,6 +20,14 @@ if(isset($_POST['tabela'])){
 
     $tabela = mysqli_real_escape_string($povezava, $tabelafilter);
 
+    //Preveri če je tabela ena, ki je že navedena s tem se izognemo injekciji saj je samo določena dovoljena
+    $tabele_dovoljene = array("Uporabnik", "Prenosi", "Posta", "Prodaja", "Nacrtovani_Prevzemi", "Stranka", "Izdelek");
+    if (!in_array($tabela, $tabele_dovoljene)){
+        mysqli_close($povezava);
+        header("location: DomovAdmin.php");
+        exit;
+    }
+
     $sql = "SHOW columns FROM $tabela;";
 
     $rezultat = mysqli_query($povezava, $sql);
@@ -301,6 +309,14 @@ function Izjeme($tabela, $stolpec){
 
                                     $tabela = mysqli_real_escape_string($povezava, $tabelafilter);
 
+                                    //Preveri če je tabela ena, ki je že navedena s tem se izognemo injekciji saj je samo določena dovoljena
+                                    $tabele_dovoljene = array("Uporabnik", "Prenosi", "Posta", "Prodaja", "Nacrtovani_Prevzemi", "Stranka", "Izdelek");
+                                    if (!in_array($tabela, $tabele_dovoljene)){
+                                        mysqli_close($povezava);
+                                        header("location: DomovAdmin.php");
+                                        exit;
+                                    }
+
                                     $sql = "SHOW columns FROM $tabela;";
 
                                     $rezultat = mysqli_query($povezava, $sql);
@@ -358,14 +374,19 @@ function Izjeme($tabela, $stolpec){
 
                                         $primary = mysqli_real_escape_string($povezava, $primaryfilter);
 
-                                        if(isset($primaryKey[1])){
-                                            $sql = "SELECT * FROM $tabela WHERE  " . $primaryKey[0]. "='$primary';";
+                                        //Prepara statment
+                                        $sql = "SELECT * FROM $tabela WHERE  " . $primaryKey[0];
+                                        $stmt = $povezava->prepare("$sql=?;");
+
+                                        if(isset($primaryKey[1])){  
+                                            $stmt->bind_param("s", $primary); 
                                         }
                                         else{
-                                            $sql = "SELECT * FROM $tabela WHERE  " . $primaryKey[0]. "=$primary;";
+                                            $stmt->bind_param("i", $primary);
                                         }
 
-                                        $rezultatpodatki = mysqli_query($povezava, $sql);
+                                        $stmt->execute();
+                                        $rezultatpodatki = $stmt->get_result();
 
                                         //Vpišemo podatke v array podatke, ki so zapisani za tisti Primary key (pač tisto vrstico, kjer je ta primary key)
 
@@ -392,11 +413,11 @@ function Izjeme($tabela, $stolpec){
                                                     </div>";
                                                 }
                                                 else if($vrstica['Key'] == "PRI" && $vrstica['Extra'] == "auto_increment" ){
-                                                    echo "<input type='hidden' name='" . $vrstica['Field'] . "' value='". $_GET[$vrstica['Field']] ."'>";
+                                                    echo "<input type='hidden' name='" . $vrstica['Field'] . "' value='". htmlspecialchars($_GET[$vrstica['Field']], ENT_QUOTES) ."'>";
                                                 }
                                                 //Če je primary key string
                                                 else if($primaryKey[0] == $vrstica['Field'] && $primaryKey[1] == "string"){
-                                                    echo "<input type='hidden' name='" . $vrstica['Field'] . "' value='". $_GET[$vrstica['Field']] ."'>";
+                                                    echo "<input type='hidden' name='" . $vrstica['Field'] . "' value='". htmlspecialchars($_GET[$vrstica['Field']], ENT_QUOTES) ."'>";
                                                     echo "<div class='formvnosItem'>
                                                             <div class='vnosNaslov'>". str_replace("_", " ", $vrstica['Field']).":</div>
                                                             <input type='text' name='". $vrstica['Field'] ."Nov' class='ipPB' value='". $VrsticaPodatki[$vrstica['Field']] ."'>
@@ -768,14 +789,16 @@ function Izjeme($tabela, $stolpec){
 
                                                 //Vrne true če ni prepoznana naoaka, drugače samo izpiše napako
                                                 if(NapakaSporocilo($tabela, $tabele[$_GET['napaka']])){
-                                                    $napaka = str_replace ( '%20', ' ', $_GET['napaka']);
-                                                    echo "<div class='napaka'>$napaka</div>";
+                                                    $napakanonSenitized = str_replace ( '%20', ' ', $_GET['napaka']);
+                                                    $napaka = htmlspecialchars($napakanonSenitized, ENT_QUOTES);
+                                                    echo "<div class='napaka'>$napaka</div>";   
                                                 }
 
                                             }
                                             else{
-                                                $napaka = str_replace ( '%20', ' ', $_GET['napaka']);
-                                                echo "<div class='napaka'>$napaka</div>";
+                                                $napakanonSenitized = str_replace ( '%20', ' ', $_GET['napaka']);
+                                                $napaka = htmlspecialchars($napakanonSenitized, ENT_QUOTES);
+                                                echo "<div class='napaka'>$napaka</div>";   
                                             }
                                         }
                                         else{
@@ -788,8 +811,9 @@ function Izjeme($tabela, $stolpec){
                                                 }
                                             }
                                             else{
-                                                $napaka = str_replace ( '%20', ' ', $_GET['napaka']);
-                                                echo "<div class='napaka'>$napaka</div>";
+                                                $napakanonSenitized = str_replace ( '%20', ' ', $_GET['napaka']);
+                                                $napaka = htmlspecialchars($napakanonSenitized, ENT_QUOTES);
+                                                echo "<div class='napaka'>$napaka</div>";   
                                             }
                                         }
 
