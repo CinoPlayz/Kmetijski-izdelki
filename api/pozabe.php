@@ -28,12 +28,18 @@ require("../PovezavaZBazo.php");
 $headersfilterSQL = mysqli_real_escape_string($povezava, $headers);
 $headersfilter = htmlspecialchars($headersfilterSQL, ENT_QUOTES);
 
+//Preveri, če sploh obstaja ta token v bazi
 $token = str_replace("Bearer ", "", $headersfilter);
+$tokensha = hash("sha256", $token);
 
-
-$sql = "SELECT * FROM Uporabnik WHERE TokenWeb='". hash("sha256", $token) . "' OR TokenAndroid='". hash("sha256", $token) . "'";
-
-$rezultat = mysqli_query($povezava, $sql);
+//Nastavi statment
+$stmt = $povezava->prepare("SELECT * FROM Uporabnik WHERE TokenWeb=? OR TokenAndroid=?");
+//Da spremenljivke v statmente
+$stmt->bind_param("ss", $tokensha, $tokensha);
+//Izvede statment
+$stmt->execute();
+//Dobi rezultate
+$rezultat = $stmt->get_result();
 
 if(mysqli_num_rows($rezultat) > 0){
 
@@ -65,7 +71,7 @@ if(mysqli_num_rows($rezultat) > 0){
             
             $kolikonazajkonec = date_format($novdatum, 'Y-m-d H:i:s');        
             
-            //Načtrovani prevzemi, ki so vpisani v tabeli prodaja
+            //Načtrovani prevzemi, ki so vpisani v tabeli prodaja            
             $sqlProdaja = "SELECT p.id_prodaje, p.id_stranke, p.Izdelek, DATE_FORMAT(p.Datum_Prodaje,'%Y-%m-%d 00:00:00') AS Datum FROM Prodaja p 
             WHERE WEEKDAY(p.Datum_Prodaje) IN (SELECT CASE Dan WHEN 'Ponedeljek' THEN '0'
             WHEN 'Torek' THEN '1'
@@ -75,9 +81,13 @@ if(mysqli_num_rows($rezultat) > 0){
             WHEN 'Sobota' THEN '5'
             WHEN 'Nedelja' THEN '6'
             ELSE '1'
-            END AS Dan FROM Nacrtovani_Prevzemi  WHERE Nacrtovani_Prevzemi.id_stranke = p.id_stranke) AND p.Datum_Prodaje BETWEEN '$kolikonazajzacetek' AND '$kolikonazajkonec';";
-     
-            $rezultatProdaja = mysqli_query($povezava, $sqlProdaja);
+            END AS Dan FROM Nacrtovani_Prevzemi  WHERE Nacrtovani_Prevzemi.id_stranke = p.id_stranke) AND p.Datum_Prodaje BETWEEN ? AND ?;";
+
+            $stmt = $povezava->prepare($sqlProdaja);
+            $stmt->bind_param("ss", $kolikonazajzacetek, $kolikonazajkonec);
+            $stmt->execute();
+
+            $rezultatProdaja = $stmt->get_result();
 
             $prodaja = array();
 
@@ -87,9 +97,14 @@ if(mysqli_num_rows($rezultat) > 0){
                 }
             }
 
-            //Načrtovani prevzemi glede na datum, ki je vpisan. Najprej ustvari temp podatkovne baze z datumi katere se nanašajo na slovenski napis ("Ponedeljek", "Torek"...)            
-            $sqlNacrtovaniPrevzemi = "SET @datum = CONVERT('$kolikonazajzacetek', DATETIME);
+            //Najprej nastavi variable za ta seesion in nato izvede spodnje
+            $stmt = $povezava->prepare("SET @datum = CONVERT(?, DATETIME);");
+            $stmt->bind_param("s", $kolikonazajzacetek);
+            $stmt->execute();
 
+
+            //Načrtovani prevzemi glede na datum, ki je vpisan. Najprej ustvari temp podatkovne baze z datumi katere se nanašajo na slovenski napis ("Ponedeljek", "Torek"...)            
+            $sqlNacrtovaniPrevzemi = "
             CREATE TEMPORARY TABLE temp1 AS SELECT n.id_nacrtovani_prevzem, n.id_stranke, n.Kolicina, n.Izdelek, n.Dan, n.Cas_Enkrat, @datum AS 'Datum' FROM Nacrtovani_Prevzemi  n WHERE n.Dan = (SELECT CASE WEEKDAY(@datum) 
                 WHEN '0' THEN 'Ponedeljek'
                 WHEN '1' THEN 'Torek'
@@ -180,6 +195,9 @@ if(mysqli_num_rows($rezultat) > 0){
                 END AS Dan FROM Nacrtovani_Prevzemi  LIMIT 1);               
                 ";
 
+            
+            
+
             $rezultatNacrtovaniPrevzemi = mysqli_multi_query($povezava, $sqlNacrtovaniPrevzemi);
 
             while(mysqli_next_result($povezava));
@@ -243,12 +261,16 @@ if(mysqli_num_rows($rezultat) > 0){
 
             }
 
+            $stmtStranka = $povezava->prepare("SELECT Ime, Priimek FROM Stranka WHERE id_stranke =?");
+            $stmtIzdelek = $povezava->prepare("SELECT Merska_enota FROM Izdelek WHERE Izdelek =?");
+
             //V ta array doda polja Ime in Priimek stranke, ter Mersko Enoto in odstrani polje Cas_Enkrat
             foreach ($manjkajociArray as $kljuc => $vrednost) {
+                
+                $stmtStranka->bind_param("i", $vrednost['id_stranke']);
+                $stmtStranka->execute();
 
-                $sqlStranke = "SELECT Ime, Priimek FROM Stranka WHERE id_stranke = " . $vrednost['id_stranke'] . ";";
-
-                $rezultatstrankaneki = mysqli_query($povezava, $sqlStranke);
+                $rezultatstrankaneki = $stmtStranka->get_result();
                 
 
                 $vrstica = mysqli_fetch_assoc($rezultatstrankaneki);
@@ -256,11 +278,11 @@ if(mysqli_num_rows($rezultat) > 0){
                 $manjkajociArray[$kljuc]['Ime'] = $vrstica['Ime'];
                 $manjkajociArray[$kljuc]['Priimek'] = $vrstica['Priimek'];
 
-
-
-                $sqlIzdelek= "SELECT Merska_enota FROM Izdelek WHERE Izdelek = '" . $vrednost['Izdelek'] . "';";
                 
-                $rezultatizdelekneki = mysqli_query($povezava, $sqlIzdelek);
+                $stmtIzdelek->bind_param("i", $vrednost['Izdelek']);
+                $stmtIzdelek->execute();
+
+                $rezultatizdelekneki = $stmtIzdelek->get_result();
                 
 
                 $vrsticaIzdelek = mysqli_fetch_assoc($rezultatizdelekneki);

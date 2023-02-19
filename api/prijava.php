@@ -47,11 +47,11 @@
         exit;
     }
 
+    $stmt = $povezava->prepare("SELECT Geslo, Pravila FROM Uporabnik WHERE Uporabnisko_ime=?");
+    $stmt->bind_param("s", $uprime);
+    $stmt->execute();
+    $rezultat = $stmt->get_result();
 
-
-    $sql = "SELECT Geslo, Pravila FROM Uporabnik WHERE Uporabnisko_ime='$uprime'";
-
-    $rezultat = mysqli_query($povezava, $sql);
     if(mysqli_num_rows($rezultat) > 0){
 
         $vrstica = mysqli_fetch_assoc($rezultat);
@@ -59,9 +59,11 @@
         if(password_verify($geslo, $vrstica['Geslo'])){
 
             $token = newToken(80);
+            $tokensha = hash("sha256", $token);
 
-            $sql = "UPDATE Uporabnik SET TokenAndroid = '" . hash("sha256", $token) . "' WHERE Uporabnisko_ime='$uprime'";
-            mysqli_query($povezava, $sql);
+            $stmt = $povezava->prepare("UPDATE Uporabnik SET TokenAndroid = ? WHERE Uporabnisko_ime = ?");
+            $stmt->bind_param("ss", $tokensha, $uprime);
+            $stmt->execute();
 
 
             echo json_encode(array("podatki" => "$token"), JSON_UNESCAPED_UNICODE);

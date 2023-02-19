@@ -33,12 +33,18 @@ require("../PovezavaZBazo.php");
 $headersfilterSQL = mysqli_real_escape_string($povezava, $headers);
 $headersfilter = htmlspecialchars($headersfilterSQL, ENT_QUOTES);
 
-$token = str_replace("Bearer ", "", $headersfilter);
-
 //Preveri, če sploh obstaja ta token v bazi
-$sql = "SELECT * FROM Uporabnik WHERE TokenWeb='". hash("sha256", $token) . "' OR TokenAndroid='". hash("sha256", $token) . "'";
+$token = str_replace("Bearer ", "", $headersfilter);
+$tokensha = hash("sha256", $token);
 
-$rezultat = mysqli_query($povezava, $sql);
+//Nastavi statment
+$stmt = $povezava->prepare("SELECT * FROM Uporabnik WHERE TokenWeb=? OR TokenAndroid=?");
+//Da spremenljivke v statmente
+$stmt->bind_param("ss", $tokensha, $tokensha);
+//Izvede statment
+$stmt->execute();
+//Dobi rezultate
+$rezultat = $stmt->get_result();
 
 if(mysqli_num_rows($rezultat) > 0){
     if(isset($_GET['tabela'])){
@@ -159,11 +165,12 @@ if(mysqli_num_rows($rezultat) > 0){
     
                 $idstranke = $StolpciZPodatki[3][1];
                 $izdelek = $StolpciZPodatki[5][1];
+
+                $stmt = $povezava->prepare("SELECT * FROM Prodaja WHERE Datum_Prodaje >= ? AND Datum_Prodaje <= ? AND id_stranke = ? AND Izdelek = ?;");
+                $stmt->bind_param("ssis", $datumprodaje_zacetek, $datumprodaje_konec, $idstranke, $izdelek);
+                $stmt->execute();
     
-    
-                $sql = "SELECT * FROM Prodaja WHERE Datum_Prodaje >= '$datumprodaje_zacetek' AND Datum_Prodaje <= '$datumprodaje_konec' AND id_stranke = $idstranke AND Izdelek = '$izdelek';";
-                
-                $rezultatObstaja = mysqli_query($povezava, $sql);
+                $rezultatObstaja = $stmt->get_result();
     
                 if(mysqli_num_rows($rezultatObstaja) > 0){
                     mysqli_close($povezava);
@@ -174,10 +181,13 @@ if(mysqli_num_rows($rezultat) > 0){
             }
         }
 
-
         //SQL stavek razdljen v dva dela za vnos ter kako velik je array $StolpciZpodatki
         $sqlPrviDel = "INSERT INTO $tabela(";
         $sqlDrugiDel = ") VALUES (";
+
+        //Nastavi array, kjer se shranijo podatke, ter spremenljivko z tipi
+        $vrednostiPodatkov = array();
+        $vrednostiTip = "";
 
         $kolikoPodatkov = count($StolpciZPodatki);
         
@@ -197,14 +207,20 @@ if(mysqli_num_rows($rezultat) > 0){
                 
 
                 //Prveri kateri element je če je string doda še '' v stavek drugače pusti prazno, za NULL doda samo NULL v stavek
-                if(is_numeric($StolpciZPodatki[$i][1])){
-                    $sqlDrugiDel .= $StolpciZPodatki[$i][1];
+                if(is_int($StolpciZPodatki[$i][1])){
+                    $sqlDrugiDel .= "?";
+                    $vrednostiTip .= "i";
+                    array_push($vrednostiPodatkov, $StolpciZPodatki[$i][1]);
                 }
                 else if($StolpciZPodatki[$i][1] == "NULL"){
-                    $sqlDrugiDel .= "NULL";
+                    $sqlDrugiDel .= "?";
+                    $vrednostiTip .= "s";
+                    array_push($vrednostiPodatkov, null);
                 }
                 else{
-                    $sqlDrugiDel .= "'" . $StolpciZPodatki[$i][1] . "'";
+                    $sqlDrugiDel .= "?";
+                    $vrednostiTip .= "s";
+                    array_push($vrednostiPodatkov, $StolpciZPodatki[$i][1]);
                 }
 
                 //Doda vejico, če ni zadenj vnos drugače samo zaključi stavek
@@ -223,7 +239,11 @@ if(mysqli_num_rows($rezultat) > 0){
         
         $sql = $sqlPrviDel . $sqlDrugiDel;
 
-        if(mysqli_query($povezava, $sql)){  
+        //Ustvari statment
+        $stmt = $povezava->prepare($sql);
+        $stmt->bind_param($vrednostiTip, ...$vrednostiPodatkov);
+
+        if($stmt->execute()){  
             mysqli_close($povezava);          
             http_response_code(200);
             exit;
@@ -262,6 +282,15 @@ else{
 
 //Dobi podatke o stolpcih v tabeli, in če so NULL
 function BranjeStolpcev($tabela, $povezava){
+    //Preveri če je tabela ena, ki je že navedena s tem se izognemo injekciji saj je samo določena dovoljena
+    $tabele_dovoljene = array("Uporabnik", "Prenosi", "Posta", "Prodaja", "Nacrtovani_Prevzemi", "Stranka", "Izdelek");
+    if (!in_array($tabela, $tabele_dovoljene)){
+        mysqli_close($povezava);
+        http_response_code(404);
+        echo json_encode(array("sporocilo" => "Ni najdena tabela oz. tabela je prazna"), JSON_UNESCAPED_UNICODE);
+        exit;
+    }
+
     $sql = "SHOW columns FROM $tabela";
             
     $rezultat = mysqli_query($povezava, $sql);

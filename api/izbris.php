@@ -33,12 +33,19 @@ require("../PovezavaZBazo.php");
 $headersfilterSQL = mysqli_real_escape_string($povezava, $headers);
 $headersfilter = htmlspecialchars($headersfilterSQL, ENT_QUOTES);
 
-$token = str_replace("Bearer ", "", $headersfilter);
-
 //Preveri, če sploh obstaja ta token v bazi
-$sql = "SELECT * FROM Uporabnik WHERE TokenWeb='". hash("sha256", $token) . "' OR TokenAndroid='". hash("sha256", $token) . "'";
+$token = str_replace("Bearer ", "", $headersfilter);
+$tokensha = hash("sha256", $token);
 
-$rezultat = mysqli_query($povezava, $sql);
+//Nastavi statment
+$stmt = $povezava->prepare("SELECT * FROM Uporabnik WHERE TokenWeb=? OR TokenAndroid=?");
+//Da spremenljivke v statmente
+$stmt->bind_param("ss", $tokensha, $tokensha);
+//Izvede statment
+$stmt->execute();
+//Dobi rezultate
+$rezultat = $stmt->get_result();
+
 
 if(mysqli_num_rows($rezultat) > 0){
     if(isset($_GET['tabela'])){
@@ -91,18 +98,22 @@ if(mysqli_num_rows($rezultat) > 0){
         }
 
         //Dobimo ime tabele, ime atributa v tej tabeli, ter ime tabele in atrikuta od katere tabele je ta foreign key
-        $sql = "SELECT 
+        $stmt = $povezava->prepare("SELECT 
             TABLE_NAME,COLUMN_NAME,CONSTRAINT_NAME, REFERENCED_TABLE_NAME,REFERENCED_COLUMN_NAME
         FROM
             INFORMATION_SCHEMA.KEY_COLUMN_USAGE
         WHERE
-            REFERENCED_TABLE_SCHEMA = '$podatkovnabaza' AND
-            REFERENCED_TABLE_NAME = '$tabela' AND
-            REFERENCED_COLUMN_NAME = '$stolpec'";
+            REFERENCED_TABLE_SCHEMA = ? AND
+            REFERENCED_TABLE_NAME = ? AND
+            REFERENCED_COLUMN_NAME = ?");
+        
+        $stmt->bind_param("sss", $podatkovnabaza, $tabela, $stolpec);
+        $stmt->execute();
+        $rezultat = $stmt->get_result();
 
-        $ForeignKeyTabeleAtribut = array();
+        
 
-        $rezultat = mysqli_query($povezava, $sql);        
+        $ForeignKeyTabeleAtribut = array();     
 
         if($rezultat == true){
 
@@ -118,40 +129,39 @@ if(mysqli_num_rows($rezultat) > 0){
             //Ustvari sql kodo tako da izbriše vse vrstice, kjer je uporabljen ta atribut s temi podatki
             if(!empty($ForeignKeyTabeleAtribut)){
                 $sql = "";
-                for($i = 0; $i < count($ForeignKeyTabeleAtribut); $i++){
 
-                    if(is_numeric($podatkifilter)){
-                        $sql .= "DELETE FROM ". $ForeignKeyTabeleAtribut[$i]['TABLE_NAME'] . " WHERE " . $ForeignKeyTabeleAtribut[$i]['COLUMN_NAME'] . "=$podatkifilter;";
+                for($i = 0; $i < count($ForeignKeyTabeleAtribut); $i++){
+                    $stmt = $povezava->prepare("DELETE FROM ". $ForeignKeyTabeleAtribut[$i]['TABLE_NAME'] . " WHERE " . $ForeignKeyTabeleAtribut[$i]['COLUMN_NAME']. "=?");
+
+                    if(is_int($podatkifilter)){
+                        $stmt->bind_param("i", $podatkifilter);
                     }
                     else{
-                        $sql .= "DELETE FROM ". $ForeignKeyTabeleAtribut[$i]['TABLE_NAME'] . " WHERE " . $ForeignKeyTabeleAtribut[$i]['COLUMN_NAME'] . "='$podatkifilter';";
+                        $stmt->bind_param("s", $podatkifilter);
                     }
                     
-                }
+                    $rezultat = $stmt->execute();                    
 
-                $rezultat = mysqli_multi_query($povezava, $sql);                
-
-                while(mysqli_next_result($povezava)){
                     if($rezultat == false){
                         mysqli_close($povezava);
                         http_response_code(500);
                         echo json_encode(array("sporocilo" => "Neka napaka se je zglodila pri izvajanju"), JSON_UNESCAPED_UNICODE);
                         exit;
-                    } 
+                    }                     
                 }
-
-                
-
             }
 
-            if(is_numeric($podatkifilter)){
-                $sql = "DELETE FROM $tabela WHERE $stolpec=$podatkifilter;";
+            //Odstrani podatek
+            $stmt = $povezava->prepare("DELETE FROM $tabela WHERE $stolpec=?");
+            if(is_int($podatkifilter)){
+                $stmt->bind_param("i", $podatkifilter);
             }
             else{
-                $sql = "DELETE FROM $tabela WHERE $stolpec='$podatkifilter';";
+                $stmt->bind_param("s", $podatkifilter);
             }
+            
 
-            if(mysqli_query($povezava, $sql)){
+            if($stmt->execute()){
                 mysqli_close($povezava);
                 http_response_code(200); 
             }
@@ -198,6 +208,16 @@ else{
 
 //Dobi podatke o stolpcih v tabeli, in če so NULL
 function BranjeStolpcev($tabela, $povezava){
+
+    //Preveri če je tabela ena, ki je že navedena s tem se izognemo injekciji saj je samo določena dovoljena
+    $tabele_dovoljene = array("Uporabnik", "Prenosi", "Posta", "Prodaja", "Nacrtovani_Prevzemi", "Stranka", "Izdelek");
+    if (!in_array($tabela, $tabele_dovoljene)){
+        mysqli_close($povezava);
+        http_response_code(404);
+        echo json_encode(array("sporocilo" => "Ni najdena tabela oz. tabela je prazna"), JSON_UNESCAPED_UNICODE);
+        exit;
+    }
+
     $sql = "SHOW columns FROM $tabela";
             
     $rezultat = mysqli_query($povezava, $sql);

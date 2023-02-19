@@ -240,7 +240,7 @@ if(isset($_POST['izbris'])){
                     //Statmenta select stavek ($tabela in $stolpec dobimo od strežnika ni user input)
                     $sql = "SELECT * FROM $tabela WHERE $stolpec";
 
-                    if (is_numeric($podatek)){
+                    if (is_int($podatek)){
                         $stmt = $povezava->prepare("$sql=?;");
                         $stmt->bind_param("i", $podatek); 
                     }
@@ -317,7 +317,7 @@ if(isset($_POST['izbris'])){
                             
                             //Da podatek v sql statment
                             $stmt = "";
-                            if(is_numeric($podatek)){
+                            if(is_int($podatek)){
                                 $stmt = $povezava->prepare($tabelainQuery[$i][1] ."=?;");
                                 $stmt->bind_param("i", $podatek);        
                             }

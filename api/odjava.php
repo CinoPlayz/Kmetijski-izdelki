@@ -29,8 +29,8 @@ $headersfilter = htmlspecialchars($headersfilterSQL, ENT_QUOTES);
 
 $token = str_replace("Bearer ", "", $headersfilter);
 
-
-$sql = "UPDATE Uporabnik SET TokenAndroid = NULL WHERE TokenAndroid='". hash("sha256", $token) . "'";
-
-mysqli_query($povezava, $sql);
+$stmt = $povezava->prepare("UPDATE Uporabnik SET TokenAndroid = NULL WHERE TokenAndroid=?;");
+$token = hash("sha256", $_SESSION['Token']);
+$stmt->bind_param("s", $token); 
+$stmt->execute();
 

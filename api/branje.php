@@ -181,8 +181,7 @@ function Branje($tabela, $povezava){
     $stmt->execute();
     //Dobi rezultate
     $rezultat = $stmt->get_result();
-
-    //$rezultat = mysqli_query($povezava, $sql);
+    
     if($rezultat == true && mysqli_num_rows($rezultat) > 0){
 
         $podatki = array();                

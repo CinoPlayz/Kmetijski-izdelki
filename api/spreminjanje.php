@@ -36,9 +36,17 @@ $headersfilter = htmlspecialchars($headersfilterSQL, ENT_QUOTES);
 $token = str_replace("Bearer ", "", $headersfilter);
 
 //Preveri, če sploh obstaja ta token v bazi
-$sql = "SELECT * FROM Uporabnik WHERE TokenWeb='". hash("sha256", $token) . "' OR TokenAndroid='". hash("sha256", $token) . "'";
+$token = str_replace("Bearer ", "", $headersfilter);
+$tokensha = hash("sha256", $token);
 
-$rezultat = mysqli_query($povezava, $sql);
+//Nastavi statment
+$stmt = $povezava->prepare("SELECT * FROM Uporabnik WHERE TokenWeb=? OR TokenAndroid=?");
+//Da spremenljivke v statmente
+$stmt->bind_param("ss", $tokensha, $tokensha);
+//Izvede statment
+$stmt->execute();
+//Dobi rezultate
+$rezultat = $stmt->get_result();
 
 if(mysqli_num_rows($rezultat) > 0){
     if(isset($_GET['tabela'])){
@@ -183,7 +191,11 @@ if(mysqli_num_rows($rezultat) > 0){
 
         $kolikoPodatkov = count($StolpciZPodatki);
 
-        //print_r($StolpciZPodatki);
+        //Nastavi array, kjer se shranijo podatke, ter spremenljivko z tipi
+        $vrednostiPodatkov = array();
+        $vrednostiTip = "";
+        $vrednostiTipPRIMARY = "";
+        $vrednostiPodatkovPRIMARY = "";
         
         //Gre čez vsak element v arrayu(V tem primeru je 2D)
         for($i = 0; $i < $kolikoPodatkov; $i++){
@@ -193,8 +205,11 @@ if(mysqli_num_rows($rezultat) > 0){
 
 
                 if($StolpciZPodatki[$i][2] == "Nov"){
-                    $sqlPrviDel .= str_replace("Nov", "", $StolpciZPodatki[$i][0]) . " = ";
-                    $sqlPrviDel .= "'" . $StolpciZPodatki[$i][1] . "'";
+                    $sqlPrviDel .= str_replace("Nov", "", $StolpciZPodatki[$i][0]) . " = ";                   
+                    $sqlPrviDel .= "?";
+
+                    array_push($vrednostiPodatkov, $StolpciZPodatki[$i][1]);
+                    $vrednostiTip .= "s";
 
                     if($i == ($kolikoPodatkov-1)){
                         $sqlPrviDel .= " ";
@@ -205,20 +220,23 @@ if(mysqli_num_rows($rezultat) > 0){
                 }
                 else{
                     //Dodaja stavek skupaj, vspodaj doda stringu "ime stolpca = "
-
                     $sqlPrviDel .= $StolpciZPodatki[$i][0] . " = ";            
                     
 
-                    //Prveri kateri element je če je string doda še '' v stavek drugače pusti prazno, za NULL doda samo NULL v stavek
-                    if(is_numeric($StolpciZPodatki[$i][1])){
-                        $sqlPrviDel .= $StolpciZPodatki[$i][1];
+                    //Preveri kateri element
+                    if(is_int($StolpciZPodatki[$i][1])){
+                        array_push($vrednostiPodatkov, $StolpciZPodatki[$i][1]);
+                        $vrednostiTip .= "i";
                     }
                     else if($StolpciZPodatki[$i][1] == "NULL"){
-                        $sqlPrviDel .= "NULL";
+                        array_push($vrednostiPodatkov, null);
+                        $vrednostiTip .= "s";
                     }
                     else{
-                        $sqlPrviDel .= "'" . $StolpciZPodatki[$i][1] . "'";
+                        array_push($vrednostiPodatkov, $StolpciZPodatki[$i][1]);
+                        $vrednostiTip .= "s";
                     }
+                    $sqlPrviDel .= "?";
 
                     //Doda vejico, če ni zadenj vnos drugače samo naredi presledek
                     if($i == ($kolikoPodatkov-1)){
@@ -234,21 +252,33 @@ if(mysqli_num_rows($rezultat) > 0){
                 
             }
             else if($StolpciZPodatki[$i][2] == "PRI"){
-                //doda k drugemu delu stringa WHERE ime stolpca = pa podatek
-                if(is_numeric($StolpciZPodatki[$i][1])){
-                    $sqlDrugiDel .= $StolpciZPodatki[$i][0] . " = " . $StolpciZPodatki[$i][1] . ";";
+                //doda k drugemu delu stringa WHERE ime stolpca = pa podatek v spremenljivko za primary            
+                $sqlDrugiDel .= $StolpciZPodatki[$i][0] . " = ?;";
+
+                if(is_int($StolpciZPodatki[$i][1])){
+                    $vrednostiPodatkovPRIMARY = $StolpciZPodatki[$i][1];
+                    $vrednostiTipPRIMARY = "i";
                 }
                 else{
-                    $sqlDrugiDel .= $StolpciZPodatki[$i][0] . " = '" . $StolpciZPodatki[$i][1] . "';";
+                    $vrednostiPodatkovPRIMARY = $StolpciZPodatki[$i][1];
+                    $vrednostiTipPRIMARY = "s";
                 }
-                
             }
 
         }
         
         $sql = $sqlPrviDel . $sqlDrugiDel;
 
-        if(mysqli_query($povezava, $sql)){  
+        //Dodana primary na konec
+        $vrednostiTip .= $vrednostiTipPRIMARY;
+        array_push($vrednostiPodatkov, $vrednostiPodatkovPRIMARY);
+
+        //Sestavi prepared stavek        
+        $stmt = $povezava->prepare($sql);
+        $stmt->bind_param($vrednostiTip, ...$vrednostiPodatkov);
+        $stmt->execute();
+
+        if($stmt->execute()){  
             mysqli_close($povezava);          
             http_response_code(200);
             exit;
@@ -294,6 +324,15 @@ else{
 
 //Dobi podatke o stolpcih v tabeli, in če so NULL
 function BranjeStolpcev($tabela, $povezava){
+    //Preveri če je tabela ena, ki je že navedena s tem se izognemo injekciji saj je samo določena dovoljena
+    $tabele_dovoljene = array("Uporabnik", "Prenosi", "Posta", "Prodaja", "Nacrtovani_Prevzemi", "Stranka", "Izdelek");
+    if (!in_array($tabela, $tabele_dovoljene)){
+        mysqli_close($povezava);
+        http_response_code(404);
+        echo json_encode(array("sporocilo" => "Ni najdena tabela oz. tabela je prazna"), JSON_UNESCAPED_UNICODE);
+        exit;
+    }
+     
     $sql = "SHOW columns FROM $tabela";
             
     $rezultat = mysqli_query($povezava, $sql);

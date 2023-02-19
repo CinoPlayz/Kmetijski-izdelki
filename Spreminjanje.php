@@ -171,9 +171,7 @@ if(isset($_POST['tabela'])){
     
     
     $jsonZaPoslat .= "}";
-   
-    mysqli_close($povezava);
-
+ 
     //Dobimo URL za curl
     $povnaslov =  $_SERVER['SERVER_NAME'] . $_SERVER['PHP_SELF'];
     $urldel = str_replace("Spreminjanje.php", "api/spreminjanje.php", $povnaslov) . "?tabela=" . urlencode($tabela);;
