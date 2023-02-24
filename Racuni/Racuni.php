@@ -63,22 +63,22 @@ require("../PovezavaZBazo.php");
 
                         <div class="strankadiv">
                             <?php
-                                 $sql = "SELECT Priimek, Ime, id_stranke FROM Stranka";
+                                $sql = "SELECT Priimek, Ime, id_stranke FROM Stranka";
 
-                                 $rezultatStranka = mysqli_query($povezava, $sql);
+                                $rezultatStranka = mysqli_query($povezava, $sql);
 
-                                 if(mysqli_num_rows($rezultatStranka) > 0){
-                                     echo "<div>Stranka:</div>";
-                                     echo "<input list='Stranke' id='Stranka' name='Stranka'/>";
-                                     echo "<datalist id='Stranke'>";
+                                if(mysqli_num_rows($rezultatStranka) > 0){
+                                echo "<div>Stranka:</div>";
+                                echo "<input list='Stranke' id='Stranka' name='Stranka'/>";
+                                echo "<datalist id='Stranke'>";
 
-                                     while($vrsticaStranka = mysqli_fetch_assoc($rezultatStranka)){
-                                         
-                                         echo "<option value='" . $vrsticaStranka['Priimek'] . " " . $vrsticaStranka['Ime'] . " - " . $vrsticaStranka['id_stranke'] . "'>";                                                            
-                                         
-                                     }
-                                     echo "</datalist>";
-                                 }
+                                while($vrsticaStranka = mysqli_fetch_assoc($rezultatStranka)){
+                                    
+                                    echo "<option value='" . $vrsticaStranka['Priimek'] . " " . $vrsticaStranka['Ime'] . " - " . $vrsticaStranka['id_stranke'] . "'>";                                                            
+                                    
+                                }
+                                echo "</datalist>";
+                                }
                             ?>
                         </div>
 

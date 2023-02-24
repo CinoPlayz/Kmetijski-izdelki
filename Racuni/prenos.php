@@ -16,9 +16,11 @@ if(!isset($_SESSION['UprIme']) && !isset($_SESSION['Pravila'])){
         if(!empty($kljuc) ){
 
             //Dobi podatke za prenos
-            $sql = "SELECT * FROM Prenosi WHERE Kljuc = '$kljuc' LIMIT 1";
+            $stmt = $povezava->prepare("SELECT * FROM Prenosi WHERE Kljuc = ? LIMIT 1");
+            $stmt->bind_param("s", $kljuc);
+            $stmt->execute();
 
-            $rezultat = mysqli_query($povezava, $sql);
+            $rezultat = $stmt->get_result();
 
             if($rezultat == true && mysqli_num_rows($rezultat) > 0){
 
@@ -31,9 +33,9 @@ if(!isset($_SESSION['UprIme']) && !isset($_SESSION['Pravila'])){
                 if($vrstica['Status_prenesenosti'] == 0){
                    
                     if(file_exists($datoteka)){
-
-                        $sqlupdate = "UPDATE Prenosi SET Status_prenesenosti=1 WHERE Kljuc = '$kljuc'";
-                        mysqli_query($povezava, $sqlupdate);
+                        $stmt = $povezava->prepare("UPDATE Prenosi SET Status_prenesenosti=1 WHERE Kljuc = ?");
+                        $stmt->bind_param("s", $kljuc);
+                        $stmt->execute();
 
                         //odpre datoteko
                         $fp = fopen($datoteka, 'rb');

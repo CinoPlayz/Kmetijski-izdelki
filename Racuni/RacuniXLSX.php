@@ -58,9 +58,15 @@ if(isset($_POST['DatumOd']) && isset($_POST['DatumDo']) && isset($_POST['kako_se
     if($Kakosestavit == "podatumu"){
 
         //Dobimo podatke za ustvarjanje datoteke
-        $sql = "SELECT p.Datum_Prodaje, s.Priimek, s.Ime, s.Naslov, s.Posta, po.Kraj, i.Izdelek, i.Ekolosko, p.Koliko, i.Merska_enota, i.Cena  FROM Prodaja p INNER JOIN Stranka s ON p.id_stranke = s.id_stranke INNER JOIN Izdelek i ON p.Izdelek = i.Izdelek LEFT JOIN Posta po ON s.Posta = po.Postana_stevilka WHERE p.Datum_Prodaje >= '$DatumOd' AND p.Datum_Prodaje <= '$DatumDo 23:59:59'  ORDER BY p.Datum_Prodaje DESC";
-
-        $rezultat = mysqli_query($povezava, $sql);
+        $stmt = $povezava->prepare("SELECT p.Datum_Prodaje, s.Priimek, s.Ime, s.Naslov, s.Posta, po.Kraj, 
+        i.Izdelek, i.Ekolosko, p.Koliko, i.Merska_enota, i.Cena FROM Prodaja p 
+        INNER JOIN Stranka s ON p.id_stranke = s.id_stranke 
+        INNER JOIN Izdelek i ON p.Izdelek = i.Izdelek 
+        LEFT JOIN Posta po ON s.Posta = po.Postana_stevilka 
+        WHERE p.Datum_Prodaje >= ? AND p.Datum_Prodaje <= CONCAT(?, ' 23:59:59')  ORDER BY p.Datum_Prodaje DESC");
+        $stmt->bind_param("ss", $DatumOd, $DatumDo);
+        $stmt->execute();
+        $rezultat = $stmt->get_result();
 
         $podatki = array();  
 
@@ -135,10 +141,10 @@ if(isset($_POST['DatumOd']) && isset($_POST['DatumDo']) && isset($_POST['kako_se
             }
             else{                              
                 //Vstavi kljuc, ime datoteke in uporabniško ime v tabelo Prenosi
-                $sql = "INSERT INTO Prenosi(Kljuc, Ime_datoteke, Prenesel) VALUES('$random','$imedatoteke', '" . $_SESSION['UprIme'] . "' )";
-
-                mysqli_query($povezava, $sql);
-
+                $stmt = $povezava->prepare("INSERT INTO Prenosi(Kljuc, Ime_datoteke, Prenesel) VALUES(?,?,?)");
+                $stmt->bind_param("sss", $random, $imedatoteke, $_SESSION['UprIme']);
+                $stmt->execute();
+    
                 mysqli_close($povezava);
                 //Redirecta nazaj in da kljuc v session
                 header("Location: RacuniXLSX.php");
@@ -162,15 +168,17 @@ if(isset($_POST['DatumOd']) && isset($_POST['DatumDo']) && isset($_POST['kako_se
     else{
 
         //Sql za dobivanje podatkov po izdelku skupaj
-        $sql = "SELECT s.Priimek, s.Ime, s.Naslov, s.Posta, po.Kraj, i.Izdelek, i.Ekolosko, SUM(p.Koliko) AS 'Skupaj_kolicina', i.Merska_enota, i.Cena  FROM Prodaja p 
+        $stmt = $povezava->prepare("SELECT s.Priimek, s.Ime, s.Naslov, s.Posta, po.Kraj, i.Izdelek, i.Ekolosko, SUM(p.Koliko) AS 'Skupaj_kolicina', i.Merska_enota, i.Cena  FROM Prodaja p 
         INNER JOIN Stranka s ON p.id_stranke = s.id_stranke 
         INNER JOIN Izdelek i ON p.Izdelek = i.Izdelek 
         LEFT JOIN Posta po ON s.Posta = po.Postana_stevilka
-        WHERE p.Datum_Prodaje >= '$DatumOd' AND p.Datum_Prodaje <= '$DatumDo 23:59:59' 
+        WHERE p.Datum_Prodaje >= ? AND p.Datum_Prodaje <= CONCAT(?, ' 23:59:59') 
         GROUP BY s.id_stranke, i.Izdelek
-        ORDER BY s.Priimek, s.Ime DESC;";
+        ORDER BY s.Priimek, s.Ime DESC;");
+        $stmt->bind_param("ss", $DatumOd, $DatumDo);
+        $stmt->execute();
 
-        $rezultat = mysqli_query($povezava, $sql);
+        $rezultat = $stmt->get_result();
 
         $podatki = array();       
 
@@ -243,9 +251,9 @@ if(isset($_POST['DatumOd']) && isset($_POST['DatumDo']) && isset($_POST['kako_se
             }
             else{                              
                 //Vstavi kljuc, ime datoteke in uporabniško ime v tabelo Prenosi
-                $sql = "INSERT INTO Prenosi(Kljuc, Ime_datoteke, Prenesel) VALUES('$random','$imedatoteke', '" . $_SESSION['UprIme'] . "' )";
-
-                mysqli_query($povezava, $sql);
+                $stmt = $povezava->prepare("INSERT INTO Prenosi(Kljuc, Ime_datoteke, Prenesel) VALUES(?,?,?)");
+                $stmt->bind_param("sss", $random, $imedatoteke, $_SESSION['UprIme']);
+                $stmt->execute();
 
                 mysqli_close($povezava);
                 //Redirecta nazaj in da kljuc v session
@@ -371,7 +379,7 @@ function ErrorHandler($errno, $errstr, $errfile, $errline) {
                                         break;
                                     case "Neka":
                                         echo "<div class='napaka'>"; 
-                                        if(isset($_GET['zapis']) && !empty($_GET['zapis'])) echo $_GET['zapis'] ."</div>";
+                                        if(isset($_GET['zapis']) && !empty($_GET['zapis'])) echo htmlspecialchars($_GET['zapis'], ENT_QUOTES) ."</div>";
                                         break;
                                     default:
                                         echo "<div class='napaka'></div>";
