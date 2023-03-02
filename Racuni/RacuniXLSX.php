@@ -94,7 +94,7 @@ if(isset($_POST['DatumOd']) && isset($_POST['DatumDo']) && isset($_POST['kako_se
                 'Izdelek' => 'string',
                 'Količina' => 'integer',
                 'Merska Enota' => 'string',
-                'Cena' => 'euro'
+                'Cena' => 'price'
             );
 
             
