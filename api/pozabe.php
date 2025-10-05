@@ -116,8 +116,8 @@ if(mysqli_num_rows($rezultat) > 0){
                 WHEN '6' THEN 'Nedelja'
                 ELSE 'Ponedeljek'
                 END AS Dan FROM Nacrtovani_Prevzemi LIMIT 1)
-                and now() >= veljavno_od
-                and now() <= coalesce(veljavno_do, DATE_ADD(now(), interval 20 second));
+                and @datum >= veljavno_od
+                and @datum <= coalesce(veljavno_do, DATE_ADD(now(), interval 20 second));
             
                 SET @datum = DATE_ADD(@datum, INTERVAL 1 DAY);
                 
@@ -131,8 +131,8 @@ if(mysqli_num_rows($rezultat) > 0){
                 WHEN '6' THEN 'Nedelja'
                 ELSE 'Ponedeljek'
                 END AS Dan FROM Nacrtovani_Prevzemi  LIMIT 1)
-                and now() >= veljavno_od
-                and now() <= coalesce(veljavno_do, DATE_ADD(now(), interval 20 second));
+                and @datum >= veljavno_od
+                and @datum <= coalesce(veljavno_do, DATE_ADD(now(), interval 20 second));
             
                 SET @datum = DATE_ADD(@datum, INTERVAL 1 DAY);
                 
@@ -146,8 +146,8 @@ if(mysqli_num_rows($rezultat) > 0){
                 WHEN '6' THEN 'Nedelja'
                 ELSE 'Ponedeljek'
                 END AS Dan FROM Nacrtovani_Prevzemi  LIMIT 1)
-                and now() >= veljavno_od
-                and now() <= coalesce(veljavno_do, DATE_ADD(now(), interval 20 second));
+                and @datum >= veljavno_od
+                and @datum <= coalesce(veljavno_do, DATE_ADD(now(), interval 20 second));
             
                 SET @datum = DATE_ADD(@datum, INTERVAL 1 DAY);
                 
@@ -161,8 +161,8 @@ if(mysqli_num_rows($rezultat) > 0){
                 WHEN '6' THEN 'Nedelja'
                 ELSE 'Ponedeljek'
                 END AS Dan FROM Nacrtovani_Prevzemi  LIMIT 1)
-                and now() >= veljavno_od
-                and now() <= coalesce(veljavno_do, DATE_ADD(now(), interval 20 second));
+                and @datum >= veljavno_od
+                and @datum <= coalesce(veljavno_do, DATE_ADD(now(), interval 20 second));
             
                 SET @datum = DATE_ADD(@datum, INTERVAL 1 DAY);
                 
@@ -176,8 +176,8 @@ if(mysqli_num_rows($rezultat) > 0){
                 WHEN '6' THEN 'Nedelja'
                 ELSE 'Ponedeljek'
                 END AS Dan FROM Nacrtovani_Prevzemi  LIMIT 1)
-                and now() >= veljavno_od
-                and now() <= coalesce(veljavno_do, DATE_ADD(now(), interval 20 second));
+                and @datum >= veljavno_od
+                and @datum <= coalesce(veljavno_do, DATE_ADD(now(), interval 20 second));
             
                 SET @datum = DATE_ADD(@datum, INTERVAL 1 DAY);
                 
@@ -191,8 +191,8 @@ if(mysqli_num_rows($rezultat) > 0){
                 WHEN '6' THEN 'Nedelja'
                 ELSE 'Ponedeljek'
                 END AS Dan FROM Nacrtovani_Prevzemi  LIMIT 1)
-                and now() >= veljavno_od
-                and now() <= coalesce(veljavno_do, DATE_ADD(now(), interval 20 second));
+                and @datum >= veljavno_od
+                and @datum <= coalesce(veljavno_do, DATE_ADD(now(), interval 20 second));
             
                 SET @datum = DATE_ADD(@datum, INTERVAL 1 DAY);
                 
@@ -206,8 +206,8 @@ if(mysqli_num_rows($rezultat) > 0){
                 WHEN '6' THEN 'Nedelja'
                 ELSE 'Ponedeljek'
                 END AS Dan FROM Nacrtovani_Prevzemi  LIMIT 1)
-                and now() >= veljavno_od
-                and now() <= coalesce(veljavno_do, DATE_ADD(now(), interval 20 second));               
+                and @datum >= veljavno_od
+                and @datum <= coalesce(veljavno_do, DATE_ADD(now(), interval 20 second));               
                 ";
 
             
