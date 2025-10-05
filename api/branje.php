@@ -196,7 +196,7 @@ function Branje($tabela, $povezava){
         echo json_encode($Vsipodatki, JSON_UNESCAPED_UNICODE);
         
         mysqli_close($povezava);
-        http_response_code(200);
+        //http_response_code(200);
         exit;
     }
     else{

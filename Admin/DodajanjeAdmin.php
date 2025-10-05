@@ -76,6 +76,11 @@ if(isset($_POST['tabela'])){
             $preskoci = true;
         }
 
+        if($tabela == "Nacrtovani_Prevzemi" && $tabele[$i] == "veljavno_do" && $podatekpostSQL != ""){
+            array_push($podatkiZaPoslat, array($tabele[$i] => $podatekpostSQL . " 23:59:59"));
+            $preskoci = true;
+        }
+
         if($preskoci === false){
             //Pregleda za izjeme kjer so lahko podatki prazni
             if(Izjeme($tabela, $tabele[$i])){         
@@ -228,7 +233,7 @@ function Izjeme($tabela, $stolpec){
 
     switch ($tabela){
         case "Nacrtovani_Prevzemi":
-            if($stolpec == "Cas_Enkrat"){
+            if($stolpec == "Cas_Enkrat" || $stolpec == "veljavno_do"){
                 $vrni = true;
             }
             break;
@@ -373,15 +378,34 @@ function Izjeme($tabela, $stolpec){
                                                 }                                                
                                                 //Če je Cas_Enkrat za vnos prikaže vnos z izbero datuma
                                                 else if($vrstica['Field'] == "Cas_Enkrat" && $tabela == "Nacrtovani_Prevzemi"){
+                                                    echo "";
+                                                }
+                                                //Če je veljavno_od za vnos prikaže vnos z izbero datuma
+                                                else if($vrstica['Field'] == "veljavno_od" && $tabela == "Nacrtovani_Prevzemi"){
                                                     if(isset($_SESSION['temp'][$vrstica['Field']])){
                                                         echo "<div class='formvnosItem' style='display:flex; flex-direction: column; align-items: center;'>
-                                                        <div class='vnosNaslov'>Čas Enkrat:</div>
+                                                        <div class='vnosNaslov'>Veljavno od:</div>
                                                         <input type='date' name='". $vrstica['Field'] ."' class='ipPB' value='". $_SESSION['temp'][$vrstica['Field']] ."'>
                                                         </div>";
                                                     }
                                                     else{
                                                         echo "<div class='formvnosItem' style='display:flex; flex-direction: column; align-items: center;'>
-                                                        <div class='vnosNaslov'>Datum za enkratni prevzem:</div>
+                                                        <div class='vnosNaslov'>Veljavno od:</div>
+                                                        <input type='date' name='". $vrstica['Field'] ."' class='ipPB'>
+                                                        </div>";
+                                                    }
+                                                }
+                                                //Če je veljavno_do za vnos prikaže vnos z izbero datuma
+                                                else if($vrstica['Field'] == "veljavno_do" && $tabela == "Nacrtovani_Prevzemi"){
+                                                    if(isset($_SESSION['temp'][$vrstica['Field']])){
+                                                        echo "<div class='formvnosItem' style='display:flex; flex-direction: column; align-items: center;'>
+                                                        <div class='vnosNaslov'>Veljavno do:</div>
+                                                        <input type='date' name='". $vrstica['Field'] ."' class='ipPB' value='". $_SESSION['temp'][$vrstica['Field']] ."'>
+                                                        </div>";
+                                                    }
+                                                    else{
+                                                        echo "<div class='formvnosItem' style='display:flex; flex-direction: column; align-items: center;'>
+                                                        <div class='vnosNaslov'>Veljavno do:</div>
                                                         <input type='date' name='". $vrstica['Field'] ."' class='ipPB'>
                                                         </div>";
                                                     }

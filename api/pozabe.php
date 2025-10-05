@@ -98,8 +98,9 @@ if(mysqli_num_rows($rezultat) > 0){
             }
 
             //Najprej nastavi variable za ta seesion in nato izvede spodnje
-            $stmt = $povezava->prepare("SET @datum = CONVERT(?, DATETIME);");
-            $stmt->bind_param("s", $kolikonazajzacetek);
+            $zactekSearch = $podatkifilter . " 00:00:00";
+            $stmt = $povezava->prepare("SET @datum = STR_TO_DATE(?, '%Y-%m-%d %H:%i:%s');");
+            $stmt->bind_param("s", $zactekSearch);
             $stmt->execute();
 
 
@@ -114,7 +115,9 @@ if(mysqli_num_rows($rezultat) > 0){
                 WHEN '5' THEN 'Sobota'
                 WHEN '6' THEN 'Nedelja'
                 ELSE 'Ponedeljek'
-                END AS Dan FROM Nacrtovani_Prevzemi LIMIT 1);
+                END AS Dan FROM Nacrtovani_Prevzemi LIMIT 1)
+                and now() >= veljavno_od
+                and now() <= coalesce(veljavno_do, DATE_ADD(now(), interval 20 second));
             
                 SET @datum = DATE_ADD(@datum, INTERVAL 1 DAY);
                 
@@ -127,7 +130,9 @@ if(mysqli_num_rows($rezultat) > 0){
                 WHEN '5' THEN 'Sobota'
                 WHEN '6' THEN 'Nedelja'
                 ELSE 'Ponedeljek'
-                END AS Dan FROM Nacrtovani_Prevzemi  LIMIT 1);
+                END AS Dan FROM Nacrtovani_Prevzemi  LIMIT 1)
+                and now() >= veljavno_od
+                and now() <= coalesce(veljavno_do, DATE_ADD(now(), interval 20 second));
             
                 SET @datum = DATE_ADD(@datum, INTERVAL 1 DAY);
                 
@@ -140,7 +145,9 @@ if(mysqli_num_rows($rezultat) > 0){
                 WHEN '5' THEN 'Sobota'
                 WHEN '6' THEN 'Nedelja'
                 ELSE 'Ponedeljek'
-                END AS Dan FROM Nacrtovani_Prevzemi  LIMIT 1);
+                END AS Dan FROM Nacrtovani_Prevzemi  LIMIT 1)
+                and now() >= veljavno_od
+                and now() <= coalesce(veljavno_do, DATE_ADD(now(), interval 20 second));
             
                 SET @datum = DATE_ADD(@datum, INTERVAL 1 DAY);
                 
@@ -153,7 +160,9 @@ if(mysqli_num_rows($rezultat) > 0){
                 WHEN '5' THEN 'Sobota'
                 WHEN '6' THEN 'Nedelja'
                 ELSE 'Ponedeljek'
-                END AS Dan FROM Nacrtovani_Prevzemi  LIMIT 1);
+                END AS Dan FROM Nacrtovani_Prevzemi  LIMIT 1)
+                and now() >= veljavno_od
+                and now() <= coalesce(veljavno_do, DATE_ADD(now(), interval 20 second));
             
                 SET @datum = DATE_ADD(@datum, INTERVAL 1 DAY);
                 
@@ -166,7 +175,9 @@ if(mysqli_num_rows($rezultat) > 0){
                 WHEN '5' THEN 'Sobota'
                 WHEN '6' THEN 'Nedelja'
                 ELSE 'Ponedeljek'
-                END AS Dan FROM Nacrtovani_Prevzemi  LIMIT 1);
+                END AS Dan FROM Nacrtovani_Prevzemi  LIMIT 1)
+                and now() >= veljavno_od
+                and now() <= coalesce(veljavno_do, DATE_ADD(now(), interval 20 second));
             
                 SET @datum = DATE_ADD(@datum, INTERVAL 1 DAY);
                 
@@ -179,7 +190,9 @@ if(mysqli_num_rows($rezultat) > 0){
                 WHEN '5' THEN 'Sobota'
                 WHEN '6' THEN 'Nedelja'
                 ELSE 'Ponedeljek'
-                END AS Dan FROM Nacrtovani_Prevzemi  LIMIT 1);
+                END AS Dan FROM Nacrtovani_Prevzemi  LIMIT 1)
+                and now() >= veljavno_od
+                and now() <= coalesce(veljavno_do, DATE_ADD(now(), interval 20 second));
             
                 SET @datum = DATE_ADD(@datum, INTERVAL 1 DAY);
                 
@@ -192,7 +205,9 @@ if(mysqli_num_rows($rezultat) > 0){
                 WHEN '5' THEN 'Sobota'
                 WHEN '6' THEN 'Nedelja'
                 ELSE 'Ponedeljek'
-                END AS Dan FROM Nacrtovani_Prevzemi  LIMIT 1);               
+                END AS Dan FROM Nacrtovani_Prevzemi  LIMIT 1)
+                and now() >= veljavno_od
+                and now() <= coalesce(veljavno_do, DATE_ADD(now(), interval 20 second));               
                 ";
 
             
@@ -310,14 +325,14 @@ if(mysqli_num_rows($rezultat) > 0){
         else{
             mysqli_close($povezava);
             http_response_code(400);
-            echo json_encode(array("sporocilo" => "Vse ni vključeno"), JSON_UNESCAPED_UNICODE);
+            echo json_encode(array("sporocilo" => "Vse ni vključeno 2"), JSON_UNESCAPED_UNICODE);
             exit;
         }
     }
     else{
         mysqli_close($povezava);
         http_response_code(400);
-        echo json_encode(array("sporocilo" => "Vse ni vključeno"), JSON_UNESCAPED_UNICODE);
+        echo json_encode(array("sporocilo" => "Vse ni vključeno 3"), JSON_UNESCAPED_UNICODE);
         exit;
     }
 

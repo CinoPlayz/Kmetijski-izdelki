@@ -135,6 +135,8 @@
                 Izdelek VARCHAR(50) NOT NULL,
                 id_stranke INT NOT NULL,
                 Cas_Enkrat DATETIME,
+                veljavno_od DATETIME not null default CURRENT_TIMESTAMP,
+	            veljavno_do DATETIME,
                 FOREIGN KEY (id_stranke) REFERENCES Stranka(id_stranke), 
                 FOREIGN KEY (Izdelek) REFERENCES Izdelek(Izdelek)
             );
@@ -289,6 +291,8 @@
                             Izdelek VARCHAR(50) NOT NULL,
                             id_stranke INT NOT NULL,
                             Cas_Enkrat DATETIME,
+                            veljavno_od DATETIME not null default CURRENT_TIMESTAMP,
+	                        veljavno_do DATETIME,
                             FOREIGN KEY (id_stranke) REFERENCES Stranka(id_stranke), 
                             FOREIGN KEY (Izdelek) REFERENCES Izdelek(Izdelek)
                         );

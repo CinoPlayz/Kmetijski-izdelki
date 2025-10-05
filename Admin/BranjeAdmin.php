@@ -128,9 +128,12 @@ if($_SESSION['Pravila'] != "Admin"){
 
                                     echo "<th>Ime</th>";
                                     array_push($tabele, array("Ime", "MOL"));     
+                                    
+                                    echo "<th>Veljavno od</th>";
+                                    array_push($tabele, array("veljavno_od", "MOL")); 
 
-                                    echo "<th>Datum Enkratnega prevzema</th>";
-                                    array_push($tabele, array("Cas_Enkrat", ""));      
+                                    echo "<th>Veljavno do</th>";
+                                    array_push($tabele, array("veljavno_do", "")); 
                                 }
                                 else if($tabela == "Stranka"){
                                     echo "<th>ID Stranke</th>";

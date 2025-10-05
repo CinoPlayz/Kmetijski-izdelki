@@ -241,7 +241,7 @@ function Izjeme($tabela, $stolpec){
 
     switch ($tabela){
         case "Nacrtovani_Prevzemi":
-            if($stolpec == "Cas_Enkrat"){
+            if($stolpec == "Cas_Enkrat" ||$stolpec == "veljavno_do"){
                 $vrni = true;
             }
             break;
@@ -478,9 +478,13 @@ function Izjeme($tabela, $stolpec){
                                                 }
                                                 //Če je Cas_Enkrat za vnos prikaže vnos z izbero datuma
                                                 else if($vrstica['Field'] == "Cas_Enkrat" && $tabela = "Nacrtovani_Prevzemi"){
+                                                    echo "";
+                                                }
+                                                //Če je veljavno_od za vnos prikaže vnos z izbero datuma
+                                                else if($vrstica['Field'] == "veljavno_od" && $tabela = "Nacrtovani_Prevzemi"){
                                                     if(isset($_SESSION['temp'][$vrstica['Field']])){
                                                         echo "<div class='formvnosItem' style='display:flex; flex-direction: column; align-items: center;'>
-                                                        <div class='vnosNaslov'>". str_replace("_", " ", $vrstica['Field']).":</div>
+                                                        <div class='vnosNaslov'>Veljavno od:</div>
                                                         <input type='date' name='". $vrstica['Field'] ."' class='ipPB' value='". $_SESSION['temp'][$vrstica['Field']] ."'>
                                                         </div>";
                                                     }
@@ -490,17 +494,43 @@ function Izjeme($tabela, $stolpec){
                                                         $Datum = $DatumObjekt->format('Y-m-d');
                                                         
                                                         echo "<div class='formvnosItem' style='display:flex; flex-direction: column; align-items: center;'>
-                                                        <div class='vnosNaslov'>". str_replace("_", " ", $vrstica['Field']).":</div>
+                                                        <div class='vnosNaslov'>Veljavno od:</div>
                                                         <input type='date' name='". $vrstica['Field'] ."' class='ipPB' value='".  $Datum ."'>
                                                         </div>";
                                                     }
                                                     else{
                                                         echo "<div class='formvnosItem' style='display:flex; flex-direction: column; align-items: center;'>
-                                                        <div class='vnosNaslov'>". str_replace("_", " ", $vrstica['Field']).":</div>
+                                                        <div class='vnosNaslov'>Veljavno od:</div>
                                                         <input type='date' name='". $vrstica['Field'] ."' class='ipPB'>
                                                         </div>";
                                                     }
                                                 }
+                                                //Če je veljavno_do za vnos prikaže vnos z izbero datuma
+                                                else if($vrstica['Field'] == "veljavno_do" && $tabela = "Nacrtovani_Prevzemi"){
+                                                    if(isset($_SESSION['temp'][$vrstica['Field']])){
+                                                        echo "<div class='formvnosItem' style='display:flex; flex-direction: column; align-items: center;'>
+                                                        <div class='vnosNaslov'>Veljavno do:</div>
+                                                        <input type='date' name='". $vrstica['Field'] ."' class='ipPB' value='". $_SESSION['temp'][$vrstica['Field']] ."'>
+                                                        </div>";
+                                                    }
+                                                    else if(isset($VrsticaPodatki[$vrstica['Field']])){
+
+                                                        $DatumObjekt = new DateTime($VrsticaPodatki[$vrstica['Field']]);
+                                                        $Datum = $DatumObjekt->format('Y-m-d');
+                                                        
+                                                        echo "<div class='formvnosItem' style='display:flex; flex-direction: column; align-items: center;'>
+                                                        <div class='vnosNaslov'>Veljavno do:</div>
+                                                        <input type='date' name='". $vrstica['Field'] ."' class='ipPB' value='".  $Datum ."'>
+                                                        </div>";
+                                                    }
+                                                    else{
+                                                        echo "<div class='formvnosItem' style='display:flex; flex-direction: column; align-items: center;'>
+                                                        <div class='vnosNaslov'>Veljavno do:</div>
+                                                        <input type='date' name='". $vrstica['Field'] ."' class='ipPB'>
+                                                        </div>";
+                                                    }
+                                                }
+
                                                 //Če je Cena za vnos prikaže vnos za številke
                                                 else if($vrstica['Field'] == "Cena" && $tabela == "Izdelek"){
                                                     if(isset($_SESSION['temp'][$vrstica['Field']])){

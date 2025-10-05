@@ -1,12 +1,12 @@
 <?php 
-        if(!defined('LahkoPovezava')) {
-            http_response_code(403);
-            exit;
-         }
-
+            if(!defined('LahkoPovezava')) {
+                http_response_code(403);
+                exit;
+            }
+            
             $uporabniskoime = "root";
-            $serverip = "localhost";
-            $geslo = "";
+            $serverip = "localhost:3307";
+            $geslo = "123";
             $podatkovnabaza = "Kmetijski_Izdelki";
         
             $povezava = mysqli_connect($serverip, $uporabniskoime, $geslo, $podatkovnabaza);

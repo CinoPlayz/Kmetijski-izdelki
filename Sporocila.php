@@ -103,6 +103,12 @@ function NapakaSporocilo($tabela, $stolpec){
                 
                 case "Cas_Enkrat": echo "<div class='napaka'>Izberite veljavni čas enkrat</div>";
                 break;
+
+                case "veljavno_do": echo "<div class='napaka'>Veljavnost do</div>";
+                break;
+
+                case "veljavno_od": echo "<div class='napaka'>Veljavnost od</div>";
+                break;
                 
 
                 default: $vrni = true;
