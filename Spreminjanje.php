@@ -86,6 +86,11 @@ if(isset($_POST['tabela'])){
             $preskoci = true;
         }
 
+        if($tabela == "Nacrtovani_Prevzemi" && $tabele[$i] == "veljavno_do" && $podatekpostSQL != ""){
+            array_push($podatkiZaPoslat, array($tabele[$i] => $podatekpostSQL . " 23:59:59"));
+            $preskoci = true;
+        }
+
         if($preskoci === false){
             if(Izjeme($tabela, $tabele[$i])){
 
